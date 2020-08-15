@@ -1,0 +1,66 @@
+{
+  "name": "coordinator-service",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "init-db": "CONFIG_PATH=test-config.json node dist/init.js",
+    "start": "node dist/index.js",
+    "start-nodemon": "nodemon --watch dist dist/index.js",
+    "test": "prettier --check \"./src/**/*.ts\" && eslint 'src/**/*.ts'",
+    "format": "prettier --loglevel error --write \"./src/**/*.ts\"",
+    "lint": "eslint 'src/**/*.ts' --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.4",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
+    "eslint": "^6.8.0",
+    "nodemon": "^2.0.3",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "env": {
+      "node": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "rules": {
+      "semi": "off",
+      "@typescript-eslint/semi": ["error", "never"],
+      "@typescript-eslint/member-delimiter-style": ["error", {
+        "multiline": {
+          "delimiter": "none",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }]
+    }
+  },
+  "prettier": {
+    "tabWidth": 4,
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "arrowParens": "always"
+  }
+}
