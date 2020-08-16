@@ -14,7 +14,7 @@ async function init(): Promise<void> {
 
     const client = new CeremonyParticipant(participantId, baseUrl)
     const contributor = new ShellContributor({
-        contributorCommand: './contributor.sh',
+        contributorCommand: './contributor/mock.sh',
         contributionBasePath: '/tmp',
     })
 
