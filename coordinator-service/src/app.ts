@@ -1,10 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 
-import { DiskCoordinator } from './disk-coordinator'
-import { DiskChunkStorage } from './disk-chunk-storage'
-
-const dbPath = process.env.DB_PATH || 'db.json'
+import { Coordinator } from './coordinator'
 
 //
 // POC: coordinates chunk contributions
@@ -20,10 +17,8 @@ declare global {
     }
 }
 
-export function initExpress(): express.Application {
+export function initExpress(coordinator: Coordinator): express.Application {
     const app = express()
-    const chunkStorage = new DiskChunkStorage('./chunk-storage')
-    const coordinator = new DiskCoordinator({ chunkStorage, dbPath })
 
     app.use(bodyParser.raw())
 
