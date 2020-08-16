@@ -1,3 +1,6 @@
+# Default test/dev storage
+.storage/
+
 # Logs
 logs
 *.log

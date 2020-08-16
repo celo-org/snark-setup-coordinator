@@ -14,6 +14,12 @@ Build:
 npm run build
 ```
 
+Init a dev "db":
+
+```
+npm run init-db
+```
+
 Run:
 
 ```

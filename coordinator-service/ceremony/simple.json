@@ -1,0 +1,19 @@
+{
+  "participantIds": ["frank", "becky", "ben", "jane"],
+  "chunks": [{
+    "chunkId": "chunk-1",
+    "location": "/some/location/chunk-1"
+  }, {
+    "chunkId": "chunk-2",
+    "location": "/some/location/chunk-2"
+  }, {
+    "chunkId": "chunk-3",
+    "location": "/some/location/chunk-3"
+  }, {
+    "chunkId": "chunk-4",
+    "location": "/some/location/chunk-4"
+  }, {
+    "chunkId": "chunk-5",
+    "location": "/some/location/chunk-5"
+  }]
+}
