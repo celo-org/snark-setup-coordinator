@@ -48,14 +48,19 @@ export function initExpress(coordinator: Coordinator): express.Application {
         const participantId = req.participantId
         const chunkId = req.params.id
         console.log(`POST /chunks/${chunkId}/lock ${participantId}`)
-        const locked = coordinator.tryLockChunk(chunkId, participantId)
-        res.json({
-            status: 'ok',
-            result: {
-                chunkId,
-                locked,
-            },
-        })
+        try {
+            const locked = coordinator.tryLockChunk(chunkId, participantId)
+            res.json({
+                status: 'ok',
+                result: {
+                    chunkId,
+                    locked,
+                },
+            })
+        } catch (err) {
+            console.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
     })
 
     app.post('/chunks/:id/contribution', async (req, res) => {
@@ -71,7 +76,7 @@ export function initExpress(coordinator: Coordinator): express.Application {
             )
             res.json({ status: 'ok' })
         } catch (err) {
-            console.error(err)
+            console.warn(err.message)
             res.status(400).json({ status: 'error' })
         }
     })

@@ -71,6 +71,16 @@ export class DiskCoordinator implements Coordinator {
 
     tryLockChunk(chunkId: string, participantId: string): boolean {
         const ceremony = this._readDb()
+
+        const holding = ceremony.chunks.find(
+            (chunk) => chunk.holder === participantId,
+        )
+        if (holding) {
+            throw new Error(
+                `${participantId} already holds lock on chunk ${holding.chunkId}`,
+            )
+        }
+
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
         if (chunk.holder) {
             return false

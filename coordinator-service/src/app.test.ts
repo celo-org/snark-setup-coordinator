@@ -20,18 +20,21 @@ describe('app', () => {
 
     before(() => {
         storageDir = tmp.dirSync({ unsafeCleanup: true })
+    })
+
+    beforeEach(() => {
         const storagePath = storageDir.name
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
             participantIds: ['frank', 'becky'],
             chunks: [
                 {
-                    chunkId: 'chunk-1',
-                    location: '/some/location/chunk-1',
+                    chunkId: '1',
+                    location: '/some/location/1',
                 },
                 {
-                    chunkId: 'chunk-2',
-                    location: '/some/location/chunk-2',
+                    chunkId: '2',
+                    location: '/some/location/2',
                 },
             ],
         }
@@ -47,9 +50,33 @@ describe('app', () => {
     })
 
     describe('/ceremony', () => {
-        it('GET', async () => {
+        it('returns ceremony', async () => {
             const res = await chai.request(app).get('/ceremony')
             expect(res).to.have.status(200)
+        })
+    })
+
+    describe('/chunks/:id/lock', () => {
+        it('locks unlocked chunk', async () => {
+            const res = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('x-participant-id', 'frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.chunkId).to.equal('1')
+            expect(res.body.result.locked).to.equal(true)
+        })
+
+        it('returns 400 if lock holder tries another lock', async () => {
+            await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('x-participant-id', 'frank')
+            const res = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('x-participant-id', 'frank')
+            expect(res).to.have.status(400)
         })
     })
 })
