@@ -8,7 +8,7 @@
     "start": "node dist/index.js",
     "start-dave": "PARTICIPANT_ID=dave node dist/index.js",
     "start-becky": "PARTICIPANT_ID=becky node dist/index.js",
-    "coverage": "mocha -r ts-node/register src/**/*.test.ts",
+    "coverage": "nyc mocha -r ts-node/register src/**/*.test.ts",
     "test": "npm run coverage && prettier --check \"./src/**/*.ts\" && eslint 'src/**/*.ts'",
     "format": "prettier --loglevel error --write \"./src/**/*.ts\"",
     "lint": "eslint 'src/**/*.ts' --fix"
@@ -31,6 +31,7 @@
     "mocha": "^8.1.1",
     "nock": "^13.0.4",
     "nodemon": "^2.0.3",
+    "nyc": "^15.1.0",
     "prettier": "^2.0.5",
     "typescript": "^3.8.3"
   },
