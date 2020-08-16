@@ -49,6 +49,13 @@ export class CeremonyParticipant {
 
     async getLockedChunk(): Promise<ChunkData> {
         const incompleteChunks = await this.getIncompleteChunks()
+        const existingChunk = incompleteChunks.find(
+            (chunk) => chunk.holder === this.participantId,
+        )
+        if (existingChunk) {
+            return existingChunk
+        }
+
         const unlockedChunks = incompleteChunks.filter((chunk) => !chunk.holder)
         // Shuffle to mitigate thundering herd problems.
         shuffle(unlockedChunks)
