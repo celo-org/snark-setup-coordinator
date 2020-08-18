@@ -7,8 +7,9 @@ import {
 } from './coordinator'
 
 interface DiskCoordinatorConfig {
-    chunks: { chunkId: string; location: string }[]
+    chunks: { chunkId: string; location: string; verified: boolean }[]
     participantIds: string[]
+    verifierIds: string[]
 }
 
 export class DiskCoordinator implements Coordinator {
@@ -29,11 +30,13 @@ export class DiskCoordinator implements Coordinator {
                     {
                         location: configChunk.location,
                         participantId: '0',
+                        verified: configChunk.verified,
                     },
                 ],
                 holder: null,
             })),
             participantIds: config.participantIds,
+            verifierIds: config.verifierIds,
         }
         fs.writeFileSync(dbPath, JSON.stringify(ceremony, null, 2))
     }
@@ -85,6 +88,17 @@ export class DiskCoordinator implements Coordinator {
         if (chunk.holder) {
             return false
         }
+        //
+        // Return false if contributor trying to lock unverified chunk or
+        // if verifier trying to lock verified chunk.
+        //
+        const verifier = ceremony.verifierIds.includes(participantId)
+        const lastContribution =
+            chunk.contributions[chunk.contributions.length - 1]
+        if (lastContribution.verified === verifier) {
+            return false
+        }
+
         chunk.holder = participantId
         this._writeDb(ceremony)
         return true
@@ -118,9 +132,11 @@ export class DiskCoordinator implements Coordinator {
             participantId,
             content,
         )
+        const verified = ceremony.verifierIds.includes(participantId)
         chunk.contributions.push({
             location,
             participantId,
+            verified,
         })
         chunk.holder = null
         this._writeDb(ceremony)

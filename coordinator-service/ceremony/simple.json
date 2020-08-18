@@ -1,19 +1,25 @@
 {
   "participantIds": ["frank", "becky", "ben", "jane"],
+  "verifierIds": ["verifier0"],
   "chunks": [{
     "chunkId": "chunk-1",
-    "location": "/some/location/chunk-1"
+    "location": "/some/location/chunk-1",
+    "verified": true
   }, {
     "chunkId": "chunk-2",
-    "location": "/some/location/chunk-2"
+    "location": "/some/location/chunk-2",
+    "verified": true
   }, {
     "chunkId": "chunk-3",
-    "location": "/some/location/chunk-3"
+    "location": "/some/location/chunk-3",
+    "verified": true
   }, {
     "chunkId": "chunk-4",
-    "location": "/some/location/chunk-4"
+    "location": "/some/location/chunk-4",
+    "verified": true
   }, {
     "chunkId": "chunk-5",
-    "location": "/some/location/chunk-5"
+    "location": "/some/location/chunk-5",
+    "verified": true
   }]
 }
