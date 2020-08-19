@@ -1,5 +1,5 @@
 {
-  "participantIds": ["frank", "becky", "ben", "jane"],
+  "participantIds": ["dave", "becky"],
   "verifierIds": ["verifier0"],
   "chunks": [{
     "chunkId": "chunk-1",

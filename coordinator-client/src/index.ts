@@ -1,27 +1,29 @@
 import * as fs from 'fs'
 
 import { ShellContributor } from './shell-contributor'
-import { CeremonyParticipant } from './ceremony-participant'
+import {
+    CeremonyParticipant,
+    CeremonyContributor,
+    CeremonyVerifier,
+} from './ceremony-participant'
 
 function sleep(msec): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
-async function init(): Promise<void> {
-    const participantId = process.env.PARTICIPANT_ID || 'dave'
-    const baseUrl = 'http://localhost:8080/'
+async function init({
+    client,
+    contributor,
+}: {
+    client: CeremonyParticipant
+    contributor: ShellContributor
+}): Promise<void> {
     const lockBackoffMsecs = 5000
-
-    const client = new CeremonyParticipant(participantId, baseUrl)
-    const contributor = new ShellContributor({
-        contributorCommand: './contributor/mock.sh',
-        contributionBasePath: '/tmp',
-    })
 
     let ceremony = await client.getCeremony()
     console.log('Starting state:', JSON.stringify(ceremony, null, 2))
 
-    let incompleteChunks = await client.getIncompleteChunks()
+    let incompleteChunks = await client.getChunksRemaining()
     while (incompleteChunks.length) {
         const completedChunkCount =
             ceremony.chunks.length - incompleteChunks.length
@@ -48,14 +50,33 @@ async function init(): Promise<void> {
             console.log('Unable to lock chunk')
         }
         await sleep(lockBackoffMsecs)
-        incompleteChunks = await client.getIncompleteChunks()
+        incompleteChunks = await client.getChunksRemaining()
     }
 
     ceremony = await client.getCeremony()
     console.log('Ending state:', JSON.stringify(ceremony, null, 2))
 }
 
-init().catch((err) => {
+const participantId = process.env.PARTICIPANT_ID || 'dave'
+const mode = process.env.MODE || 'contribute'
+const baseUrl = 'http://localhost:8080/'
+
+let client
+if (mode === 'contribute') {
+    client = new CeremonyContributor(participantId, baseUrl)
+} else if (mode === 'verify') {
+    client = new CeremonyVerifier(participantId, baseUrl)
+} else {
+    console.error(`Unexpected mode ${mode}`)
+    process.exit(1)
+}
+
+const contributor = new ShellContributor({
+    contributorCommand: './contributor/mock.sh',
+    contributionBasePath: '/tmp',
+})
+
+init({ client, contributor }).catch((err) => {
     console.error(err)
     process.exit(1)
 })

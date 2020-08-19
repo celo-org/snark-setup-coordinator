@@ -1,6 +1,7 @@
 export interface ChunkContribution {
     location: string
     participantId: string
+    verified: boolean
 }
 
 export interface ChunkData {
@@ -15,4 +16,5 @@ export interface LockedChunkData extends ChunkData {
 export interface Ceremony {
     chunks: LockedChunkData[]
     participantIds: string[]
+    verifierIds: string[]
 }
