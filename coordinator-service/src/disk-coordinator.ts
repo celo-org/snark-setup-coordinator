@@ -111,16 +111,6 @@ export class DiskCoordinator implements Coordinator {
     ): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
-        if (
-            chunk.contributions.find(
-                (contribution) => contribution.participantId === participantId,
-            )
-        ) {
-            throw new Error(
-                `Participant ${participantId} already contributed ` +
-                    `to chunk ${chunkId}`,
-            )
-        }
         if (chunk.holder !== participantId) {
             throw new Error(
                 `Participant ${participantId} does not hold lock ` +
