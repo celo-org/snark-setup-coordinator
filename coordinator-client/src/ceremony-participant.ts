@@ -65,14 +65,32 @@ export abstract class CeremonyParticipant {
     }
 
     async contributeChunk(chunkId: string, content: string): Promise<void> {
+        const writeUrl = (
+            await this.axios({
+                method: 'GET',
+                url: `/chunks/${chunkId}/contribution`,
+                headers: {
+                    'X-Participant-Id': this.participantId,
+                },
+            })
+        ).data.result.writeUrl
+
         await this.axios({
             method: 'POST',
-            url: `/chunks/${chunkId}/contribution`,
+            url: writeUrl,
             headers: {
                 'Content-Type': 'application/octet-stream',
                 'X-Participant-Id': this.participantId,
             },
             data: content,
+        })
+
+        await this.axios({
+            method: 'POST',
+            url: `/chunks/${chunkId}/contribution`,
+            headers: {
+                'X-Participant-Id': this.participantId,
+            },
         })
     }
 }
