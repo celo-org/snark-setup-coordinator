@@ -2,16 +2,28 @@ import axios, { AxiosInstance } from 'axios'
 import shuffle = require('shuffle-array')
 
 import { ChunkData, LockedChunkData, Ceremony } from './coordinator'
+import { ChunkUploader, DefaultChunkUploader } from './chunk-uploader'
 
 export abstract class CeremonyParticipant {
     participantId: string
     axios: AxiosInstance
+    chunkUploader: ChunkUploader
 
-    constructor(participantId: string, baseUrl: string) {
+    constructor({
+        participantId,
+        baseUrl,
+        chunkUploader = null,
+    }: {
+        participantId: string
+        baseUrl: string
+        chunkUploader?: ChunkUploader
+    }) {
         this.participantId = participantId
         this.axios = axios.create({
             baseURL: baseUrl,
         })
+        this.chunkUploader =
+            chunkUploader || new DefaultChunkUploader({ participantId })
     }
 
     // All the chunks this participant still might need to do work on
@@ -75,15 +87,7 @@ export abstract class CeremonyParticipant {
             })
         ).data.result.writeUrl
 
-        await this.axios({
-            method: 'POST',
-            url: writeUrl,
-            headers: {
-                'Content-Type': 'application/octet-stream',
-                'X-Participant-Id': this.participantId,
-            },
-            data: content,
-        })
+        await this.chunkUploader.upload({ url: writeUrl, content })
 
         await this.axios({
             method: 'POST',

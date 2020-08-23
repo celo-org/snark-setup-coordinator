@@ -51,7 +51,7 @@ export class BlobChunkStorage implements ChunkStorage {
             },
             this.sharedKeyCredential,
         ).toString()
-        return `${this._baseUrl()}?${blobSAS}`
+        return `${this._baseUrl()}/${this.containerName}/${blobName}?${blobSAS}`
     }
 
     getChunkReadLocation({

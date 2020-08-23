@@ -63,9 +63,9 @@ const baseUrl = 'http://localhost:8080/'
 
 let client
 if (mode === 'contribute') {
-    client = new CeremonyContributor(participantId, baseUrl)
+    client = new CeremonyContributor({ participantId, baseUrl })
 } else if (mode === 'verify') {
-    client = new CeremonyVerifier(participantId, baseUrl)
+    client = new CeremonyVerifier({ participantId, baseUrl })
 } else {
     console.error(`Unexpected mode ${mode}`)
     process.exit(1)

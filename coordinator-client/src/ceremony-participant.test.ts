@@ -38,7 +38,10 @@ describe('CeremonyVerifier', () => {
                         ],
                     },
                 })
-            const client = new CeremonyVerifier('bitdiddle', 'http://mock')
+            const client = new CeremonyVerifier({
+                participantId: 'bitdiddle',
+                baseUrl: 'http://mock',
+            })
             const chunks = await client.getChunksRemaining()
             expect(chunks.length).to.equal(2)
         })
@@ -55,7 +58,10 @@ describe('CeremonyContributor', () => {
                         participantIds: ['bitdiddle'],
                     },
                 })
-            const client = new CeremonyContributor('bitdiddle', 'http://mock')
+            const client = new CeremonyContributor({
+                participantId: 'bitdiddle',
+                baseUrl: 'http://mock',
+            })
             const ceremony = await client.getCeremony()
             expect(ceremony.participantIds.length).to.equal(1)
         })
@@ -89,7 +95,10 @@ describe('CeremonyContributor', () => {
                         ],
                     },
                 })
-            const client = new CeremonyContributor('bitdiddle', 'http://mock')
+            const client = new CeremonyContributor({
+                participantId: 'bitdiddle',
+                baseUrl: 'http://mock',
+            })
             const chunks = await client.getChunksAcceptingContributions()
             expect(chunks.length).to.equal(1)
             expect(chunks[0].chunkId).to.equal('verifiedChunkId')
@@ -117,7 +126,10 @@ describe('CeremonyContributor', () => {
                         participantIds: ['bitdiddle'],
                     },
                 })
-            const client = new CeremonyContributor('bitdiddle', 'http://mock')
+            const client = new CeremonyContributor({
+                participantId: 'bitdiddle',
+                baseUrl: 'http://mock',
+            })
             const chunk = await client.getLockedChunk()
             expect(chunk.chunkId).to.equal('foo-chunk-id')
         })
