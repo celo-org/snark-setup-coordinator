@@ -39,6 +39,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.2.0-preview.1",
     "express": "^4.17.1"
   },
   "nyc": {

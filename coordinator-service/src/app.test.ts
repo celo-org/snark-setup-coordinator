@@ -13,6 +13,8 @@ chai.use(chaiHttp)
 chai.should()
 
 describe('app', () => {
+    const chunkStorageUrl = 'http://doesnt-matter'
+
     let app
     let chunkStorage
     let coordinator
@@ -43,23 +45,23 @@ describe('app', () => {
         }
 
         DiskCoordinator.init({ config, dbPath })
-        chunkStorage = new DiskChunkStorage(storagePath)
+        chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
         coordinator = new DiskCoordinator({ chunkStorage, dbPath })
-        app = initExpress(coordinator)
+        app = initExpress({ coordinator, chunkStorage })
     })
 
     after(() => {
         storageDir.removeCallback()
     })
 
-    describe('/ceremony', () => {
+    describe('GET /ceremony', () => {
         it('returns ceremony', async () => {
             const res = await chai.request(app).get('/ceremony')
             expect(res).to.have.status(200)
         })
     })
 
-    describe('/chunks/:id/lock', () => {
+    describe('GET /chunks/:id/lock', () => {
         it('locks unlocked chunk', async () => {
             const res = await chai
                 .request(app)
@@ -101,13 +103,23 @@ describe('app', () => {
         })
     })
 
-    describe('/chunks/:id/contribute', () => {
+    describe('GET /chunks/:id/contribute', () => {
+        it('returns a write URL', async () => {
+            const res = await chai
+                .request(app)
+                .get('/chunks/1/contribution')
+                .set('x-participant-id', 'frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.writeUrl).to.be.a('string')
+        })
+    })
+
+    describe('POST /chunks/:id/contribute', () => {
         it('rejects unlocked chunk contributions', async () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('x-participant-id', 'frank')
-                .send('abc')
             expect(res).to.have.status(400)
         })
 
@@ -121,7 +133,6 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('x-participant-id', 'frank')
-                .send('abc')
             expect(contributionRes).to.have.status(200)
             const ceremony = (await chai.request(app).get('/ceremony')).body
                 .result
@@ -139,7 +150,6 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/2/contribution')
                 .set('x-participant-id', 'verifier0')
-                .send('abc')
             expect(contributionRes).to.have.status(200)
             const ceremony = (await chai.request(app).get('/ceremony')).body
                 .result

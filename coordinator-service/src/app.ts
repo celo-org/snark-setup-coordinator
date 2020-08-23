@@ -1,7 +1,6 @@
-import bodyParser from 'body-parser'
 import express from 'express'
 
-import { Coordinator } from './coordinator'
+import { ChunkStorage, Coordinator } from './coordinator'
 
 //
 // POC: coordinates chunk contributions
@@ -17,10 +16,14 @@ declare global {
     }
 }
 
-export function initExpress(coordinator: Coordinator): express.Application {
+export function initExpress({
+    coordinator,
+    chunkStorage,
+}: {
+    coordinator: Coordinator
+    chunkStorage: ChunkStorage
+}): express.Application {
     const app = express()
-
-    app.use(bodyParser.raw())
 
     app.get('/ceremony', (req, res) => {
         console.log('GET /ceremony')
@@ -63,17 +66,44 @@ export function initExpress(coordinator: Coordinator): express.Application {
         }
     })
 
+    app.get('/chunks/:id/contribution', (req, res) => {
+        const participantId = req.participantId
+        const chunkId = req.params.id
+
+        console.log(`GET /chunks/${chunkId}/contribution ${participantId}`)
+        const version = coordinator
+            .getChunk(chunkId)
+            .contributions.length.toString()
+        const writeUrl = chunkStorage.getChunkWriteLocation({
+            chunkId,
+            participantId,
+            version,
+        })
+        res.json({
+            status: 'ok',
+            result: {
+                chunkId,
+                participantId,
+                writeUrl,
+            },
+        })
+    })
+
     app.post('/chunks/:id/contribution', async (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
 
         console.log(`POST /chunks/${chunkId}/contribution ${participantId}`)
+        const version = coordinator
+            .getChunk(chunkId)
+            .contributions.length.toString()
+        const readUrl = chunkStorage.getChunkReadLocation({
+            chunkId,
+            participantId,
+            version,
+        })
         try {
-            await coordinator.contributeChunk(
-                chunkId,
-                participantId,
-                req.body.toString(),
-            )
+            await coordinator.contributeChunk(chunkId, participantId, readUrl)
             res.json({ status: 'ok' })
         } catch (err) {
             console.warn(err.message)

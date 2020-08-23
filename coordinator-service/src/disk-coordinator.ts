@@ -72,6 +72,11 @@ export class DiskCoordinator implements Coordinator {
         return chunk
     }
 
+    getChunk(chunkId: string): LockedChunkData {
+        const ceremony = this._readDb()
+        return DiskCoordinator._getChunk(ceremony, chunkId)
+    }
+
     tryLockChunk(chunkId: string, participantId: string): boolean {
         const ceremony = this._readDb()
 
@@ -107,7 +112,7 @@ export class DiskCoordinator implements Coordinator {
     async contributeChunk(
         chunkId: string,
         participantId: string,
-        content: string,
+        location: string,
     ): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
@@ -117,11 +122,6 @@ export class DiskCoordinator implements Coordinator {
                     `on chunk ${chunkId}`,
             )
         }
-        const location = await this.chunkStorage.setChunk(
-            chunkId,
-            participantId,
-            content,
-        )
         const verified = ceremony.verifierIds.includes(participantId)
         chunk.contributions.push({
             location,
