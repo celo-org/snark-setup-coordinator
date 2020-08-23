@@ -3,6 +3,7 @@ import shuffle = require('shuffle-array')
 
 import { ChunkData, LockedChunkData, Ceremony } from './coordinator'
 import { ChunkUploader, DefaultChunkUploader } from './chunk-uploader'
+import { logger } from './logger'
 
 export abstract class CeremonyParticipant {
     participantId: string
@@ -117,7 +118,7 @@ export class CeremonyContributor extends CeremonyParticipant {
         return ceremony.chunks.filter((chunk) => {
             const contributions = chunk.contributions
             if (!contributions.length) {
-                console.warn(`Missing contributions for chunk ${chunk.chunkId}`)
+                logger.warn(`missing contributions for chunk ${chunk.chunkId}`)
                 return false
             }
             //
@@ -141,7 +142,7 @@ export class CeremonyVerifier extends CeremonyParticipant {
         return ceremony.chunks.filter((chunk) => {
             const contributions = chunk.contributions
             if (!contributions.length) {
-                console.warn(`Missing contributions for chunk ${chunk.chunkId}`)
+                logger.warn(`missing contributions for chunk ${chunk.chunkId}`)
                 return false
             }
             //
@@ -166,7 +167,7 @@ export class CeremonyVerifier extends CeremonyParticipant {
         return ceremony.chunks.filter((chunk) => {
             const contributions = chunk.contributions
             if (!contributions.length) {
-                console.warn(`Missing contributions for chunk ${chunk.chunkId}`)
+                logger.warn(`Missing contributions for chunk ${chunk.chunkId}`)
                 return false
             }
             //

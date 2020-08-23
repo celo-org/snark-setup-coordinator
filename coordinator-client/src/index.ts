@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 
+import { logger } from './logger'
 import { ShellContributor } from './shell-contributor'
 import {
     CeremonyParticipant,
@@ -20,41 +21,39 @@ async function init({
 }): Promise<void> {
     const lockBackoffMsecs = 5000
 
-    let ceremony = await client.getCeremony()
-    console.log('Starting state:', JSON.stringify(ceremony, null, 2))
-
     let incompleteChunks = await client.getChunksRemaining()
     while (incompleteChunks.length) {
+        const ceremony = await client.getCeremony()
         const completedChunkCount =
             ceremony.chunks.length - incompleteChunks.length
-        console.log(
-            `Completed ${completedChunkCount} / ${ceremony.chunks.length}`,
+        const remainingChunkIds = incompleteChunks.map(chunk => chunk.chunkId)
+        logger.info(
+            `completed ${completedChunkCount} / ${ceremony.chunks.length}`,
         )
-        console.log(
-            `Incomplete chunks:\n${JSON.stringify(incompleteChunks, null, 2)}`,
+        logger.info(
+            `incomplete chunks: %o`, remainingChunkIds
         )
         const chunk = await client.getLockedChunk()
         if (chunk) {
-            console.log(`Locked chunk ${chunk.chunkId}`)
+            logger.info(`locked chunk ${chunk.chunkId}`)
             try {
                 const contributionPath = await contributor.run(chunk)
-                console.log('contributionPath', contributionPath)
+                logger.info('uploading contribution %s', contributionPath)
                 const content = fs.readFileSync(contributionPath).toString()
                 await client.contributeChunk(chunk.chunkId, content)
             } catch (error) {
-                console.error('Contributor failed', error)
+                logger.warn(error, 'contributor failed')
                 // TODO(sbw)
                 // await client.unlockChunk(chunk.chunkId)
             }
         } else {
-            console.log('Unable to lock chunk')
+            logger.info('unable to lock chunk')
         }
         await sleep(lockBackoffMsecs)
         incompleteChunks = await client.getChunksRemaining()
     }
 
-    ceremony = await client.getCeremony()
-    console.log('Ending state:', JSON.stringify(ceremony, null, 2))
+    logger.info('no more chunks remaining')
 }
 
 const participantId = process.env.PARTICIPANT_ID || 'dave'
@@ -67,7 +66,7 @@ if (mode === 'contribute') {
 } else if (mode === 'verify') {
     client = new CeremonyVerifier({ participantId, baseUrl })
 } else {
-    console.error(`Unexpected mode ${mode}`)
+    logger.error(`Unexpected mode ${mode}`)
     process.exit(1)
 }
 
@@ -77,6 +76,6 @@ const contributor = new ShellContributor({
 })
 
 init({ client, contributor }).catch((err) => {
-    console.error(err)
+    logger.error(err)
     process.exit(1)
 })
