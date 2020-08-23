@@ -1,10 +1,5 @@
 import fs from 'fs'
-import {
-    Ceremony,
-    ChunkStorage,
-    Coordinator,
-    LockedChunkData,
-} from './coordinator'
+import { Ceremony, Coordinator, LockedChunkData } from './coordinator'
 
 interface DiskCoordinatorConfig {
     chunks: { chunkId: string; location: string; verified: boolean }[]
@@ -14,7 +9,6 @@ interface DiskCoordinatorConfig {
 
 export class DiskCoordinator implements Coordinator {
     dbPath: string
-    chunkStorage: ChunkStorage
 
     static init({
         config,
@@ -41,15 +35,8 @@ export class DiskCoordinator implements Coordinator {
         fs.writeFileSync(dbPath, JSON.stringify(ceremony, null, 2))
     }
 
-    constructor({
-        chunkStorage,
-        dbPath,
-    }: {
-        chunkStorage: ChunkStorage
-        dbPath: string
-    }) {
+    constructor({ dbPath }: { dbPath: string }) {
         this.dbPath = dbPath
-        this.chunkStorage = chunkStorage
     }
 
     _readDb(): Ceremony {

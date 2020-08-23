@@ -11,10 +11,7 @@ const dbPath = process.env.DB_PATH || './.storage/db.json'
 
 const chunkStorageUrl = `http://localhost:${port}/chunks`
 const diskChunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
-const coordinator = new DiskCoordinator({
-    chunkStorage: diskChunkStorage,
-    dbPath,
-})
+const coordinator = new DiskCoordinator({ dbPath })
 const app = initExpress({ coordinator, chunkStorage: diskChunkStorage })
 
 //

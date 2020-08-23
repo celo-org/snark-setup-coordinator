@@ -46,7 +46,7 @@ describe('app', () => {
 
         DiskCoordinator.init({ config, dbPath })
         chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
-        coordinator = new DiskCoordinator({ chunkStorage, dbPath })
+        coordinator = new DiskCoordinator({ dbPath })
         app = initExpress({ coordinator, chunkStorage })
     })
 
