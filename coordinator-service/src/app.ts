@@ -1,6 +1,7 @@
 import express from 'express'
 
 import { ChunkStorage, Coordinator } from './coordinator'
+import { logger } from './logger'
 
 //
 // POC: coordinates chunk contributions
@@ -26,7 +27,7 @@ export function initExpress({
     const app = express()
 
     app.get('/ceremony', (req, res) => {
-        console.log('GET /ceremony')
+        logger.info('GET /ceremony')
         res.json({
             result: coordinator.getCeremony(),
             status: 'ok',
@@ -50,7 +51,7 @@ export function initExpress({
     app.post('/chunks/:id/lock', (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
-        console.log(`POST /chunks/${chunkId}/lock ${participantId}`)
+        logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
         try {
             const locked = coordinator.tryLockChunk(chunkId, participantId)
             res.json({
@@ -61,7 +62,7 @@ export function initExpress({
                 },
             })
         } catch (err) {
-            console.warn(err.message)
+            logger.warn(err.message)
             res.status(400).json({ status: 'error', message: err.message })
         }
     })
@@ -70,7 +71,7 @@ export function initExpress({
         const participantId = req.participantId
         const chunkId = req.params.id
 
-        console.log(`GET /chunks/${chunkId}/contribution ${participantId}`)
+        logger.info(`GET /chunks/${chunkId}/contribution ${participantId}`)
         const version = coordinator
             .getChunk(chunkId)
             .contributions.length.toString()
@@ -93,7 +94,7 @@ export function initExpress({
         const participantId = req.participantId
         const chunkId = req.params.id
 
-        console.log(`POST /chunks/${chunkId}/contribution ${participantId}`)
+        logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
         const version = coordinator
             .getChunk(chunkId)
             .contributions.length.toString()
@@ -106,7 +107,7 @@ export function initExpress({
             await coordinator.contributeChunk(chunkId, participantId, readUrl)
             res.json({ status: 'ok' })
         } catch (err) {
-            console.warn(err.message)
+            logger.warn(err.message)
             res.status(400).json({ status: 'error' })
         }
     })

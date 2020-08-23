@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import { initExpress } from './app'
 import { DiskCoordinator } from './disk-coordinator'
 import { DiskChunkStorage } from './disk-chunk-storage'
+import { logger } from './logger'
 
 const port = process.env.PORT || 8080
 const storagePath = process.env.STORAGE_PATH || './.storage'
@@ -26,7 +27,7 @@ app.post('/chunks/:chunkId/contribution/:version', async (req, res) => {
     const version = req.params.version
     const content = req.body.toString()
 
-    console.log(`POST /chunks/${chunkId}/contribution/${version}`)
+    logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
     try {
         await diskChunkStorage.setChunk(
             chunkId,
@@ -41,5 +42,5 @@ app.post('/chunks/:chunkId/contribution/:version', async (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Listening on ${port}`)
+    logger.info(`listening on ${port}`)
 })

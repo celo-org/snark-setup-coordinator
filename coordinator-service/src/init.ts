@@ -1,6 +1,7 @@
 import fs from 'fs'
 
 import { DiskCoordinator } from './disk-coordinator'
+import { logger } from './logger'
 
 const storagePath = process.env.STORAGE_PATH || './.storage'
 const dbPath = process.env.DB_PATH || './.storage/db.json'
@@ -20,6 +21,6 @@ async function init(): Promise<void> {
 }
 
 init().catch((err) => {
-    console.error(err)
+    logger.error(err)
     process.exit(1)
 })
