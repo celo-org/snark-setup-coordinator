@@ -23,10 +23,7 @@ export class DefaultChunkUploader implements ChunkUploader {
     }): Promise<void> {
         if (url.includes('.blob.core.windows.net')) {
             const client = new BlockBlobClient(url)
-            await client.upload(
-                content,
-                content.length,
-            )
+            await client.upload(content, content.length)
         } else {
             await this.axios({
                 method: 'POST',

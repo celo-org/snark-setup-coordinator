@@ -40,7 +40,9 @@ const argv = yargs
     .option('azure-container', {
         type: 'string',
         describe: 'Azure container name to write contributions to',
-    }).argv
+    })
+    .help()
+    .argv
 
 function main(args): void {
     logger.info('invoked with args %o', args)
