@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "pkg": "npm i && npm run build && pkg .",
     "start": "node dist/index.js",
     "start-verifier": "node dist/index.js --mode=verify --participant-id=verifier0",
     "start-dave": "node dist/index.js --mode=contribute --participant-id=dave",
@@ -34,6 +36,7 @@
     "nock": "^13.0.4",
     "nodemon": "^2.0.3",
     "nyc": "^15.1.0",
+    "pkg": "^4.4.9",
     "prettier": "^2.0.5",
     "typescript": "^3.8.3"
   },

@@ -19,3 +19,10 @@ Run:
 ```
 npm run start
 ```
+
+Build executable:
+
+```
+npm run pkg
+
+```
