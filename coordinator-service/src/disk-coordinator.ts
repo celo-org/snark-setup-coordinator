@@ -14,25 +14,10 @@ export class DiskCoordinator implements Coordinator {
         config,
         dbPath,
     }: {
-        config: DiskCoordinatorConfig
+        config: Ceremony
         dbPath: string
     }): void {
-        const ceremony = {
-            chunks: config.chunks.map((configChunk) => ({
-                chunkId: configChunk.chunkId,
-                contributions: [
-                    {
-                        location: configChunk.location,
-                        participantId: '0',
-                        verified: configChunk.verified,
-                    },
-                ],
-                holder: null,
-            })),
-            participantIds: config.participantIds,
-            verifierIds: config.verifierIds,
-        }
-        fs.writeFileSync(dbPath, JSON.stringify(ceremony, null, 2))
+        fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
     constructor({ dbPath }: { dbPath: string }) {

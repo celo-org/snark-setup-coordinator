@@ -33,13 +33,25 @@ describe('app', () => {
             chunks: [
                 {
                     chunkId: '1',
-                    location: '/some/location/1',
-                    verified: true,
+                    holder: null,
+                    contributions: [
+                        {
+                            location: '/some/location/1',
+                            participantId: 'verifier0',
+                            verified: true,
+                        },
+                    ],
                 },
                 {
                     chunkId: '2',
-                    location: '/some/location/2',
-                    verified: false,
+                    holder: null,
+                    contributions: [
+                        {
+                            location: '/some/location/2',
+                            participantId: 'pat',
+                            verified: false,
+                        },
+                    ],
                 },
             ],
         }
