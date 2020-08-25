@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: coordinator-service
+  labels:
+    app: coordinator-service
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: coordinator-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coordinator-service
+  serviceName: coordinator-service
+  template:
+    metadata:
+      labels:
+        app: coordinator-service
+    spec:
+      containers:
+        - image: coordinator-service:test
+          name: coordinator-service
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: db
+              mountPath: /db/
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: coordinator-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coordinator-service
+  labels:
+    app: coordinator-service
+spec:
+  ports:
+    - port: 8080
+      name: coordinator-service
+  selector:
+    app: coordinator-service
