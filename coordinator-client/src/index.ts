@@ -1,5 +1,9 @@
-import * as fs from 'fs'
+import execa = require('execa')
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 import yargs = require('yargs')
+import tmp from 'tmp'
 
 import { logger } from './logger'
 import { ShellContributor } from './shell-contributor'
@@ -9,24 +13,46 @@ import {
     CeremonyVerifier,
 } from './ceremony-participant'
 
-const argv = yargs
-    .env('COORDINATOR')
-    .option('api-url', {
-        default: 'http://localhost:8080',
-        type: 'string',
-        describe: 'Ceremony API url',
+function copy(source, target): Promise<unknown> {
+    const reader = fs.createReadStream(source)
+    const writer = fs.createWriteStream(target)
+    const finish = new Promise((resolve) => writer.on('finish', resolve))
+    reader.pipe(writer)
+    return finish
+}
+
+async function powersoftau(): Promise<void> {
+    const passThroughArgs = process.argv.slice(3)
+    const powersoftauFileName = {
+        Linux: 'powersoftau_linux.file',
+        Darwin: 'powersoftau_macos.uu',
+        Windows_NT: 'powersoftau.exe', // eslint-disable-line @typescript-eslint/camelcase
+    }[os.type()]
+    if (typeof powersoftauFileName === 'undefined') {
+        logger.error(`Unsupported OS type: ${os.type()}`)
+        process.exit(1)
+    }
+    const powersoftauPath = path.normalize(
+        path.join(__dirname, '..', 'powersoftau', powersoftauFileName),
+    )
+
+    const tmpFile = tmp.fileSync({
+        mode: 0o775,
+        prefix: 'powersoftau-extracted-',
+        discardDescriptor: true,
     })
-    .option('participant-id', {
-        type: 'string',
-        demand: true,
-        describe: 'ID of ceremony participant',
-    })
-    .option('mode', {
-        default: 'contribute',
-        choices: ['contribute', 'verify'],
-        type: 'string',
-    })
-    .help().argv
+    await copy(powersoftauPath, tmpFile.name)
+
+    const subprocess = execa(tmpFile.name, passThroughArgs)
+    subprocess.stdout.pipe(process.stdout)
+    subprocess.stderr.pipe(process.stderr)
+    try {
+        await subprocess
+    } catch (err) {
+        console.log(err)
+        process.exit(process.exitCode)
+    }
+}
 
 function sleep(msec): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, msec))
@@ -74,11 +100,47 @@ async function work({
     logger.info('no more chunks remaining')
 }
 
-function main(args): void {
+async function main(): Promise<void> {
+    if (process.argv[2] === 'powersoftau') {
+        await powersoftau()
+        return
+    }
+
+    const participateArgs = {
+        'api-url': {
+            default: 'http://localhost:8080',
+            type: 'string',
+            describe: 'Ceremony API url',
+        },
+        'participant-id': {
+            type: 'string',
+            demand: true,
+            describe: 'ID of ceremony participant',
+        },
+    }
+
+    const args = yargs
+        .env('COORDINATOR')
+        .command(
+            'contribute',
+            'Run the process to make contributions',
+            participateArgs,
+        )
+        .command(
+            'verify',
+            'Run the process to verify contributions',
+            participateArgs,
+        )
+        .command('powersoftau', 'Run powersoftau command directly', (yargs) => {
+            return yargs.help(false).version(false)
+        })
+        .strictCommands()
+        .help().argv
+
     logger.info('invoked with args %o', args)
 
     const participantId = args.participantId
-    const mode = args.mode
+    const mode = args._[0]
     const baseUrl = args.apiUrl
 
     let client
@@ -102,4 +164,4 @@ function main(args): void {
     })
 }
 
-main(argv)
+main()
