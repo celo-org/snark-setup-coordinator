@@ -16,7 +16,7 @@ import {
 function copy(source, target): Promise<unknown> {
     const reader = fs.createReadStream(source)
     const writer = fs.createWriteStream(target)
-    const finish = new Promise((resolve) => writer.on('finish', resolve))
+    const finish = new Promise((resolve) => writer.on('close', resolve))
     reader.pipe(writer)
     return finish
 }
@@ -49,8 +49,13 @@ async function powersoftau(): Promise<void> {
     try {
         await subprocess
     } catch (err) {
-        console.log(err)
-        process.exit(process.exitCode)
+        // If exitCode is missing it probably means we couldn't even run the
+        // powersoftau, which might indicate a bug somewhere in this code.
+        if (typeof subprocess.exitCode === 'undefined') {
+            logger.error(err)
+            process.exit(1)
+        }
+        process.exit(subprocess.exitCode)
     }
 }
 
