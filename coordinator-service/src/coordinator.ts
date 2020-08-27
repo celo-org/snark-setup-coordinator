@@ -17,6 +17,7 @@ export interface Ceremony {
     chunks: LockedChunkData[]
     participantIds: string[]
     verifierIds: string[]
+    version: number
 }
 
 export interface Coordinator {

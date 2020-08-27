@@ -17,6 +17,13 @@ export class DiskCoordinator implements Coordinator {
         config: Ceremony
         dbPath: string
     }): void {
+        const configVersion = typeof config.version === 'undefined' ? 0 : config.version
+        if (fs.existsSync(dbPath)) {
+            const ceremony = JSON.parse(fs.readFileSync(dbPath).toString())
+            if (ceremony.version >= configVersion) {
+                return
+            }
+        }
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
@@ -29,6 +36,7 @@ export class DiskCoordinator implements Coordinator {
     }
 
     _writeDb(ceremony: Ceremony): void {
+        ceremony.version += 1
         fs.writeFileSync(this.dbPath, JSON.stringify(ceremony, null, 2))
     }
 

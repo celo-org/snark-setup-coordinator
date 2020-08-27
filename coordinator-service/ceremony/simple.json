@@ -1,4 +1,5 @@
 {
+  "version": 0,
   "participantIds": ["dave", "becky"],
   "verifierIds": ["verifier0"],
   "chunks": [
