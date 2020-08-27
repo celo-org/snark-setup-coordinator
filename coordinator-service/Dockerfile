@@ -24,5 +24,4 @@ RUN npm ci
 # Copy build files
 COPY --from=base /app/dist ./dist
 
-USER 1000
 CMD ["npm", "start"]
