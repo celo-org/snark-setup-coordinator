@@ -12,6 +12,7 @@ import {
     CeremonyContributor,
     CeremonyVerifier,
 } from './ceremony-participant'
+import { ChunkData } from './coordinator'
 
 function copy(source, target): Promise<unknown> {
     const reader = fs.createReadStream(source)
@@ -68,7 +69,7 @@ async function work({
     contributor,
 }: {
     client: CeremonyParticipant
-    contributor: ShellContributor
+    contributor: (chunk: ChunkData) => ShellContributor
 }): Promise<void> {
     const lockBackoffMsecs = 5000
 
@@ -86,10 +87,16 @@ async function work({
         if (chunk) {
             logger.info(`locked chunk ${chunk.chunkId}`)
             try {
-                const contributionPath = await contributor.run(chunk)
+                // TODO: pull up out of if and handle errors
+                const contribute = contributor(chunk)
+                await contribute.load()
+
+                const contributionPath = await contribute.run()
                 logger.info('uploading contribution %s', contributionPath)
                 const content = fs.readFileSync(contributionPath).toString()
                 await client.contributeChunk(chunk.chunkId, content)
+
+                contribute.cleanup()
             } catch (error) {
                 logger.warn(error, 'contributor failed')
                 // TODO(sbw)
@@ -158,10 +165,12 @@ async function main(): Promise<void> {
         process.exit(1)
     }
 
-    const contributor = new ShellContributor({
-        contributorCommand: './contributor/mock.sh',
-        contributionBasePath: '/tmp',
-    })
+    const contributor = (chunkData: ChunkData): ShellContributor => {
+        return new ShellContributor({
+            chunkData: chunkData,
+            contributorCommand: './contributor/mock.sh',
+        })
+    }
 
     work({ client, contributor }).catch((err) => {
         logger.error(err)
