@@ -7,7 +7,7 @@
     "build": "tsc",
     "init-db": "node dist/init.js",
     "reset-db": "rm -rf .storage/db.json && node dist/init.js",
-    "start": "node dist/index.js",
+    "start": "npm run init-db && node dist/index.js",
     "start-nodemon": "nodemon --watch dist dist/index.js",
     "coverage": "nyc mocha -r ts-node/register src/**/*.test.ts",
     "test": "npm run coverage && prettier --check \"./src/**/*.ts\" && eslint 'src/**/*.ts'",
