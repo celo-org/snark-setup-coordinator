@@ -1,3 +1,4 @@
+import { auth } from './auth'
 import yargs = require('yargs')
 import bodyParser from 'body-parser'
 import fs from 'fs'
@@ -71,24 +72,26 @@ function main(args): void {
 
     if (args.chunkStorageType === 'disk') {
         app.use(bodyParser.raw())
-        app.post('/chunks/:chunkId/contribution/:version', async (req, res) => {
-            const participantId = req.participantId
+        app.post(
+            '/chunks/:chunkId/contribution/:version',
+            auth,
+            async (req, res) => {
+                const chunkId = req.params.chunkId
+                const version = req.params.version
+                const content = req.body.toString()
+
+                logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
+                diskChunkStorage.setChunk(chunkId, version, content)
+                res.json({ status: 'ok' })
+            },
+        )
+        app.get('/chunks/:chunkId/contribution/:version', async (req, res) => {
             const chunkId = req.params.chunkId
             const version = req.params.version
-            const content = req.body.toString()
 
-            logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
-            try {
-                await diskChunkStorage.setChunk(
-                    chunkId,
-                    participantId,
-                    version,
-                    content,
-                )
-                res.json({ status: 'ok' })
-            } catch (err) {
-                res.status(400).json({ status: 'error', message: err.message })
-            }
+            logger.info(`GET /chunks/${chunkId}/contribution/${version}`)
+            const content = diskChunkStorage.getChunk(chunkId, version)
+            res.status(200).send(content)
         })
     }
 

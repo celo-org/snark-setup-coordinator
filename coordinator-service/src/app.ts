@@ -1,5 +1,6 @@
 import express from 'express'
 
+import { auth } from './auth'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 
@@ -34,21 +35,7 @@ export function initExpress({
         })
     })
 
-    // Lame fake authentication middleware
-    app.use((req, res, next) => {
-        if (!('x-participant-id' in req.headers)) {
-            const error = new Error('Missing x-participant-id header')
-            res.status(400).json({
-                status: 'error',
-                message: error.message,
-            })
-            next(error)
-        }
-        req.participantId = req.headers['x-participant-id'] as string
-        next()
-    })
-
-    app.post('/chunks/:id/lock', (req, res) => {
+    app.post('/chunks/:id/lock', auth, (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
         logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
@@ -67,7 +54,7 @@ export function initExpress({
         }
     })
 
-    app.get('/chunks/:id/contribution', (req, res) => {
+    app.get('/chunks/:id/contribution', auth, (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
 
@@ -90,7 +77,7 @@ export function initExpress({
         })
     })
 
-    app.post('/chunks/:id/contribution', async (req, res) => {
+    app.post('/chunks/:id/contribution', auth, async (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
 
