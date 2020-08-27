@@ -33,6 +33,9 @@ spec:
           name: coordinator-service
           ports:
             - containerPort: 8080
+          env:
+            - name: COORDINATOR_DB_FILE
+              value: /db/db.json
           volumeMounts:
             - name: db
               mountPath: /db/

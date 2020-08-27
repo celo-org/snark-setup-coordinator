@@ -1,13 +1,14 @@
 import fs from 'fs'
+import path from 'path'
 
 import { DiskCoordinator } from './disk-coordinator'
 import { logger } from './logger'
 
-const storagePath = process.env.STORAGE_PATH || './.storage'
-const dbPath = process.env.DB_PATH || './.storage/db.json'
-const configPath = process.env.CONFIG_PATH || './ceremony/simple.json'
+const dbPath = process.env.COORDINATOR_DB_FILE || './.storage/db.json'
+const configPath = process.env.COORDINATOR_CONFIG_PATH || './ceremony/simple.json'
 
 async function init(): Promise<void> {
+    const storagePath = path.dirname(dbPath)
     try {
         fs.mkdirSync(storagePath, { recursive: true })
     } catch (error) {

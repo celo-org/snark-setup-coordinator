@@ -23,5 +23,6 @@ RUN npm ci
 
 # Copy build files
 COPY --from=base /app/dist ./dist
+COPY ceremony ceremony
 
 CMD ["npm", "start"]
