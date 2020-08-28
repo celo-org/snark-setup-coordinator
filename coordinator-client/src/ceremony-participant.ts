@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import shuffle = require('shuffle-array')
 
-import { ChunkData, LockedChunkData, Ceremony } from './coordinator'
+import { ChunkData, LockedChunkData, Ceremony } from './ceremony'
 import { ChunkUploader, DefaultChunkUploader } from './chunk-uploader'
 import { logger } from './logger'
 
@@ -108,7 +108,7 @@ export class CeremonyContributor extends CeremonyParticipant {
             // Any chunk this.participantId hasn't contribute to.
             //
             return !chunk.contributions.find((contribution) => {
-                return contribution.participantId === this.participantId
+                return contribution.contributorId === this.participantId
             })
         })
     }
@@ -130,7 +130,7 @@ export class CeremonyContributor extends CeremonyParticipant {
                 return false
             }
             return !chunk.contributions.find((contribution) => {
-                return contribution.participantId === this.participantId
+                return contribution.contributorId === this.participantId
             })
         })
     }
@@ -153,11 +153,11 @@ export class CeremonyVerifier extends CeremonyParticipant {
             if (!lastContribution.verified) {
                 return true
             }
-            const particpantsIds = contributions
+            const contributorIds = contributions
                 .filter((contribution) => !contribution.verified)
-                .map((contribution) => contribution.participantId)
+                .map((contribution) => contribution.contributorId)
             return !ceremony.participantIds.every((particpantsId) =>
-                particpantsIds.includes(particpantsId),
+                contributorIds.includes(particpantsId),
             )
         })
     }

@@ -3,7 +3,7 @@ import execa = require('execa')
 import fs from 'fs'
 import tmp from 'tmp'
 
-import { ChunkData } from './coordinator'
+import { ChunkData } from './ceremony'
 
 async function fetch({ url }: { url: string }): Promise<tmp.FileResult> {
     const destinationFile = tmp.fileSync({ discardDescriptor: true })
@@ -45,7 +45,7 @@ export class ShellContributor {
         const challengeContribution = this.chunkData.contributions[
             this.chunkData.contributions.length - 1
         ]
-        const challengeUrl = challengeContribution.location
+        const challengeUrl = challengeContribution.verifiedLocation
         const challengeFile = await fetch({ url: challengeUrl })
 
         this.challengeFile = challengeFile

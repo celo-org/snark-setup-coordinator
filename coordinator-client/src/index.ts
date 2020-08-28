@@ -12,7 +12,7 @@ import {
     CeremonyContributor,
     CeremonyVerifier,
 } from './ceremony-participant'
-import { ChunkData } from './coordinator'
+import { ChunkData } from './ceremony'
 
 function copy(source, target): Promise<unknown> {
     const reader = fs.createReadStream(source)
