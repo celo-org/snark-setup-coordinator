@@ -13,12 +13,15 @@ export class DiskCoordinator implements Coordinator {
     static init({
         config,
         dbPath,
+        force = false,
     }: {
         config: Ceremony
         dbPath: string
+        force?: boolean
     }): void {
-        const configVersion = typeof config.version === 'undefined' ? 0 : config.version
-        if (fs.existsSync(dbPath)) {
+        const configVersion =
+            typeof config.version === 'undefined' ? 0 : config.version
+        if (!force && fs.existsSync(dbPath)) {
             const ceremony = JSON.parse(fs.readFileSync(dbPath).toString())
             if (ceremony.version >= configVersion) {
                 return
@@ -102,12 +105,22 @@ export class DiskCoordinator implements Coordinator {
                     `on chunk ${chunkId}`,
             )
         }
-        const verified = ceremony.verifierIds.includes(participantId)
-        chunk.contributions.push({
-            location,
-            participantId,
-            verified,
-        })
+        const verifier = ceremony.verifierIds.includes(participantId)
+        if (verifier) {
+            const contribution =
+                chunk.contributions[chunk.contributions.length - 1]
+            contribution.verifierId = participantId
+            contribution.verifiedLocation = location
+            contribution.verified = true
+        } else {
+            chunk.contributions.push({
+                contributorId: participantId,
+                contributedLocation: location,
+                verifierId: null,
+                verifiedLocation: null,
+                verified: false,
+            })
+        }
         chunk.holder = null
         this._writeDb(ceremony)
     }

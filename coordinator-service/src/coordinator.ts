@@ -1,6 +1,8 @@
 export interface ChunkContribution {
-    location: string
-    participantId: string
+    contributorId: string
+    contributedLocation: string
+    verifierId: string
+    verifiedLocation: string
     verified: boolean
 }
 

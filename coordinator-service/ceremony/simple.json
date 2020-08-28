@@ -7,40 +7,50 @@
       "chunkId": "chunk-1",
       "holder": null,
       "contributions": [{
-        "location": "http://localhost:8080/chunks/chunk-1/contribution/0",
-        "participantId": "verifier0",
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "http://localhost:8080/chunks/chunk-1/contribution/0",
         "verified": true
       }]
     }, {
       "chunkId": "chunk-2",
       "holder": null,
       "contributions": [{
-        "location": "http://localhost:8080/chunks/chunk-2/contribution/0",
-        "participantId": "verifier0",
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "http://localhost:8080/chunks/chunk-2/contribution/0",
         "verified": true
       }]
     }, {
       "chunkId": "chunk-3",
       "holder": null,
       "contributions": [{
-        "location": "http://localhost:8080/chunks/chunk-3/contribution/0",
-        "participantId": "verifier0",
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "http://localhost:8080/chunks/chunk-3/contribution/0",
         "verified": true
       }]
     }, {
       "chunkId": "chunk-4",
       "holder": null,
       "contributions": [{
-        "location": "http://localhost:8080/chunks/chunk-4/contribution/0",
-        "participantId": "verifier0",
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "http://localhost:8080/chunks/chunk-4/contribution/0",
         "verified": true
       }]
     }, {
       "chunkId": "chunk-5",
       "holder": null,
       "contributions": [{
-        "location": "http://localhost:8080/chunks/chunk-5/contribution/0",
-        "participantId": "verifier0",
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "http://localhost:8080/chunks/chunk-5/contribution/0",
         "verified": true
       }]
     }

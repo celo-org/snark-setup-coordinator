@@ -37,8 +37,10 @@ describe('app', () => {
                     holder: null,
                     contributions: [
                         {
-                            location: '/some/location/1',
-                            participantId: 'verifier0',
+                            contributorId: null,
+                            contributedLocation: null,
+                            verifiedLocation: '/some/location/1',
+                            verifierId: 'verifier0',
                             verified: true,
                         },
                     ],
@@ -48,8 +50,10 @@ describe('app', () => {
                     holder: null,
                     contributions: [
                         {
-                            location: '/some/location/2',
-                            participantId: 'pat',
+                            contributorId: 'pat',
+                            contributedLocation: '/some/location/2',
+                            verifierId: null,
+                            verifiedLocation: null,
                             verified: false,
                         },
                     ],
@@ -57,7 +61,7 @@ describe('app', () => {
             ],
         }
 
-        DiskCoordinator.init({ config, dbPath })
+        DiskCoordinator.init({ config, dbPath, force: true })
         chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
         coordinator = new DiskCoordinator({ dbPath })
         app = initExpress({ coordinator, chunkStorage })

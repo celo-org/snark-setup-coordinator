@@ -5,7 +5,8 @@ import { DiskCoordinator } from './disk-coordinator'
 import { logger } from './logger'
 
 const dbPath = process.env.COORDINATOR_DB_FILE || './.storage/db.json'
-const configPath = process.env.COORDINATOR_CONFIG_PATH || './ceremony/simple.json'
+const configPath =
+    process.env.COORDINATOR_CONFIG_PATH || './ceremony/simple.json'
 
 async function init(): Promise<void> {
     const storagePath = path.dirname(dbPath)
