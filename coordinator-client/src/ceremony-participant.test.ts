@@ -10,14 +10,14 @@ describe('CeremonyVerifier', () => {
                 .get('/ceremony')
                 .reply(200, {
                     result: {
-                        participantIds: ['bitdiddle'],
+                        contributorIds: ['bitdiddle'],
                         verifierIds: ['verifier0'],
                         chunks: [
                             {
                                 chunkId: 'verifiedChunkId',
                                 contributions: [
                                     {
-                                        participantId: 'verifier0',
+                                        verifierId: 'verifier0',
                                         verified: true,
                                     },
                                 ],
@@ -26,11 +26,11 @@ describe('CeremonyVerifier', () => {
                                 chunkId: 'unverifiedChunkId',
                                 contributions: [
                                     {
-                                        participantId: 'verifier0',
+                                        verifierId: 'verifier0',
                                         verified: true,
                                     },
                                     {
-                                        participantId: 'bitdiddle',
+                                        contributorId: 'bitdiddle',
                                         verified: false,
                                     },
                                 ],
@@ -55,7 +55,7 @@ describe('CeremonyContributor', () => {
                 .get('/ceremony')
                 .reply(200, {
                     result: {
-                        participantIds: ['bitdiddle'],
+                        contributorIds: ['bitdiddle'],
                     },
                 })
             const client = new CeremonyContributor({
@@ -63,7 +63,7 @@ describe('CeremonyContributor', () => {
                 baseUrl: 'http://mock',
             })
             const ceremony = await client.getCeremony()
-            expect(ceremony.participantIds.length).to.equal(1)
+            expect(ceremony.contributorIds.length).to.equal(1)
         })
     })
 
@@ -78,7 +78,7 @@ describe('CeremonyContributor', () => {
                                 chunkId: 'verifiedChunkId',
                                 contributions: [
                                     {
-                                        participantId: 'verifier0',
+                                        verifierId: 'verifier0',
                                         verified: true,
                                     },
                                 ],
@@ -87,7 +87,7 @@ describe('CeremonyContributor', () => {
                                 chunkId: 'unverifiedChunkId',
                                 contributions: [
                                     {
-                                        participantId: 'bitdiddle',
+                                        contributorId: 'bitdiddle',
                                         verified: false,
                                     },
                                 ],
@@ -116,14 +116,14 @@ describe('CeremonyContributor', () => {
                                 chunkId: 'foo-chunk-id',
                                 contributions: [
                                     {
-                                        participantId: 'verifier0',
+                                        verifiedId: 'verifier0',
                                         verified: true,
                                     },
                                 ],
-                                holder: 'bitdiddle',
+                                lockHolder: 'bitdiddle',
                             },
                         ],
-                        participantIds: ['bitdiddle'],
+                        contributorIds: ['bitdiddle'],
                     },
                 })
             const client = new CeremonyContributor({

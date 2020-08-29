@@ -1,6 +1,6 @@
 {
   "version": 0,
-  "participantIds": ["dave", "becky"],
+  "contributorIds": ["dave", "becky"],
   "verifierIds": ["verifier0"],
   "chunks": [
     {

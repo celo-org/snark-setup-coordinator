@@ -29,7 +29,7 @@ describe('app', () => {
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
             version: 0,
-            participantIds: ['frank', 'becky'],
+            contributorIds: ['frank', 'becky'],
             verifierIds: ['verifier0'],
             chunks: [
                 {

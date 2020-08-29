@@ -3,12 +3,6 @@ import fs from 'fs'
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
 
-interface DiskCoordinatorConfig {
-    chunks: { chunkId: string; location: string; verified: boolean }[]
-    participantIds: string[]
-    verifierIds: string[]
-}
-
 export class DiskCoordinator implements Coordinator {
     dbPath: string
 

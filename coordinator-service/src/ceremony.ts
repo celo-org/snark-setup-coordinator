@@ -17,7 +17,7 @@ export interface LockedChunkData extends ChunkData {
 
 export interface Ceremony {
     chunks: LockedChunkData[]
-    participantIds: string[]
+    contributorIds: string[]
     verifierIds: string[]
     version: number
 }

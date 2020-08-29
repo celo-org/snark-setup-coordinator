@@ -65,7 +65,9 @@ export abstract class CeremonyParticipant {
             return existingChunk
         }
 
-        const unlockedChunks = incompleteChunks.filter((chunk) => !chunk.lockHolder)
+        const unlockedChunks = incompleteChunks.filter(
+            (chunk) => !chunk.lockHolder,
+        )
         // Shuffle to mitigate thundering herd problems.
         shuffle(unlockedChunks)
         for (const chunk of unlockedChunks) {
@@ -156,7 +158,7 @@ export class CeremonyVerifier extends CeremonyParticipant {
             const contributorIds = contributions
                 .filter((contribution) => contribution.contributorId)
                 .map((contribution) => contribution.contributorId)
-            return !ceremony.participantIds.every((particpantsId) =>
+            return !ceremony.contributorIds.every((particpantsId) =>
                 contributorIds.includes(particpantsId),
             )
         })
