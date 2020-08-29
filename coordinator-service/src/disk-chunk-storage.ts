@@ -1,6 +1,8 @@
-import { ChunkStorage } from './coordinator'
 import fs from 'fs'
 import path from 'path'
+
+import { ChunkStorage, chunkVersion } from './coordinator'
+import { ChunkData } from './ceremony'
 
 export class DiskChunkStorage implements ChunkStorage {
     chunkStorageUrl: string
@@ -18,29 +20,27 @@ export class DiskChunkStorage implements ChunkStorage {
     }
 
     getChunkWriteLocation({
-        chunkId,
+        chunk,
         participantId, // eslint-disable-line @typescript-eslint/no-unused-vars
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     }): string {
+        const chunkId = chunk.chunkId
+        const version = chunkVersion(chunk)
         const path = `/${chunkId}/contribution/${version}`
         return `${this.chunkStorageUrl}${path}`
     }
 
     getChunkReadLocation({
-        chunkId,
+        chunk,
         participantId,
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     }): string {
         // It's the same as the write location.
-        return this.getChunkWriteLocation({ chunkId, participantId, version })
+        return this.getChunkWriteLocation({ chunk, participantId })
     }
 
     setChunk(chunkId: string, version: string, content: string): void {

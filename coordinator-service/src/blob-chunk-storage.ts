@@ -1,10 +1,11 @@
-import { ChunkStorage } from './coordinator'
-
 import {
     BlobSASPermissions,
     generateBlobSASQueryParameters,
     StorageSharedKeyCredential,
 } from '@azure/storage-blob'
+
+import { ChunkData } from './ceremony'
+import { ChunkStorage, chunkVersion } from './coordinator'
 
 const expireMinutes = 60 * 2
 const expireMilliseconds = 1000 * 60 * expireMinutes
@@ -29,14 +30,15 @@ export class BlobChunkStorage implements ChunkStorage {
     }
 
     getChunkWriteLocation({
-        chunkId,
+        chunk,
         participantId,
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     }): string {
+        const chunkId = chunk.chunkId
+        const version = chunkVersion(chunk)
+
         const blobName = `${chunkId}.${version}.${participantId}`
         const permissions = BlobSASPermissions.parse('racwd')
         const startsOn = new Date()
@@ -55,14 +57,14 @@ export class BlobChunkStorage implements ChunkStorage {
     }
 
     getChunkReadLocation({
-        chunkId,
+        chunk,
         participantId,
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     }): string {
+        const chunkId = chunk.chunkId
+        const version = chunkVersion(chunk)
         const blobName = `${chunkId}.${version}.${participantId}`
         return `${this._baseUrl()}/${this.containerName}/${blobName}`
     }

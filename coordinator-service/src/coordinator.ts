@@ -1,4 +1,4 @@
-import { Ceremony, LockedChunkData } from './ceremony'
+import { Ceremony, ChunkData, LockedChunkData } from './ceremony'
 
 export interface Coordinator {
     getCeremony(): Ceremony
@@ -13,22 +13,28 @@ export interface Coordinator {
 
 export interface ChunkStorage {
     getChunkWriteLocation({
-        chunkId,
+        chunk,
         participantId,
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     })
 
     getChunkReadLocation({
-        chunkId,
+        chunk,
         participantId,
-        version,
     }: {
-        chunkId: string
+        chunk: ChunkData
         participantId: string
-        version: string
     })
+}
+
+export function chunkVersion(chunk: ChunkData): number {
+    // Generate an number that uniquely identifies the current state of the chunk
+    return (
+        chunk.contributions.filter((contribution) => contribution.contributorId)
+            .length +
+        chunk.contributions.filter((contribution) => contribution.verifierId)
+            .length
+    )
 }

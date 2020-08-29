@@ -59,13 +59,10 @@ export function initExpress({
         const chunkId = req.params.id
 
         logger.info(`GET /chunks/${chunkId}/contribution ${participantId}`)
-        const version = coordinator
-            .getChunk(chunkId)
-            .contributions.length.toString()
+        const chunk = coordinator.getChunk(chunkId)
         const writeUrl = chunkStorage.getChunkWriteLocation({
-            chunkId,
+            chunk,
             participantId,
-            version,
         })
         res.json({
             status: 'ok',
@@ -82,13 +79,10 @@ export function initExpress({
         const chunkId = req.params.id
 
         logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
-        const version = coordinator
-            .getChunk(chunkId)
-            .contributions.length.toString()
+        const chunk = coordinator.getChunk(chunkId)
         const readUrl = chunkStorage.getChunkReadLocation({
-            chunkId,
+            chunk,
             participantId,
-            version,
         })
         try {
             await coordinator.contributeChunk(chunkId, participantId, readUrl)

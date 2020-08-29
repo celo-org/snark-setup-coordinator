@@ -1,8 +1,8 @@
 import { expect } from 'chai'
+import { StorageSharedKeyCredential } from '@azure/storage-blob'
 
 import { BlobChunkStorage } from './blob-chunk-storage'
-
-import { StorageSharedKeyCredential } from '@azure/storage-blob'
+import { ChunkData } from './ceremony'
 
 describe('BlobChunkStorage', () => {
     describe('.getChunkWriteLocation', () => {
@@ -18,13 +18,23 @@ describe('BlobChunkStorage', () => {
                 containerName,
                 sharedKeyCredential,
             })
-            const chunkId = 'chunkfoo'
+            const chunk = {
+                chunkId: 'chunkfoo',
+                contributions: [
+                    {
+                        contributorId: null,
+                        contributedLocation: null,
+                        verifierId: 'verifier0',
+                        verifiedLocation:
+                            'http://testing:8080/chunks/chunk-1/contribution/0',
+                        verified: true,
+                    },
+                ],
+            } as ChunkData
             const participantId = 'ben'
-            const version = '1'
             const expectedUrl = blobChunkStorage.getChunkWriteLocation({
-                chunkId,
+                chunk,
                 participantId,
-                version,
             })
 
             expect(expectedUrl).to.include(
