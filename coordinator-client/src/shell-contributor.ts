@@ -42,12 +42,15 @@ abstract class Powersoftau implements ShellCommand {
     constructor({
         chunkData,
         contributorCommand,
+        seed,
     }: {
         chunkData: ChunkData
         contributorCommand: string
+        seed: string
     }) {
         this.chunkData = chunkData
         this.contributorCommand = contributorCommand
+        this.seed = seed
     }
 
     _exec(...args: string[]): execa.ExecaChildProcess {

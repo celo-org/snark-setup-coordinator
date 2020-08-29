@@ -176,6 +176,7 @@ async function main(): Promise<void> {
             return new ShellContributor({
                 chunkData: chunkData,
                 contributorCommand: './contributor/mock.sh',
+                seed: args.seed,
             })
         }
     } else if (mode === 'verify') {
@@ -184,6 +185,7 @@ async function main(): Promise<void> {
             return new ShellVerifier({
                 chunkData: chunkData,
                 contributorCommand: './contributor/mock.sh',
+                seed: args.seed,
             })
         }
     } else {
