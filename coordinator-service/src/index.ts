@@ -1,9 +1,11 @@
-import { auth } from './auth'
+import dotenv from 'dotenv'
 import yargs = require('yargs')
 import bodyParser from 'body-parser'
 import fs from 'fs'
+import path from 'path'
 import { StorageSharedKeyCredential } from '@azure/storage-blob'
 
+import { auth } from './auth'
 import { BlobChunkStorage } from './blob-chunk-storage'
 import { ChunkStorage } from './coordinator'
 import { DiskCoordinator } from './disk-coordinator'
@@ -11,42 +13,59 @@ import { DiskChunkStorage } from './disk-chunk-storage'
 import { initExpress } from './app'
 import { logger } from './logger'
 
-const argv = yargs
-    .env('COORDINATOR')
-    .option('port', {
+dotenv.config()
+
+const httpArgs = {
+    port: {
         default: 8080,
         type: 'number',
-    })
-    .option('db-file', {
-        default: './.storage/db.json',
-        type: 'string',
-    })
-    .option('chunk-storage-type', {
+    },
+    'chunk-storage-type': {
         choices: ['disk', 'azure'],
         default: 'disk',
         type: 'string',
-    })
-    .option('disk-chunk-storage-directory', {
+    },
+    'disk-chunk-storage-directory': {
         default: './.storage',
         type: 'string',
-    })
-    .option('azure-access-key-file', {
+    },
+    'azure-access-key-file': {
         type: 'string',
         describe: 'File with storage account access key',
-    })
-    .option('azure-storage-account', {
+    },
+    'azure-storage-account': {
         type: 'string',
         describe: 'Azure storage account',
-    })
-    .option('azure-container', {
+    },
+    'azure-container': {
         type: 'string',
         describe: 'Azure container name to write contributions to',
+    },
+}
+
+const dbArgs = {
+    'db-file': {
+        default: './.storage/db.json',
+        type: 'string',
+    },
+}
+
+const argv = yargs
+    .env('COORDINATOR')
+    .command('http', 'Enable the HTTP server', { ...httpArgs, ...dbArgs })
+    .command('init', 'Initialize the ceremony', {
+        ...dbArgs,
+        'config-path': {
+            type: 'string',
+            demand: true,
+            describe: 'Initial ceremony state file',
+        },
     })
+    .demandCommand(1, 'You must specify a command.')
+    .strictCommands()
     .help().argv
 
-function main(args): void {
-    logger.info('invoked with args %o', args)
-
+function http(args): void {
     let diskChunkStorage
     let chunkStorage: ChunkStorage
     if (args.chunkStorageType === 'disk') {
@@ -98,6 +117,31 @@ function main(args): void {
     app.listen(args.port, () => {
         logger.info(`listening on ${args.port}`)
     })
+}
+
+function init(args): void {
+    const dbPath = args.dbFile
+    const storagePath = path.dirname(dbPath)
+    try {
+        fs.mkdirSync(storagePath, { recursive: true })
+    } catch (error) {
+        if (error.code !== 'EEXIST') {
+            throw error
+        }
+    }
+    const config = JSON.parse(fs.readFileSync(args.configPath).toString())
+    DiskCoordinator.init({ config, dbPath })
+}
+
+function main(args): void {
+    logger.info('invoked with args %o', args)
+
+    const command = args._[0]
+    if (command === 'http') {
+        http(args)
+    } else if (command === 'init') {
+        init(args)
+    }
 }
 
 main(argv)

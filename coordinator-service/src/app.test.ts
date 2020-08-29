@@ -4,6 +4,7 @@ import path from 'path'
 import tmp from 'tmp'
 
 import { initExpress } from './app'
+import { Ceremony } from './ceremony'
 import { DiskCoordinator } from './disk-coordinator'
 import { DiskChunkStorage } from './disk-chunk-storage'
 
@@ -151,10 +152,11 @@ describe('app', () => {
                 .post('/chunks/1/contribution')
                 .set('x-participant-id', 'frank')
             expect(contributionRes).to.have.status(200)
-            const ceremony = (await chai.request(app).get('/ceremony')).body
-                .result
+            const ceremony: Ceremony = (
+                await chai.request(app).get('/ceremony')
+            ).body.result
             const chunk = ceremony.chunks.find((chunk) => chunk.chunkId === '1')
-            expect(chunk.holder).to.equal(null)
+            expect(chunk.lockHolder).to.equal(null)
         })
 
         it('sets verified flag for verified contributions', async () => {
@@ -168,8 +170,9 @@ describe('app', () => {
                 .post('/chunks/2/contribution')
                 .set('x-participant-id', 'verifier0')
             expect(contributionRes).to.have.status(200)
-            const ceremony = (await chai.request(app).get('/ceremony')).body
-                .result
+            const ceremony: Ceremony = (
+                await chai.request(app).get('/ceremony')
+            ).body.result
             const chunk = ceremony.chunks.find((chunk) => chunk.chunkId === '2')
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]

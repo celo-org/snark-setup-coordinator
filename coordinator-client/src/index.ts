@@ -150,6 +150,7 @@ async function main(): Promise<void> {
         .command('powersoftau', 'Run powersoftau command directly', (yargs) => {
             return yargs.help(false).version(false)
         })
+        .demandCommand(1, 'You must specify a command.')
         .strictCommands()
         .help().argv
 

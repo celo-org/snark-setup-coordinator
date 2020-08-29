@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "init-db": "node dist/init.js",
-    "reset-db": "rm -rf .storage/db.json && node dist/init.js",
-    "start": "npm run init-db && node dist/index.js",
-    "start-nodemon": "nodemon --watch dist dist/index.js",
+    "init-db": "node dist/index.js init",
+    "reset-db": "rm -rf .storage/db.json",
+    "start": "npm run init-db && node dist/index.js http",
+    "start-nodemon": "npm run init-db && nodemon --watch dist dist/index.js",
     "coverage": "nyc mocha -r ts-node/register src/**/*.test.ts",
     "test": "npm run coverage && prettier --check \"./src/**/*.ts\" && eslint 'src/**/*.ts'",
     "format": "prettier --loglevel error --write \"./src/**/*.ts\"",
@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@azure/storage-blob": "^12.2.0-preview.1",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "pino": "^6.5.1",
     "pino-pretty": "^4.1.0",
