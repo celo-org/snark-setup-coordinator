@@ -8,16 +8,16 @@ Install dependencies:
 npm i
 ```
 
+Configure a ceremony:
+
+```
+echo 'COORDINATOR_CONFIG_PATH=ceremony/simple.json' > .env
+```
+
 Build:
 
 ```
 npm run build
-```
-
-Init a dev "db":
-
-```
-npm run init-db
 ```
 
 Run:
