@@ -6,7 +6,11 @@ import yargs = require('yargs')
 import tmp from 'tmp'
 
 import { logger } from './logger'
-import { ShellContributor } from './shell-contributor'
+import {
+    ShellContributor,
+    ShellVerifier,
+    ShellCommand,
+} from './shell-contributor'
 import {
     CeremonyParticipant,
     CeremonyContributor,
@@ -69,7 +73,7 @@ async function work({
     contributor,
 }: {
     client: CeremonyParticipant
-    contributor: (chunk: ChunkData) => ShellContributor
+    contributor: (chunk: ChunkData) => ShellCommand
 }): Promise<void> {
     const lockBackoffMsecs = 5000
 
@@ -156,20 +160,26 @@ async function main(): Promise<void> {
     const baseUrl = args.apiUrl
 
     let client
+    let contributor
     if (mode === 'contribute') {
         client = new CeremonyContributor({ participantId, baseUrl })
+        contributor = (chunkData: ChunkData): ShellContributor => {
+            return new ShellContributor({
+                chunkData: chunkData,
+                contributorCommand: './contributor/mock.sh',
+            })
+        }
     } else if (mode === 'verify') {
         client = new CeremonyVerifier({ participantId, baseUrl })
+        contributor = (chunkData: ChunkData): ShellVerifier => {
+            return new ShellVerifier({
+                chunkData: chunkData,
+                contributorCommand: './contributor/mock.sh',
+            })
+        }
     } else {
         logger.error(`Unexpected mode ${mode}`)
         process.exit(1)
-    }
-
-    const contributor = (chunkData: ChunkData): ShellContributor => {
-        return new ShellContributor({
-            chunkData: chunkData,
-            contributorCommand: './contributor/mock.sh',
-        })
     }
 
     work({ client, contributor }).catch((err) => {

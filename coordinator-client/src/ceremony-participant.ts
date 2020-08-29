@@ -154,7 +154,7 @@ export class CeremonyVerifier extends CeremonyParticipant {
                 return true
             }
             const contributorIds = contributions
-                .filter((contribution) => !contribution.verified)
+                .filter((contribution) => contribution.contributorId)
                 .map((contribution) => contribution.contributorId)
             return !ceremony.participantIds.every((particpantsId) =>
                 contributorIds.includes(particpantsId),

@@ -4,7 +4,7 @@
   "verifierIds": ["verifier0"],
   "chunks": [
     {
-      "chunkId": "chunk-1",
+      "chunkId": "0",
       "holder": null,
       "contributions": [{
         "contributorId": null,
@@ -14,7 +14,7 @@
         "verified": true
       }]
     }, {
-      "chunkId": "chunk-2",
+      "chunkId": "1",
       "holder": null,
       "contributions": [{
         "contributorId": null,
@@ -24,7 +24,7 @@
         "verified": true
       }]
     }, {
-      "chunkId": "chunk-3",
+      "chunkId": "2",
       "holder": null,
       "contributions": [{
         "contributorId": null,
@@ -34,7 +34,7 @@
         "verified": true
       }]
     }, {
-      "chunkId": "chunk-4",
+      "chunkId": "3",
       "holder": null,
       "contributions": [{
         "contributorId": null,
@@ -44,7 +44,7 @@
         "verified": true
       }]
     }, {
-      "chunkId": "chunk-5",
+      "chunkId": "4",
       "holder": null,
       "contributions": [{
         "contributorId": null,
