@@ -1,9 +1,11 @@
 #!/bin/bash
 
+echo "args: $@"
 SLEEP_TIME=$(shuf -i 1-10 -n 1)
-CHUNK_ID=$1
-OUTPUT_PATH=$2
-echo "Output stuff for '$CHUNK_ID'"
-echo "stuff-$CHUNK_ID" > $OUTPUT_PATH
-echo "Sleeping $SLEEP_TIME"
+OUTPUT_PATH="${@: -1}"
+
+echo "sleep: $SLEEP_TIME"
 sleep $SLEEP_TIME
+
+echo "$@" > $OUTPUT_PATH
+echo "output: $OUTPUT_PATH"

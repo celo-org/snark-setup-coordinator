@@ -8,7 +8,7 @@
     "init-db": "node dist/index.js init",
     "reset-db": "rm -rf .storage/db.json",
     "start": "npm run init-db && node dist/index.js http",
-    "start-nodemon": "npm run init-db && nodemon --watch dist dist/index.js",
+    "start-nodemon": "npm run init-db && nodemon --watch dist dist/index.js http",
     "coverage": "nyc mocha -r ts-node/register src/**/*.test.ts",
     "test": "npm run coverage && prettier --check \"./src/**/*.ts\" && eslint 'src/**/*.ts'",
     "format": "prettier --loglevel error --write \"./src/**/*.ts\"",

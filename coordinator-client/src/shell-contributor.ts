@@ -29,12 +29,15 @@ export interface ShellCommand {
     cleanup(): void
 }
 
-export class ShellVerifier implements ShellCommand {
+abstract class Powersoftau implements ShellCommand {
     contributorCommand: string
     chunkData: ChunkData
-    challengeFile: tmp.FileResult
-    contributionFile: tmp.FileResult
-    responseFile: tmp.FileResult
+
+    curveKind = 'bw6'
+    batchSize = 64
+    chunkSize = 512
+    power = 10
+    seed: string
 
     constructor({
         chunkData,
@@ -46,6 +49,42 @@ export class ShellVerifier implements ShellCommand {
         this.chunkData = chunkData
         this.contributorCommand = contributorCommand
     }
+
+    _exec(...args: string[]): execa.ExecaChildProcess {
+        const baseArgs = [
+            '--curve-kind',
+            this.curveKind,
+            '--batch-size',
+            this.batchSize.toString(),
+            '--contribution-mode',
+            'chunked',
+            '--chunk-size',
+            this.chunkSize.toString(),
+            '--power',
+            this.power.toString(),
+            '--seed',
+            this.seed,
+        ]
+
+        const subprocess = execa(this.contributorCommand, [
+            ...baseArgs,
+            ...args,
+        ])
+
+        subprocess.stdout.pipe(process.stdout)
+        subprocess.stderr.pipe(process.stderr)
+        return subprocess
+    }
+
+    abstract load(): Promise<void>
+    abstract run(): Promise<string>
+    abstract cleanup(): void
+}
+
+export class ShellVerifier extends Powersoftau {
+    challengeFile: tmp.FileResult
+    contributionFile: tmp.FileResult
+    responseFile: tmp.FileResult
 
     async load(): Promise<void> {
         const challengeContribution = this.chunkData.contributions[
@@ -67,17 +106,17 @@ export class ShellVerifier implements ShellCommand {
     async run(): Promise<string> {
         this.contributionFile = tmp.fileSync({ discardDescriptor: true })
         const chunkIndex = this.chunkData.chunkId
-
-        const subprocess = execa(this.contributorCommand, [
+        await this._exec(
+            '--chunk-index',
             chunkIndex,
-            this.contributionFile.name,
+            'verify-and-transform-pok-and-correctness',
+            '--challenge-fname',
             this.challengeFile.name,
+            '--response-fname',
             this.responseFile.name,
-        ])
-        subprocess.stdout.pipe(process.stdout)
-        subprocess.stderr.pipe(process.stderr)
-        await subprocess
-
+            '--new-challenge-fname',
+            this.contributionFile.name,
+        )
         return this.contributionFile.name
     }
 
@@ -96,22 +135,9 @@ export class ShellVerifier implements ShellCommand {
 }
 
 // Run a command to generate a contribution.
-export class ShellContributor implements ShellCommand {
-    contributorCommand: string
-    chunkData: ChunkData
+export class ShellContributor extends Powersoftau {
     challengeFile: tmp.FileResult
     contributionFile: tmp.FileResult
-
-    constructor({
-        chunkData,
-        contributorCommand,
-    }: {
-        chunkData: ChunkData
-        contributorCommand: string
-    }) {
-        this.chunkData = chunkData
-        this.contributorCommand = contributorCommand
-    }
 
     async load(): Promise<void> {
         const challengeContribution = this.chunkData.contributions[
@@ -126,16 +152,15 @@ export class ShellContributor implements ShellCommand {
     async run(): Promise<string> {
         this.contributionFile = tmp.fileSync({ discardDescriptor: true })
         const chunkIndex = this.chunkData.chunkId
-
-        const subprocess = execa(this.contributorCommand, [
+        await this._exec(
+            '--chunk-index',
             chunkIndex,
-            this.contributionFile.name,
+            'contribute',
+            '--challenge-fname',
             this.challengeFile.name,
-        ])
-        subprocess.stdout.pipe(process.stdout)
-        subprocess.stderr.pipe(process.stderr)
-        await subprocess
-
+            '--response-fname',
+            this.contributionFile.name,
+        )
         return this.contributionFile.name
     }
 

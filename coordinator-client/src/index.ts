@@ -1,3 +1,4 @@
+import dotenv from 'dotenv'
 import execa = require('execa')
 import fs from 'fs'
 import os from 'os'
@@ -17,6 +18,8 @@ import {
     CeremonyVerifier,
 } from './ceremony-participant'
 import { ChunkData } from './ceremony'
+
+dotenv.config()
 
 function copy(source, target): Promise<unknown> {
     const reader = fs.createReadStream(source)
@@ -132,6 +135,11 @@ async function main(): Promise<void> {
             type: 'string',
             demand: true,
             describe: 'ID of ceremony participant',
+        },
+        seed: {
+            type: 'string',
+            demand: true,
+            describe: '32-character hexadecimal seed value',
         },
     }
 
