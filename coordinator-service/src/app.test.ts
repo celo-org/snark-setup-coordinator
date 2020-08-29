@@ -34,7 +34,7 @@ describe('app', () => {
             chunks: [
                 {
                     chunkId: '1',
-                    holder: null,
+                    lockHolder: null,
                     contributions: [
                         {
                             contributorId: null,
@@ -47,7 +47,7 @@ describe('app', () => {
                 },
                 {
                     chunkId: '2',
-                    holder: null,
+                    lockHolder: null,
                     contributions: [
                         {
                             contributorId: 'pat',

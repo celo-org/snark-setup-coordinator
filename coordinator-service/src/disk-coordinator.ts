@@ -66,7 +66,7 @@ export class DiskCoordinator implements Coordinator {
         const ceremony = this._readDb()
 
         const holding = ceremony.chunks.find(
-            (chunk) => chunk.holder === participantId,
+            (chunk) => chunk.lockHolder === participantId,
         )
         if (holding) {
             throw new Error(
@@ -75,7 +75,7 @@ export class DiskCoordinator implements Coordinator {
         }
 
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
-        if (chunk.holder) {
+        if (chunk.lockHolder) {
             return false
         }
         //
@@ -89,7 +89,7 @@ export class DiskCoordinator implements Coordinator {
             return false
         }
 
-        chunk.holder = participantId
+        chunk.lockHolder = participantId
         this._writeDb(ceremony)
         return true
     }
@@ -101,7 +101,7 @@ export class DiskCoordinator implements Coordinator {
     ): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
-        if (chunk.holder !== participantId) {
+        if (chunk.lockHolder !== participantId) {
             throw new Error(
                 `Participant ${participantId} does not hold lock ` +
                     `on chunk ${chunkId}`,
@@ -123,7 +123,7 @@ export class DiskCoordinator implements Coordinator {
                 verified: false,
             })
         }
-        chunk.holder = null
+        chunk.lockHolder = null
         this._writeDb(ceremony)
     }
 }

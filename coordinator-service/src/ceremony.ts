@@ -12,7 +12,7 @@ export interface ChunkData {
 }
 
 export interface LockedChunkData extends ChunkData {
-    holder: string
+    lockHolder: string
 }
 
 export interface Ceremony {

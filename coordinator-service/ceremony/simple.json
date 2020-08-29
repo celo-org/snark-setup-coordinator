@@ -5,7 +5,7 @@
   "chunks": [
     {
       "chunkId": "0",
-      "holder": null,
+      "lockHolder": null,
       "contributions": [{
         "contributorId": null,
         "contributedLocation": null,
@@ -15,7 +15,7 @@
       }]
     }, {
       "chunkId": "1",
-      "holder": null,
+      "lockHolder": null,
       "contributions": [{
         "contributorId": null,
         "contributedLocation": null,
@@ -25,7 +25,7 @@
       }]
     }, {
       "chunkId": "2",
-      "holder": null,
+      "lockHolder": null,
       "contributions": [{
         "contributorId": null,
         "contributedLocation": null,
@@ -35,7 +35,7 @@
       }]
     }, {
       "chunkId": "3",
-      "holder": null,
+      "lockHolder": null,
       "contributions": [{
         "contributorId": null,
         "contributedLocation": null,
@@ -45,7 +45,7 @@
       }]
     }, {
       "chunkId": "4",
-      "holder": null,
+      "lockHolder": null,
       "contributions": [{
         "contributorId": null,
         "contributedLocation": null,

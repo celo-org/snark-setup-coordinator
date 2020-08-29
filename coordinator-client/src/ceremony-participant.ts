@@ -59,13 +59,13 @@ export abstract class CeremonyParticipant {
     async getLockedChunk(): Promise<ChunkData> {
         const incompleteChunks = await this.getChunksAcceptingContributions()
         const existingChunk = incompleteChunks.find(
-            (chunk) => chunk.holder === this.participantId,
+            (chunk) => chunk.lockHolder === this.participantId,
         )
         if (existingChunk) {
             return existingChunk
         }
 
-        const unlockedChunks = incompleteChunks.filter((chunk) => !chunk.holder)
+        const unlockedChunks = incompleteChunks.filter((chunk) => !chunk.lockHolder)
         // Shuffle to mitigate thundering herd problems.
         shuffle(unlockedChunks)
         for (const chunk of unlockedChunks) {
