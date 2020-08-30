@@ -4,6 +4,7 @@ import fs from 'fs'
 import tmp from 'tmp'
 
 import { ChunkData } from './ceremony'
+import { logger } from './logger'
 
 async function fetch({ url }: { url: string }): Promise<tmp.FileResult> {
     const destinationFile = tmp.fileSync({ discardDescriptor: true })
@@ -21,6 +22,16 @@ async function fetch({ url }: { url: string }): Promise<tmp.FileResult> {
     })
 
     return destinationFile
+}
+
+function forceUnlink(filePath): void {
+    try {
+        fs.unlinkSync(filePath)
+    } catch (err) {
+        if (err.code !== 'ENOENT') {
+            throw err
+        }
+    }
 }
 
 export interface ShellCommand {
@@ -66,10 +77,10 @@ abstract class Powersoftau {
             this.seed,
         ]
 
-        const subprocess = execa(this.contributorCommand, [
-            ...baseArgs,
-            ...args,
-        ])
+        const powersoftauArgs = [...baseArgs, ...args]
+
+        logger.info([this.contributorCommand, ...powersoftauArgs].join(' '))
+        const subprocess = execa(this.contributorCommand, powersoftauArgs)
 
         subprocess.stdout.pipe(process.stdout)
         subprocess.stderr.pipe(process.stderr)
@@ -97,8 +108,8 @@ export class PowersoftauNew extends Powersoftau {
 
 export class ShellVerifier extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
-    contributionFile: tmp.FileResult
     responseFile: tmp.FileResult
+    contributionFileName: string
 
     constructor({
         chunkData,
@@ -131,7 +142,7 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
     }
 
     async run(): Promise<string> {
-        this.contributionFile = tmp.fileSync({ discardDescriptor: true })
+        this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
         await this._exec(
             '--chunk-index',
@@ -142,15 +153,15 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
             '--response-fname',
             this.responseFile.name,
             '--new-challenge-fname',
-            this.contributionFile.name,
+            this.contributionFileName,
         )
-        return this.contributionFile.name
+        return this.contributionFileName
     }
 
     // It isn't necessary to call this, but seems prudent to help keep disk
     // space overhead low.
     cleanup(): void {
-        const toCleanup = ['challengeFile', 'contributionFile', 'responseFile']
+        const toCleanup = ['challengeFile', 'responseFile']
         for (const property of toCleanup) {
             const fileToCleanup = this[property]
             if (fileToCleanup) {
@@ -158,13 +169,17 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
                 this[property] = null
             }
         }
+        if (this.contributionFileName) {
+            forceUnlink(this.contributionFileName)
+            this.contributionFileName = null
+        }
     }
 }
 
 // Run a command to generate a contribution.
 export class ShellContributor extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
-    contributionFile: tmp.FileResult
+    contributionFileName: string
 
     constructor({
         chunkData,
@@ -190,7 +205,7 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
     }
 
     async run(): Promise<string> {
-        this.contributionFile = tmp.fileSync({ discardDescriptor: true })
+        this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
         await this._exec(
             '--chunk-index',
@@ -199,9 +214,9 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             '--challenge-fname',
             this.challengeFile.name,
             '--response-fname',
-            this.contributionFile.name,
+            this.contributionFileName,
         )
-        return this.contributionFile.name
+        return this.contributionFileName
     }
 
     // It isn't necessary to call this, but seems prudent to help keep disk
@@ -211,9 +226,9 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             this.challengeFile.removeCallback()
             this.challengeFile = null
         }
-        if (this.contributionFile) {
-            this.contributionFile.removeCallback()
-            this.contributionFile = null
+        if (this.contributionFileName) {
+            forceUnlink(this.contributionFileName)
+            this.contributionFileName = null
         }
     }
 }
