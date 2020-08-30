@@ -1,13 +1,13 @@
 import dotenv from 'dotenv'
 import execa = require('execa')
 import fs from 'fs'
-import os from 'os'
 import path from 'path'
 import yargs = require('yargs')
 import tmp from 'tmp'
 
 import { logger } from './logger'
 import {
+    extractPowersoftau,
     PowersoftauNew,
     ShellContributor,
     ShellVerifier,
@@ -21,40 +21,16 @@ import {
 import { ChunkData } from './ceremony'
 
 dotenv.config()
-
-function copy(source, target): Promise<unknown> {
-    const reader = fs.createReadStream(source)
-    const writer = fs.createWriteStream(target)
-    const finish = new Promise((resolve) => writer.on('close', resolve))
-    reader.pipe(writer)
-    return finish
-}
+tmp.setGracefulCleanup()
 
 async function powersoftau(): Promise<void> {
     const passThroughArgs = process.argv.slice(3)
-    const powersoftauFileName = {
-        Linux: 'powersoftau_linux.file',
-        Darwin: 'powersoftau_macos.uu',
-        Windows_NT: 'powersoftau.exe', // eslint-disable-line @typescript-eslint/camelcase
-    }[os.type()]
-    if (typeof powersoftauFileName === 'undefined') {
-        logger.error(`Unsupported OS type: ${os.type()}`)
-        process.exit(1)
-    }
-    const powersoftauPath = path.normalize(
-        path.join(__dirname, '..', 'powersoftau', powersoftauFileName),
-    )
-
-    const tmpFile = tmp.fileSync({
-        mode: 0o775,
-        prefix: 'powersoftau-extracted-',
-        discardDescriptor: true,
-    })
-    await copy(powersoftauPath, tmpFile.name)
+    const tmpFile = await extractPowersoftau()
 
     const subprocess = execa(tmpFile.name, passThroughArgs)
     subprocess.stdout.pipe(process.stdout)
     subprocess.stderr.pipe(process.stderr)
+
     try {
         await subprocess
     } catch (err) {
@@ -120,9 +96,41 @@ async function work({
     logger.info('no more chunks remaining')
 }
 
+async function contribute(args): Promise<void> {
+    const participantId = args.participantId
+    const baseUrl = args.apiUrl
+
+    const client = new CeremonyContributor({ participantId, baseUrl })
+    const contributor = (chunkData: ChunkData): ShellContributor => {
+        return new ShellContributor({
+            chunkData: chunkData,
+            contributorCommand: args.command,
+            seed: args.seed,
+        })
+    }
+
+    await work({ client, contributor })
+}
+
+async function verify(args): Promise<void> {
+    const participantId = args.participantId
+    const baseUrl = args.apiUrl
+
+    const client = new CeremonyVerifier({ participantId, baseUrl })
+    const contributor = (chunkData: ChunkData): ShellVerifier => {
+        return new ShellVerifier({
+            chunkData: chunkData,
+            contributorCommand: args.command,
+            seed: args.seed,
+        })
+    }
+
+    await work({ client, contributor })
+}
+
 async function newChallenge(args): Promise<void> {
     const powersoftauNew = new PowersoftauNew({
-        contributorCommand: './contributor/powersoftau',
+        contributorCommand: args.command,
         seed: args.seed,
     })
 
@@ -142,6 +150,10 @@ async function main(): Promise<void> {
     }
 
     const powersoftauArgs = {
+        command: {
+            type: 'string',
+            describe: 'Override the built-in powersoftau command',
+        },
         seed: {
             type: 'string',
             demand: true,
@@ -185,51 +197,44 @@ async function main(): Promise<void> {
                 default: process.cwd(),
             },
         })
-        .command('powersoftau', 'Run powersoftau command directly', (yargs) => {
-            return yargs.help(false).version(false)
-        })
+        .command(
+            'powersoftau',
+            'Run built-in powersoftau command directly',
+            (yargs) => {
+                return yargs.help(false).version(false)
+            },
+        )
         .demandCommand(1, 'You must specify a command.')
         .strictCommands()
         .help().argv
 
     logger.info('invoked with args %o', args)
 
-    const participantId = args.participantId
     const mode = args._[0]
-    const baseUrl = args.apiUrl
+    let powersoftauTmpFile
+    if (!args.command) {
+        powersoftauTmpFile = await extractPowersoftau()
+        args.command = powersoftauTmpFile.name
+        logger.info(`using built-in powersoftau at ${args.command}`)
+    }
 
-    let client
-    let contributor
-    if (mode === 'contribute') {
-        client = new CeremonyContributor({ participantId, baseUrl })
-        contributor = (chunkData: ChunkData): ShellContributor => {
-            return new ShellContributor({
-                chunkData: chunkData,
-                contributorCommand: './powersoftau/powersoftau_linux.file',
-                seed: args.seed,
-            })
+    try {
+        if (mode === 'contribute') {
+            await contribute(args)
+        } else if (mode === 'verify') {
+            await verify(args)
+        } else if (mode === 'new') {
+            await newChallenge(args)
+        } else {
+            logger.error(`Unexpected mode ${mode}`)
+            process.exit(1)
         }
-    } else if (mode === 'verify') {
-        client = new CeremonyVerifier({ participantId, baseUrl })
-        contributor = (chunkData: ChunkData): ShellVerifier => {
-            return new ShellVerifier({
-                chunkData: chunkData,
-                contributorCommand: './powersoftau/powersoftau_linux.file',
-                seed: args.seed,
-            })
-        }
-    } else if (mode === 'new') {
-        newChallenge(args)
-        return
-    } else {
-        logger.error(`Unexpected mode ${mode}`)
+    } catch (err) {
+        logger.error(err)
         process.exit(1)
     }
 
-    work({ client, contributor }).catch((err) => {
-        logger.error(err)
-        process.exit(1)
-    })
+    process.exit(0)
 }
 
 main()

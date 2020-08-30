@@ -1,10 +1,50 @@
 import axios from 'axios'
 import execa = require('execa')
 import fs from 'fs'
+import path from 'path'
+import os from 'os'
 import tmp from 'tmp'
 
 import { ChunkData } from './ceremony'
 import { logger } from './logger'
+
+export interface ShellCommand {
+    load(): Promise<void>
+    run(): Promise<string>
+    cleanup(): void
+}
+
+function copy(source, target): Promise<unknown> {
+    const reader = fs.createReadStream(source)
+    const writer = fs.createWriteStream(target)
+    const finish = new Promise((resolve) => writer.on('close', resolve))
+    reader.pipe(writer)
+    return finish
+}
+
+export async function extractPowersoftau(): Promise<tmp.FileResult> {
+    const powersoftauFileName = {
+        Linux: 'powersoftau_linux.file',
+        Darwin: 'powersoftau_macos.uu',
+        Windows_NT: 'powersoftau.exe', // eslint-disable-line @typescript-eslint/camelcase
+    }[os.type()]
+    if (typeof powersoftauFileName === 'undefined') {
+        logger.error(`Unsupported OS type: ${os.type()}`)
+        process.exit(1)
+    }
+    const powersoftauPath = path.normalize(
+        path.join(__dirname, '..', 'powersoftau', powersoftauFileName),
+    )
+
+    const tmpFile = tmp.fileSync({
+        mode: 0o775,
+        prefix: 'powersoftau-extracted',
+        discardDescriptor: true,
+    })
+    await copy(powersoftauPath, tmpFile.name)
+
+    return tmpFile
+}
 
 async function fetch({ url }: { url: string }): Promise<tmp.FileResult> {
     const destinationFile = tmp.fileSync({ discardDescriptor: true })
@@ -32,12 +72,6 @@ function forceUnlink(filePath): void {
             throw err
         }
     }
-}
-
-export interface ShellCommand {
-    load(): Promise<void>
-    run(): Promise<string>
-    cleanup(): void
 }
 
 abstract class Powersoftau {
