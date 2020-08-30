@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import { BlockBlobClient } from '@azure/storage-blob'
 
 export interface ChunkUploader {
-    upload({ url, content }: { url: string; content: string }): Promise<void>
+    upload({ url, content }: { url: string; content: Buffer }): Promise<void>
 }
 
 export class DefaultChunkUploader implements ChunkUploader {
@@ -19,7 +19,7 @@ export class DefaultChunkUploader implements ChunkUploader {
         content,
     }: {
         url: string
-        content: string
+        content: Buffer
     }): Promise<void> {
         if (url.includes('.blob.core.windows.net')) {
             const client = new BlockBlobClient(url)

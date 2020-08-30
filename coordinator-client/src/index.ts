@@ -101,7 +101,7 @@ async function work({
 
                 const contributionPath = await contribute.run()
                 logger.info('uploading contribution %s', contributionPath)
-                const content = fs.readFileSync(contributionPath).toString()
+                const content = fs.readFileSync(contributionPath)
                 await client.contributeChunk(chunk.chunkId, content)
 
                 contribute.cleanup()
@@ -205,7 +205,7 @@ async function main(): Promise<void> {
         contributor = (chunkData: ChunkData): ShellContributor => {
             return new ShellContributor({
                 chunkData: chunkData,
-                contributorCommand: './contributor/mock.sh',
+                contributorCommand: './powersoftau/powersoftau_linux.file',
                 seed: args.seed,
             })
         }
@@ -214,7 +214,7 @@ async function main(): Promise<void> {
         contributor = (chunkData: ChunkData): ShellVerifier => {
             return new ShellVerifier({
                 chunkData: chunkData,
-                contributorCommand: './contributor/mock.sh',
+                contributorCommand: './powersoftau/powersoftau_linux.file',
                 seed: args.seed,
             })
         }

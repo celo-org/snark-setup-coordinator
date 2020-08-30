@@ -36,6 +36,12 @@ or verify:
 COORDINATOR_PARTICIPANT_ID=verifier0 npm run start-verifier
 ```
 
+## Create new challenges
+
+```
+node dist/index.js new --count=4 --destination ../coordinator-service/.storage
+```
+
 ## Distribute
 
 Build executable:

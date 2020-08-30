@@ -79,7 +79,7 @@ export abstract class CeremonyParticipant {
         return null
     }
 
-    async contributeChunk(chunkId: string, content: string): Promise<void> {
+    async contributeChunk(chunkId: string, content: Buffer): Promise<void> {
         const writeUrl = (
             await this.axios({
                 method: 'GET',
