@@ -43,13 +43,13 @@ export class DiskChunkStorage implements ChunkStorage {
         return this.getChunkWriteLocation({ chunk, participantId })
     }
 
-    setChunk(chunkId: string, version: string, content: string): void {
+    setChunk(chunkId: string, version: string, content: Buffer): void {
         const contentPath = path.join(this.storagePath, `${chunkId}.${version}`)
         fs.writeFileSync(contentPath, content)
     }
 
-    getChunk(chunkId: string, version: string): string {
+    getChunk(chunkId: string, version: string): Buffer {
         const contentPath = path.join(this.storagePath, `${chunkId}.${version}`)
-        return fs.readFileSync(contentPath).toString()
+        return fs.readFileSync(contentPath)
     }
 }

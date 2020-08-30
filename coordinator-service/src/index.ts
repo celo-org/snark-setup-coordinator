@@ -90,14 +90,14 @@ function http(args): void {
     const app = initExpress({ coordinator, chunkStorage })
 
     if (args.chunkStorageType === 'disk') {
-        app.use(bodyParser.raw())
+        app.use(bodyParser.raw({ limit: '5mb' }))
         app.post(
             '/chunks/:chunkId/contribution/:version',
             auth,
             async (req, res) => {
                 const chunkId = req.params.chunkId
                 const version = req.params.version
-                const content = req.body.toString()
+                const content = req.body
 
                 logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
                 diskChunkStorage.setChunk(chunkId, version, content)
