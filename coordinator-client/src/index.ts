@@ -8,6 +8,7 @@ import tmp from 'tmp'
 
 import { logger } from './logger'
 import {
+    PowersoftauNew,
     ShellContributor,
     ShellVerifier,
     ShellCommand,
@@ -119,10 +120,33 @@ async function work({
     logger.info('no more chunks remaining')
 }
 
+async function newChallenge(args): Promise<void> {
+    const powersoftauNew = new PowersoftauNew({
+        contributorCommand: './contributor/powersoftau',
+        seed: args.seed,
+    })
+
+    for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
+        logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)
+        await powersoftauNew.run({
+            chunkIndex,
+            contributionPath: path.join(args.destination, `${chunkIndex}.0`),
+        })
+    }
+}
+
 async function main(): Promise<void> {
     if (process.argv[2] === 'powersoftau') {
         await powersoftau()
         return
+    }
+
+    const powersoftauArgs = {
+        seed: {
+            type: 'string',
+            demand: true,
+            describe: '32-character hexadecimal seed value',
+        },
     }
 
     const participateArgs = {
@@ -136,25 +160,31 @@ async function main(): Promise<void> {
             demand: true,
             describe: 'ID of ceremony participant',
         },
-        seed: {
-            type: 'string',
-            demand: true,
-            describe: '32-character hexadecimal seed value',
-        },
     }
 
     const args = yargs
         .env('COORDINATOR')
-        .command(
-            'contribute',
-            'Run the process to make contributions',
-            participateArgs,
-        )
-        .command(
-            'verify',
-            'Run the process to verify contributions',
-            participateArgs,
-        )
+        .command('contribute', 'Run the process to make contributions', {
+            ...participateArgs,
+            powersoftauArgs,
+        })
+        .command('verify', 'Run the process to verify contributions', {
+            ...participateArgs,
+            powersoftauArgs,
+        })
+        .command('new', 'Create new challenges for a ceremony', {
+            ...powersoftauArgs,
+            count: {
+                type: 'number',
+                demand: true,
+                describe: 'Number of challenges',
+            },
+            destination: {
+                type: 'string',
+                describe: 'Directory to create challenge files in',
+                default: process.cwd(),
+            },
+        })
         .command('powersoftau', 'Run powersoftau command directly', (yargs) => {
             return yargs.help(false).version(false)
         })
@@ -188,6 +218,9 @@ async function main(): Promise<void> {
                 seed: args.seed,
             })
         }
+    } else if (mode === 'new') {
+        newChallenge(args)
+        return
     } else {
         logger.error(`Unexpected mode ${mode}`)
         process.exit(1)

@@ -29,7 +29,7 @@ export interface ShellCommand {
     cleanup(): void
 }
 
-abstract class Powersoftau implements ShellCommand {
+abstract class Powersoftau {
     contributorCommand: string
     chunkData: ChunkData
 
@@ -40,15 +40,12 @@ abstract class Powersoftau implements ShellCommand {
     seed: string
 
     constructor({
-        chunkData,
         contributorCommand,
         seed,
     }: {
-        chunkData: ChunkData
         contributorCommand: string
         seed: string
     }) {
-        this.chunkData = chunkData
         this.contributorCommand = contributorCommand
         this.seed = seed
     }
@@ -78,16 +75,43 @@ abstract class Powersoftau implements ShellCommand {
         subprocess.stderr.pipe(process.stderr)
         return subprocess
     }
-
-    abstract load(): Promise<void>
-    abstract run(): Promise<string>
-    abstract cleanup(): void
 }
 
-export class ShellVerifier extends Powersoftau {
+export class PowersoftauNew extends Powersoftau {
+    async run({
+        chunkIndex,
+        contributionPath,
+    }: {
+        chunkIndex: number
+        contributionPath: string
+    }): Promise<void> {
+        await this._exec(
+            '--chunk-index',
+            chunkIndex.toString(),
+            'new',
+            '--challenge-fname',
+            contributionPath,
+        )
+    }
+}
+
+export class ShellVerifier extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     contributionFile: tmp.FileResult
     responseFile: tmp.FileResult
+
+    constructor({
+        chunkData,
+        contributorCommand,
+        seed,
+    }: {
+        chunkData: ChunkData
+        contributorCommand: string
+        seed: string
+    }) {
+        super({ contributorCommand, seed })
+        this.chunkData = chunkData
+    }
 
     async load(): Promise<void> {
         const challengeContribution = this.chunkData.contributions[
@@ -138,9 +162,22 @@ export class ShellVerifier extends Powersoftau {
 }
 
 // Run a command to generate a contribution.
-export class ShellContributor extends Powersoftau {
+export class ShellContributor extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     contributionFile: tmp.FileResult
+
+    constructor({
+        chunkData,
+        contributorCommand,
+        seed,
+    }: {
+        chunkData: ChunkData
+        contributorCommand: string
+        seed: string
+    }) {
+        super({ contributorCommand, seed })
+        this.chunkData = chunkData
+    }
 
     async load(): Promise<void> {
         const challengeContribution = this.chunkData.contributions[
