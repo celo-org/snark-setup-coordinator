@@ -178,11 +178,11 @@ async function main(): Promise<void> {
         .env('COORDINATOR')
         .command('contribute', 'Run the process to make contributions', {
             ...participateArgs,
-            powersoftauArgs,
+            ...powersoftauArgs,
         })
         .command('verify', 'Run the process to verify contributions', {
             ...participateArgs,
-            powersoftauArgs,
+            ...powersoftauArgs,
         })
         .command('new', 'Create new challenges for a ceremony', {
             ...powersoftauArgs,
