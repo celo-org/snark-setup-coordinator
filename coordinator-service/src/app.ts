@@ -4,11 +4,6 @@ import { auth } from './auth'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 
-//
-// POC: coordinates chunk contributions
-// No verification, no auth, allows locking multiple chunks, no lock timeout, ...
-//
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
