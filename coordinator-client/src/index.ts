@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import execa = require('execa')
 import fs from 'fs'
-import path from 'path'
 import yargs = require('yargs')
 import tmp from 'tmp'
 
@@ -19,6 +18,7 @@ import {
     CeremonyVerifier,
 } from './ceremony-participant'
 import { ChunkData } from './ceremony'
+import { DefaultChunkUploader } from './chunk-uploader'
 
 dotenv.config()
 tmp.setGracefulCleanup()
@@ -133,13 +133,24 @@ async function newChallenge(args): Promise<void> {
         contributorCommand: args.command,
         seed: args.seed,
     })
+    const chunkUploader = new DefaultChunkUploader({
+        participantId: args.participantId,
+    })
 
     for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
         logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)
+        const contributionPath = tmp.tmpNameSync()
+
         await powersoftauNew.run({
             chunkIndex,
-            contributionPath: path.join(args.destination, `${chunkIndex}.0`),
+            contributionPath,
         })
+        await chunkUploader.upload({
+            url: `${args.apiUrl}/chunks/${chunkIndex}/contribution/0`,
+            content: fs.readFileSync(contributionPath),
+        })
+
+        fs.unlinkSync(contributionPath)
     }
 }
 
@@ -185,16 +196,12 @@ async function main(): Promise<void> {
             ...powersoftauArgs,
         })
         .command('new', 'Create new challenges for a ceremony', {
+            ...participateArgs,
             ...powersoftauArgs,
             count: {
                 type: 'number',
                 demand: true,
                 describe: 'Number of challenges',
-            },
-            destination: {
-                type: 'string',
-                describe: 'Directory to create challenge files in',
-                default: process.cwd(),
             },
         })
         .command(

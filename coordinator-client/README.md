@@ -55,10 +55,14 @@ or verify:
 COORDINATOR_PARTICIPANT_ID=verifier0 npm run start-verifier
 ```
 
-### Create new challenges
+### Initial challenges for testing
+
+Use the built-in `powersoftau` and the `COORDINATOR_SEED` you configured
+above to create initial challenges and `POST` them to the local
+[coordinator-service](../coordinator-service):
 
 ```
-node dist/index.js new --count=4 --destination ../coordinator-service/.storage
+node dist/index.js new --count=4 --participant-id=verifier0
 ```
 
 ### Build for distribution
