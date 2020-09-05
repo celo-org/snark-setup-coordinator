@@ -6,7 +6,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "pkg": "npm i && npm run build && pkg .",
+    "pkg": "npm i && npm run build && pkg . --out-path=./pkg",
     "start": "node dist/index.js",
     "start-dave": "node dist/index.js contribute --participant-id=dave",
     "start-becky": "node dist/index.js contribute --participant-id=becky",
