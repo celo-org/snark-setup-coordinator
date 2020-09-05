@@ -20,7 +20,7 @@ export interface ChunkStorage {
         participantId: string
     })
 
-    getChunkReadLocation({
+    copyChunk({
         chunk,
         participantId,
     }: {

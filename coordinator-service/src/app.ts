@@ -80,12 +80,24 @@ export function initExpress({
 
         logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
         const chunk = coordinator.getChunk(chunkId)
-        const readUrl = chunkStorage.getChunkReadLocation({
-            chunk,
-            participantId,
-        })
+
+        let url
         try {
-            await coordinator.contributeChunk(chunkId, participantId, readUrl)
+            url = chunkStorage.copyChunk({
+                chunk,
+                participantId,
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({
+                status: 'error',
+                message: 'Unable to copy contribution',
+            })
+            return
+        }
+
+        try {
+            await coordinator.contributeChunk(chunkId, participantId, url)
             res.json({ status: 'ok' })
         } catch (err) {
             logger.warn(err.message)

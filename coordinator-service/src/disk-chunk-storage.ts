@@ -32,7 +32,7 @@ export class DiskChunkStorage implements ChunkStorage {
         return `${this.chunkStorageUrl}${path}`
     }
 
-    getChunkReadLocation({
+    copyChunk({
         chunk,
         participantId,
     }: {

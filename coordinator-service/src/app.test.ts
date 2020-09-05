@@ -133,6 +133,22 @@ describe('app', () => {
     })
 
     describe('POST /chunks/:id/contribute', () => {
+        it('handles contribution copy failures', async () => {
+            chunkStorage.copyChunk = (): string => {
+                throw new Error('fail')
+            }
+            const lockRes = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('x-participant-id', 'frank')
+            expect(lockRes).to.have.status(200)
+            const contributionRes = await chai
+                .request(app)
+                .post('/chunks/1/contribution')
+                .set('x-participant-id', 'frank')
+            expect(contributionRes).to.have.status(400)
+        })
+
         it('rejects unlocked chunk contributions', async () => {
             const res = await chai
                 .request(app)

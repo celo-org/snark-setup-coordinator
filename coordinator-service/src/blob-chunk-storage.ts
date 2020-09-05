@@ -56,7 +56,7 @@ export class BlobChunkStorage implements ChunkStorage {
         return `${this._baseUrl()}/${this.containerName}/${blobName}?${blobSAS}`
     }
 
-    getChunkReadLocation({
+    copyChunk({
         chunk,
         participantId,
     }: {
