@@ -78,7 +78,7 @@ export function initExpress({
 
         let url
         try {
-            url = chunkStorage.copyChunk({
+            url = await chunkStorage.copyChunk({
                 chunk,
                 participantId,
             })

@@ -3,7 +3,10 @@ import yargs = require('yargs')
 import bodyParser from 'body-parser'
 import fs from 'fs'
 import path from 'path'
-import { StorageSharedKeyCredential } from '@azure/storage-blob'
+import {
+    BlobServiceClient,
+    StorageSharedKeyCredential,
+} from '@azure/storage-blob'
 
 import { auth } from './auth'
 import { BlobChunkStorage } from './blob-chunk-storage'
@@ -80,8 +83,12 @@ function http(args): void {
             args.azureStorageAccount,
             fs.readFileSync(args.azureAccessKeyFile).toString(),
         )
+        const containerClient = new BlobServiceClient(
+            `https://${args.azureStorageAccount}.blob.core.windows.net`,
+            sharedKeyCredential,
+        ).getContainerClient(args.azureContainer)
         chunkStorage = new BlobChunkStorage({
-            containerName: args.azureContainer,
+            containerClient,
             sharedKeyCredential,
         })
     }

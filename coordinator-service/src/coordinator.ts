@@ -26,7 +26,7 @@ export interface ChunkStorage {
     }: {
         chunk: ChunkData
         participantId: string
-    })
+    }): Promise<string>
 }
 
 export function chunkVersion(chunk: ChunkData): number {

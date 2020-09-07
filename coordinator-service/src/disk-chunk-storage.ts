@@ -32,13 +32,13 @@ export class DiskChunkStorage implements ChunkStorage {
         return `${this.chunkStorageUrl}${path}`
     }
 
-    copyChunk({
+    async copyChunk({
         chunk,
         participantId,
     }: {
         chunk: ChunkData
         participantId: string
-    }): string {
+    }): Promise<string> {
         // It's the same as the write location.
         return this.getChunkWriteLocation({ chunk, participantId })
     }

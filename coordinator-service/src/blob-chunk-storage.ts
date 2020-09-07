@@ -1,5 +1,7 @@
+import { AbortController } from '@azure/abort-controller'
 import {
     BlobSASPermissions,
+    ContainerClient,
     generateBlobSASQueryParameters,
     StorageSharedKeyCredential,
 } from '@azure/storage-blob'
@@ -9,24 +11,29 @@ import { ChunkStorage, chunkVersion } from './coordinator'
 
 const expireMinutes = 60 * 2
 const expireMilliseconds = 1000 * 60 * expireMinutes
+const timeoutMilliseconds = 10 * 1000
 
 export class BlobChunkStorage implements ChunkStorage {
-    containerName: string
     sharedKeyCredential: StorageSharedKeyCredential
+    containerClient: ContainerClient
 
     constructor({
-        containerName,
+        containerClient,
         sharedKeyCredential,
     }: {
-        containerName: string
+        containerClient: ContainerClient
         sharedKeyCredential: StorageSharedKeyCredential
     }) {
-        this.containerName = containerName
+        this.containerClient = containerClient
         this.sharedKeyCredential = sharedKeyCredential
     }
 
     _baseUrl(): string {
-        return `https://${this.sharedKeyCredential.accountName}.blob.core.windows.net`
+        return this.containerClient.url
+    }
+
+    static _blobName(chunkId, version, participantId, suffix): string {
+        return `${chunkId}.${version}.${participantId}${suffix}`
     }
 
     getChunkWriteLocation({
@@ -39,13 +46,18 @@ export class BlobChunkStorage implements ChunkStorage {
         const chunkId = chunk.chunkId
         const version = chunkVersion(chunk)
 
-        const blobName = `${chunkId}.${version}.${participantId}`
+        const blobName = BlobChunkStorage._blobName(
+            chunkId,
+            version,
+            participantId,
+            '-unsafe',
+        )
         const permissions = BlobSASPermissions.parse('racwd')
         const startsOn = new Date()
         const expiresOn = new Date(new Date().valueOf() + expireMilliseconds)
         const blobSAS = generateBlobSASQueryParameters(
             {
-                containerName: this.containerName,
+                containerName: this.containerClient.containerName,
                 blobName,
                 permissions,
                 startsOn,
@@ -53,19 +65,43 @@ export class BlobChunkStorage implements ChunkStorage {
             },
             this.sharedKeyCredential,
         ).toString()
-        return `${this._baseUrl()}/${this.containerName}/${blobName}?${blobSAS}`
+        return `${this._baseUrl()}/${blobName}?${blobSAS}`
     }
 
-    copyChunk({
+    async copyChunk({
         chunk,
         participantId,
     }: {
         chunk: ChunkData
         participantId: string
-    }): string {
+    }): Promise<string> {
         const chunkId = chunk.chunkId
         const version = chunkVersion(chunk)
-        const blobName = `${chunkId}.${version}.${participantId}`
-        return `${this._baseUrl()}/${this.containerName}/${blobName}`
+        const sourceBlobName = BlobChunkStorage._blobName(
+            chunkId,
+            version,
+            participantId,
+            '-unsafe',
+        )
+        const sourceUrl = `${this._baseUrl()}/${sourceBlobName}`
+        const destinationBlobName = BlobChunkStorage._blobName(
+            chunkId,
+            version,
+            participantId,
+            '',
+        )
+        const destinationClient = this.containerClient.getBlobClient(
+            destinationBlobName,
+        )
+        const abortSignal = AbortController.timeout(timeoutMilliseconds)
+        const result = await destinationClient.syncCopyFromURL(sourceUrl, {
+            abortSignal,
+        })
+        if (result.copyStatus !== 'success') {
+            throw new Error(`Copy '${sourceUrl}' failed '${result.copyStatus}'`)
+        }
+
+        const destinationUrl = `${this._baseUrl()}/${destinationBlobName}`
+        return destinationUrl
     }
 }

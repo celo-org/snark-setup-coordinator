@@ -1,5 +1,8 @@
 import { expect } from 'chai'
-import { StorageSharedKeyCredential } from '@azure/storage-blob'
+import {
+    ContainerClient,
+    StorageSharedKeyCredential,
+} from '@azure/storage-blob'
 
 import { BlobChunkStorage } from './blob-chunk-storage'
 import { ChunkData } from './ceremony'
@@ -7,15 +10,19 @@ import { ChunkData } from './ceremony'
 describe('BlobChunkStorage', () => {
     describe('.getChunkWriteLocation', () => {
         it('returns an azure blob URL', () => {
-            const containerName = 'foo'
             const account = 'accountfoo'
             const accountKey = 'doesnt matter'
             const sharedKeyCredential = new StorageSharedKeyCredential(
                 account,
                 accountKey,
             )
+            const mockUrl = `https://${account}.blob.core.windows.net/foo`
+            const containerClient = new ContainerClient(
+                mockUrl,
+                sharedKeyCredential,
+            )
             const blobChunkStorage = new BlobChunkStorage({
-                containerName,
+                containerClient,
                 sharedKeyCredential,
             })
             const chunk = {
