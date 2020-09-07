@@ -6,6 +6,7 @@ export function auth(req, res, next): void {
             message: error.message,
         })
         next(error)
+        return
     }
     req.participantId = req.headers['x-participant-id'] as string
     next()
