@@ -19,6 +19,7 @@ import {
 } from './ceremony-participant'
 import { ChunkData } from './ceremony'
 import { DefaultChunkUploader } from './chunk-uploader'
+import { AuthCelo } from './auth-celo'
 import { AuthDummy } from './auth-dummy'
 
 dotenv.config()
@@ -101,10 +102,9 @@ async function contribute(args): Promise<void> {
     const participantId = args.participantId
     const baseUrl = args.apiUrl
 
-    const auth = new AuthDummy(participantId)
-    const chunkUploader = new DefaultChunkUploader({ auth })
+    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
     const client = new CeremonyContributor({
-        auth,
+        auth: args.auth,
         participantId,
         baseUrl,
         chunkUploader,
@@ -124,10 +124,9 @@ async function verify(args): Promise<void> {
     const participantId = args.participantId
     const baseUrl = args.apiUrl
 
-    const auth = new AuthDummy(participantId)
-    const chunkUploader = new DefaultChunkUploader({ auth })
+    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
     const client = new CeremonyVerifier({
-        auth,
+        auth: args.auth,
         participantId,
         baseUrl,
         chunkUploader,
@@ -150,8 +149,7 @@ async function newChallenge(args): Promise<void> {
         seed: args.seed,
     })
 
-    const auth = new AuthDummy(args.participantId)
-    const chunkUploader = new DefaultChunkUploader({ auth })
+    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
 
     for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
         logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)
@@ -194,10 +192,19 @@ async function main(): Promise<void> {
             type: 'string',
             describe: 'Ceremony API url',
         },
+        'auth-type': {
+            choices: ['celo', 'dummy'],
+            default: 'dummy',
+            type: 'string',
+        },
         'participant-id': {
             type: 'string',
             demand: true,
             describe: 'ID of ceremony participant',
+        },
+        'celo-private-key-file': {
+            type: 'string',
+            describe: 'Path to private key if using celo auth',
         },
     }
 
@@ -239,6 +246,15 @@ async function main(): Promise<void> {
         powersoftauTmpFile = await extractPowersoftau()
         args.command = powersoftauTmpFile.name
         logger.info(`using built-in powersoftau at ${args.command}`)
+    }
+
+    if (args.authType === 'celo') {
+        args.auth = new AuthCelo({
+            address: args.participantId,
+            privateKey: fs.readFileSync(args.celoPrivateKeyFile).toString(),
+        })
+    } else {
+        args.auth = new AuthDummy(args.participantId)
     }
 
     try {
