@@ -4,7 +4,7 @@ import { SignatureUtils } from '@celo/utils/lib/signatureUtils'
 import { authCelo } from './auth-celo'
 
 describe('celoAuth', () => {
-    it('accepts valid authorization', () => {
+    it('accepts valid authorization', (done) => {
         const method = 'get'
         const path = '/flarb/snarg/bronb'
         const privateKey =
@@ -27,9 +27,10 @@ describe('celoAuth', () => {
             participantId: null,
         }
         const mockRes = null
-        const mockNext = null
-        authCelo(mockReq, mockRes, mockNext)
-        expect(mockReq.participantId).is.equal(address)
+        authCelo(mockReq, mockRes, () => {
+            expect(mockReq.participantId).is.equal(address)
+            done()
+        })
     })
 
     let statusCode

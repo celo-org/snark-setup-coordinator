@@ -53,4 +53,5 @@ export function authCelo(req, res, next): void {
         return
     }
     req.participantId = address
+    next()
 }
