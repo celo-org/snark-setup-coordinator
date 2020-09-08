@@ -84,7 +84,7 @@ describe('app', () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(res).to.have.status(200)
             expect(res.body.result.chunkId).to.equal('1')
             expect(res.body.result.locked).to.equal(true)
@@ -94,11 +94,11 @@ describe('app', () => {
             await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             const res = await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(res).to.have.status(400)
         })
 
@@ -106,7 +106,7 @@ describe('app', () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/2/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(res).to.have.status(200)
             expect(res.body.result.locked).to.equal(false)
         })
@@ -115,7 +115,7 @@ describe('app', () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'verifier0')
+                .set('authorization', 'dummy verifier0')
             expect(res).to.have.status(200)
             expect(res.body.result.locked).to.equal(false)
         })
@@ -126,7 +126,7 @@ describe('app', () => {
             const res = await chai
                 .request(app)
                 .get('/chunks/1/contribution')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(res).to.have.status(200)
             expect(res.body.result.writeUrl).to.be.a('string')
         })
@@ -140,12 +140,12 @@ describe('app', () => {
             const lockRes = await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
                 .post('/chunks/1/contribution')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(contributionRes).to.have.status(400)
         })
 
@@ -153,7 +153,7 @@ describe('app', () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/1/contribution')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(res).to.have.status(400)
         })
 
@@ -161,12 +161,12 @@ describe('app', () => {
             const lockRes = await chai
                 .request(app)
                 .post('/chunks/1/lock')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
                 .post('/chunks/1/contribution')
-                .set('x-participant-id', 'frank')
+                .set('authorization', 'dummy frank')
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')
@@ -179,12 +179,12 @@ describe('app', () => {
             const lockRes = await chai
                 .request(app)
                 .post('/chunks/2/lock')
-                .set('x-participant-id', 'verifier0')
+                .set('authorization', 'dummy verifier0')
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
                 .post('/chunks/2/contribution')
-                .set('x-participant-id', 'verifier0')
+                .set('authorization', 'dummy verifier0')
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')

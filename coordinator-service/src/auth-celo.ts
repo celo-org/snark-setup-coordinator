@@ -1,7 +1,7 @@
 import { verifySignature } from '@celo/utils/lib/signatureUtils'
 
 /**
- * Middleware to authenticates a request using Celo accounts.
+ * Middleware that authenticates a request using Celo accounts.
  *
  * @remarks
  * Uses the Authorization header in the following form: Authorizaton Celo Account-Address:Signature

@@ -8,7 +8,7 @@ import {
     StorageSharedKeyCredential,
 } from '@azure/storage-blob'
 
-import { auth } from './auth'
+import { auth } from './auth-dummy'
 import { BlobChunkStorage } from './blob-chunk-storage'
 import { ChunkStorage } from './coordinator'
 import { DiskCoordinator } from './disk-coordinator'
