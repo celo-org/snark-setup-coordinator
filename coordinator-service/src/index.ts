@@ -8,7 +8,8 @@ import {
     StorageSharedKeyCredential,
 } from '@azure/storage-blob'
 
-import { auth } from './auth-dummy'
+import { authCelo } from './auth-celo'
+import { authDummy } from './auth-dummy'
 import { BlobChunkStorage } from './blob-chunk-storage'
 import { ChunkStorage } from './coordinator'
 import { DiskCoordinator } from './disk-coordinator'
@@ -22,6 +23,11 @@ const httpArgs = {
     port: {
         default: 8080,
         type: 'number',
+    },
+    'auth-type': {
+        choices: ['celo', 'dummy'],
+        default: 'dummy',
+        type: 'string',
     },
     'chunk-storage-type': {
         choices: ['disk', 'azure'],
@@ -93,8 +99,13 @@ function http(args): void {
         })
     }
 
+    const auth = {
+        celo: authCelo,
+        dummy: authDummy,
+    }[args.authType]
+
     const coordinator = new DiskCoordinator({ dbPath: args.dbFile })
-    const app = initExpress({ coordinator, chunkStorage })
+    const app = initExpress({ auth, coordinator, chunkStorage })
 
     if (args.chunkStorageType === 'disk') {
         app.use(bodyParser.raw({ limit: '5mb' }))

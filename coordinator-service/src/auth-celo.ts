@@ -23,7 +23,7 @@ export function authCelo(req, res, next): void {
         ] = authorization.split(' ')
         if (authorizationType.toLowerCase() !== 'celo') {
             throw new Error(
-                'Unexpected authorization type ${authorizationType}',
+                `Unexpected authorization type ${authorizationType}`,
             )
         } else if (!authorizationCredentials) {
             throw new Error('Missing authorization credentials')

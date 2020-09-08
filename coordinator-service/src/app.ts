@@ -1,6 +1,5 @@
 import express from 'express'
 
-import { auth } from './auth-dummy'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 
@@ -14,9 +13,11 @@ declare global {
 }
 
 export function initExpress({
+    auth,
     coordinator,
     chunkStorage,
 }: {
+    auth: (req, res, next) => void
     coordinator: Coordinator
     chunkStorage: ChunkStorage
 }): express.Application {

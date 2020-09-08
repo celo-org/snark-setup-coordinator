@@ -1,7 +1,7 @@
 /**
  * Middleware for development that authenticates any request with type 'dummy'
  */
-export function auth(req, res, next): void {
+export function authDummy(req, res, next): void {
     let participantId
     try {
         if (!('authorization' in req.headers)) {
@@ -13,7 +13,7 @@ export function auth(req, res, next): void {
         const authorizationType = split[0]
         if (authorizationType.toLowerCase() !== 'dummy') {
             throw new Error(
-                'Unexpected authorization type ${authorizationType}',
+                `Unexpected authorization type ${authorizationType}`,
             )
         }
         participantId = split[1]
