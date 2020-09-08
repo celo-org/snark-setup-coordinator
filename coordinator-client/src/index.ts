@@ -19,6 +19,7 @@ import {
 } from './ceremony-participant'
 import { ChunkData } from './ceremony'
 import { DefaultChunkUploader } from './chunk-uploader'
+import { AuthDummy } from './auth-dummy'
 
 dotenv.config()
 tmp.setGracefulCleanup()
@@ -100,7 +101,14 @@ async function contribute(args): Promise<void> {
     const participantId = args.participantId
     const baseUrl = args.apiUrl
 
-    const client = new CeremonyContributor({ participantId, baseUrl })
+    const auth = new AuthDummy(participantId)
+    const chunkUploader = new DefaultChunkUploader({ auth })
+    const client = new CeremonyContributor({
+        auth,
+        participantId,
+        baseUrl,
+        chunkUploader,
+    })
     const contributor = (chunkData: ChunkData): ShellContributor => {
         return new ShellContributor({
             chunkData: chunkData,
@@ -116,7 +124,15 @@ async function verify(args): Promise<void> {
     const participantId = args.participantId
     const baseUrl = args.apiUrl
 
-    const client = new CeremonyVerifier({ participantId, baseUrl })
+    const auth = new AuthDummy(participantId)
+    const chunkUploader = new DefaultChunkUploader({ auth })
+    const client = new CeremonyVerifier({
+        auth,
+        participantId,
+        baseUrl,
+        chunkUploader,
+    })
+
     const contributor = (chunkData: ChunkData): ShellVerifier => {
         return new ShellVerifier({
             chunkData: chunkData,
@@ -133,9 +149,9 @@ async function newChallenge(args): Promise<void> {
         contributorCommand: args.command,
         seed: args.seed,
     })
-    const chunkUploader = new DefaultChunkUploader({
-        participantId: args.participantId,
-    })
+
+    const auth = new AuthDummy(args.participantId)
+    const chunkUploader = new DefaultChunkUploader({ auth })
 
     for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
         logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)

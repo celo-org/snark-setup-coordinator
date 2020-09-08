@@ -1,30 +1,34 @@
 import axios, { AxiosInstance } from 'axios'
 import shuffle = require('shuffle-array')
 
+import { Auth } from './auth'
 import { ChunkData, LockedChunkData, Ceremony } from './ceremony'
-import { ChunkUploader, DefaultChunkUploader } from './chunk-uploader'
+import { ChunkUploader } from './chunk-uploader'
 import { logger } from './logger'
 
 export abstract class CeremonyParticipant {
+    auth: Auth
     participantId: string
     axios: AxiosInstance
     chunkUploader: ChunkUploader
 
     constructor({
+        auth,
         participantId,
         baseUrl,
-        chunkUploader = null,
+        chunkUploader,
     }: {
+        auth: Auth
         participantId: string
         baseUrl: string
-        chunkUploader?: ChunkUploader
+        chunkUploader: ChunkUploader
     }) {
+        this.auth = auth
         this.participantId = participantId
         this.axios = axios.create({
             baseURL: baseUrl,
         })
-        this.chunkUploader =
-            chunkUploader || new DefaultChunkUploader({ participantId })
+        this.chunkUploader = chunkUploader
     }
 
     // All the chunks this participant still might need to do work on
@@ -33,24 +37,34 @@ export abstract class CeremonyParticipant {
     abstract getChunksAcceptingContributions(): Promise<LockedChunkData[]>
 
     async getCeremony(): Promise<Ceremony> {
+        const method = 'GET'
+        const path = '/ceremony'
         return (
             await this.axios({
-                method: 'GET',
-                url: '/ceremony',
+                method,
+                url: path,
                 headers: {
-                    'X-Participant-Id': this.participantId,
+                    Authorization: this.auth.getAuthorizationValue({
+                        method,
+                        path,
+                    }),
                 },
             })
         ).data.result as Ceremony
     }
 
     async tryLock(chunkId: string): Promise<boolean> {
+        const method = 'POST'
+        const path = `/chunks/${chunkId}/lock`
         return (
             await this.axios({
-                method: 'POST',
-                url: `/chunks/${chunkId}/lock`,
+                method,
+                url: path,
                 headers: {
-                    'X-Participant-Id': this.participantId,
+                    Authorization: this.auth.getAuthorizationValue({
+                        method,
+                        path,
+                    }),
                 },
             })
         ).data.result.locked
@@ -80,23 +94,33 @@ export abstract class CeremonyParticipant {
     }
 
     async contributeChunk(chunkId: string, content: Buffer): Promise<void> {
+        const destinationMethod = 'GET'
+        const destinationPath = `/chunks/${chunkId}/contribution`
         const writeUrl = (
             await this.axios({
-                method: 'GET',
-                url: `/chunks/${chunkId}/contribution`,
+                method: destinationMethod,
+                url: destinationPath,
                 headers: {
-                    'X-Participant-Id': this.participantId,
+                    Authorization: this.auth.getAuthorizationValue({
+                        method: destinationMethod,
+                        path: destinationPath,
+                    }),
                 },
             })
         ).data.result.writeUrl
 
         await this.chunkUploader.upload({ url: writeUrl, content })
 
+        const contributeMethod = 'POST'
+        const contributePath = `/chunks/${chunkId}/contribution`
         await this.axios({
-            method: 'POST',
-            url: `/chunks/${chunkId}/contribution`,
+            method: contributeMethod,
+            url: contributePath,
             headers: {
-                'X-Participant-Id': this.participantId,
+                Authorization: this.auth.getAuthorizationValue({
+                    method: contributeMethod,
+                    path: contributePath,
+                }),
             },
         })
     }

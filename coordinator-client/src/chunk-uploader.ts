@@ -1,16 +1,18 @@
 import axios, { AxiosInstance } from 'axios'
 import { BlockBlobClient } from '@azure/storage-blob'
 
+import { Auth } from './auth'
+
 export interface ChunkUploader {
     upload({ url, content }: { url: string; content: Buffer }): Promise<void>
 }
 
 export class DefaultChunkUploader implements ChunkUploader {
-    participantId: string
+    auth: Auth
     axios: AxiosInstance
 
-    constructor({ participantId }: { participantId: string }) {
-        this.participantId = participantId
+    constructor({ auth }: { auth: Auth }) {
+        this.auth = auth
         this.axios = axios.create()
     }
 
@@ -25,12 +27,16 @@ export class DefaultChunkUploader implements ChunkUploader {
             const client = new BlockBlobClient(url)
             await client.upload(content, content.length)
         } else {
+            const parsedUrl = new URL(url)
             await this.axios({
                 method: 'POST',
-                url: url,
+                url,
                 headers: {
                     'Content-Type': 'application/octet-stream',
-                    'X-Participant-Id': this.participantId,
+                    Authorization: this.auth.getAuthorizationValue({
+                        method: 'POST',
+                        path: parsedUrl.pathname,
+                    }),
                 },
                 data: content,
             })
