@@ -4,7 +4,8 @@ import { verifySignature } from '@celo/utils/lib/signatureUtils'
  * Middleware that authenticates a request using Celo accounts.
  *
  * @remarks
- * Uses the Authorization header in the following form: Authorizaton Celo Account-Address:Signature
+ * Uses the Authorization header in the following form:
+ *   Authorizaton: Celo Account-Address:Signature
  * Signature signs a message of the following form: HTTP-Verb Request-Path
  **/
 export function authCelo(req, res, next): void {
