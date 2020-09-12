@@ -210,6 +210,10 @@ async function main(): Promise<void> {
 
     const args = yargs
         .env('COORDINATOR')
+        .config('config', (configPath) => {
+            dotenv.config({ path: configPath })
+            return {}
+        })
         .command('contribute', 'Run the process to make contributions', {
             ...participateArgs,
             ...powersoftauArgs,
