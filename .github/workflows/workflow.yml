@@ -4,11 +4,14 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     name: Node 12
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [coordinator-client, coordinator-service]
     defaults:
       run:
-        working-directory: coordinator-client
+        working-directory: ${{ matrix.app }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
