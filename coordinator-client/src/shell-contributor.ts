@@ -82,17 +82,17 @@ abstract class Powersoftau {
     batchSize = 64
     chunkSize = 512
     power = 10
-    seed: string
+    seedFile: string
 
     constructor({
         contributorCommand,
-        seed,
+        seedFile,
     }: {
         contributorCommand: string
-        seed: string
+        seedFile: string
     }) {
         this.contributorCommand = contributorCommand
-        this.seed = seed
+        this.seedFile = seedFile
     }
 
     _exec(...args: string[]): execa.ExecaChildProcess {
@@ -108,7 +108,7 @@ abstract class Powersoftau {
             '--power',
             this.power.toString(),
             '--seed',
-            this.seed,
+            this.seedFile,
         ]
 
         const powersoftauArgs = [...baseArgs, ...args]
@@ -148,13 +148,13 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
     constructor({
         chunkData,
         contributorCommand,
-        seed,
+        seedFile,
     }: {
         chunkData: ChunkData
         contributorCommand: string
-        seed: string
+        seedFile: string
     }) {
-        super({ contributorCommand, seed })
+        super({ contributorCommand, seedFile })
         this.chunkData = chunkData
     }
 
@@ -218,13 +218,13 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
     constructor({
         chunkData,
         contributorCommand,
-        seed,
+        seedFile,
     }: {
         chunkData: ChunkData
         contributorCommand: string
-        seed: string
+        seedFile: string
     }) {
-        super({ contributorCommand, seed })
+        super({ contributorCommand, seedFile })
         this.chunkData = chunkData
     }
 

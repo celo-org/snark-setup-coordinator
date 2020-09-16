@@ -113,7 +113,7 @@ async function contribute(args): Promise<void> {
         return new ShellContributor({
             chunkData: chunkData,
             contributorCommand: args.command,
-            seed: args.seed,
+            seedFile: args.seedFile,
         })
     }
 
@@ -136,7 +136,7 @@ async function verify(args): Promise<void> {
         return new ShellVerifier({
             chunkData: chunkData,
             contributorCommand: args.command,
-            seed: args.seed,
+            seedFile: args.seedFile,
         })
     }
 
@@ -146,7 +146,7 @@ async function verify(args): Promise<void> {
 async function newChallenge(args): Promise<void> {
     const powersoftauNew = new PowersoftauNew({
         contributorCommand: args.command,
-        seed: args.seed,
+        seedFile: args.seedFile,
     })
 
     const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
@@ -181,10 +181,11 @@ async function main(): Promise<void> {
             type: 'string',
             describe: 'Override the built-in powersoftau command',
         },
-        seed: {
+        'seed-file': {
             type: 'string',
             demand: true,
-            describe: '32-character hexadecimal seed value',
+            describe:
+                'Path to file containing 32-character hexadecimal seed value',
         },
     }
 

@@ -15,8 +15,8 @@ file. Upper snake-case the command line option and prepend
 `COORDINATOR_`.  E.g.,
 
 ```
-./coordinator-client-linux contribute --seed foo
-COORDINATOR_SEED=foo ./coordinator-client-linux contribute
+./coordinator-client-linux contribute --seed-file ./seed
+COORDINATOR_SEED_FILE=./seed ./coordinator-client-linux contribute
 ```
 
 ## Development
@@ -32,7 +32,8 @@ npm i
 Configure powersoftau:
 
 ```
-echo "COORDINATOR_SEED=$(tr -dc 'A-F0-9' < /dev/urandom | head -c32)" > .env
+echo -n "$(tr -dc 'A-F0-9' < /dev/urandom | head -c32)" > seed
+echo "COORDINATOR_SEED_FILE=seed" > .env
 ```
 
 Build:
@@ -57,7 +58,7 @@ COORDINATOR_PARTICIPANT_ID=verifier0 npm run start-verifier
 
 ### Initial challenges for testing
 
-Use the built-in `powersoftau` and the `COORDINATOR_SEED` you configured
+Use the built-in `powersoftau` and the `COORDINATOR_SEED_FILE` you configured
 above to create initial challenges and `POST` them to the local
 [coordinator-service](../coordinator-service):
 
