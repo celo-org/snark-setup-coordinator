@@ -24,7 +24,7 @@ function copy(source, target): Promise<unknown> {
 
 export async function extractPowersoftau(): Promise<tmp.FileResult> {
     const powersoftauFileName = {
-        Linux: 'powersoftau_linux.file',
+        Linux: 'powersoftau_linux_musl.file',
         Darwin: 'powersoftau_macos.uu',
         Windows_NT: 'powersoftau.exe', // eslint-disable-line @typescript-eslint/camelcase
     }[os.type()]
