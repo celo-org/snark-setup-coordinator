@@ -159,10 +159,12 @@ async function newChallenge(args): Promise<void> {
             chunkIndex,
             contributionPath,
         })
+        const url = `${args.apiUrl}/chunks/${chunkIndex}/contribution/0`
         await chunkUploader.upload({
-            url: `${args.apiUrl}/chunks/${chunkIndex}/contribution/0`,
+            url,
             content: fs.readFileSync(contributionPath),
         })
+        logger.info('uploaded %s', url)
 
         fs.unlinkSync(contributionPath)
     }
@@ -202,9 +204,13 @@ async function main(): Promise<void> {
             demand: true,
             describe: 'ID of ceremony participant',
         },
+        'celo-private-key': {
+            type: 'string',
+            describe: 'Private key if using Celo auth (for development)',
+        },
         'celo-private-key-file': {
             type: 'string',
-            describe: 'Path to private key if using celo auth',
+            describe: 'Path to private key if using Celo auth',
         },
     }
 
@@ -253,9 +259,14 @@ async function main(): Promise<void> {
     }
 
     if (args.authType === 'celo') {
+        let privateKey = args.celoPrivateKey
+        if (!privateKey) {
+            privateKey = fs.readFileSync(args.celoPrivateKeyFile).toString()
+        }
+
         args.auth = new AuthCelo({
             address: args.participantId,
-            privateKey: fs.readFileSync(args.celoPrivateKeyFile).toString(),
+            privateKey,
         })
     } else {
         args.auth = new AuthDummy(args.participantId)
