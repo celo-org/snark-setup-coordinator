@@ -1,0 +1,48 @@
+{
+  "version": 0,
+  "contributorIds": ["dave", "becky"],
+  "verifierIds": ["verifier0"],
+  "chunks": [
+    {
+      "chunkId": "0",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "1",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/1.0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "2",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/2.0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "3",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "verifier0",
+        "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/3.0",
+        "verified": true
+      }]
+    }
+  ]
+}

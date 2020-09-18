@@ -27,3 +27,13 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test
+  test-e2e:
+    runs-on: ubuntu-latest
+    name: E2E
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: node e2e/run-e2e-suite.js

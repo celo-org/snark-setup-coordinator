@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: contributor
+data:
+  COORDINATOR_API_URL: 'http://coordinator-service:8080'
+  COORDINATOR_AUTH_TYPE: celo
+  COORDINATOR_SEED_FILE: '/mnt/secrets/seed'
+  COORDINATOR_PARTICIPANT_ID: 0xEC60b9a43529c12CA83Af466D8A6F8444392D47C
+  COORDINATOR_CELO_PRIVATE_KEY_FILE: '/mnt/secrets/key'

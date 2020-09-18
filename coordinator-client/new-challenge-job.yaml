@@ -13,15 +13,15 @@ spec:
           name: new-challenge
           envFrom:
             - configMapRef:
-                name: verifier
+                name: new-challenge
           volumeMounts:
-            - name: contributor
+            - name: new-challenge
               mountPath: "/mnt/secrets"
               readOnly: true
           command: ["npm"]
           args: ["start", "--", "new", "--count=4"]
       restartPolicy: Never
       volumes:
-        - name: contributor
+        - name: new-challenge
           secret:
-            secretName: contributor
+            secretName: new-challenge
