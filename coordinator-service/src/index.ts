@@ -38,6 +38,10 @@ const httpArgs = {
         default: './.storage',
         type: 'string',
     },
+    'disk-chunk-storage-url': {
+        default: 'http://localhost:8080',
+        type: 'string',
+    },
     'azure-access-key-file': {
         type: 'string',
         describe: 'File with storage account access key',
@@ -78,7 +82,7 @@ function http(args): void {
     let diskChunkStorage
     let chunkStorage: ChunkStorage
     if (args.chunkStorageType === 'disk') {
-        const chunkStorageUrl = `http://localhost:${args.port}/chunks`
+        const chunkStorageUrl = `${args.diskChunkStorageUrl}/chunks`
         diskChunkStorage = new DiskChunkStorage({
             storagePath: args.diskChunkStorageDirectory,
             chunkStorageUrl,
@@ -122,13 +126,18 @@ function http(args): void {
                 res.json({ status: 'ok' })
             },
         )
-        app.get('/chunks/:chunkId/contribution/:version', async (req, res) => {
+        app.get('/chunks/:chunkId/contribution/:version', (req, res) => {
             const chunkId = req.params.chunkId
             const version = req.params.version
 
             logger.info(`GET /chunks/${chunkId}/contribution/${version}`)
-            const content = diskChunkStorage.getChunk(chunkId, version)
-            res.status(200).send(content)
+            try {
+                const content = diskChunkStorage.getChunk(chunkId, version)
+                res.status(200).send(content)
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(500).json({ status: 'error', message: err.message })
+            }
         })
     }
 
