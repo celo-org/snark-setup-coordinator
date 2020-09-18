@@ -33,12 +33,17 @@ spec:
           name: coordinator-service
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: coordinator-service
           env:
             - name: COORDINATOR_DB_FILE
               value: /db/db.json
+            - name: COORDINATOR_DISK_CHUNK_STORAGE_DIRECTORY
+              value: /db
           volumeMounts:
             - name: db
-              mountPath: /db/
+              mountPath: /db
       volumes:
         - name: db
           persistentVolumeClaim:

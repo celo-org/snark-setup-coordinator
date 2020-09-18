@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: new-challenge
+spec:
+  template:
+    metadata:
+      labels:
+        app: new-challenge
+    spec:
+      containers:
+        - image: coordinator-client:test
+          name: new-challenge
+          envFrom:
+            - configMapRef:
+                name: verifier
+          volumeMounts:
+            - name: contributor
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          command: ["npm"]
+          args: ["start", "--", "new", "--count=4"]
+      restartPolicy: Never
+      volumes:
+        - name: contributor
+          secret:
+            secretName: contributor

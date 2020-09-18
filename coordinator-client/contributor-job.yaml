@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: contributor
+spec:
+  template:
+    metadata:
+      labels:
+        app: contributor
+    spec:
+      containers:
+        - image: coordinator-client:test
+          name: contributor
+          envFrom:
+            - configMapRef:
+                name: contributor
+          volumeMounts:
+            - name: contributor
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          command: ["npm"]
+          args: ["start", "--", "contribute"]
+      restartPolicy: Never
+      volumes:
+        - name: contributor
+          secret:
+            secretName: contributor
