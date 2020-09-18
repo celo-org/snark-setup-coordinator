@@ -26,11 +26,9 @@ RUN apk update && apk upgrade && \
     apk add --no-cache git
 
 WORKDIR /app
+COPY powersoftau ./powersoftau
 COPY package*.json ./
 RUN npm ci
 
 # Copy build files
 COPY --from=base /app/dist ./dist
-COPY ceremony ceremony
-
-CMD ["npm", "start"]
