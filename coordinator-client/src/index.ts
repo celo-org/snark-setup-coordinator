@@ -136,7 +136,6 @@ async function verify(args): Promise<void> {
         return new ShellVerifier({
             chunkData: chunkData,
             contributorCommand: args.command,
-            seedFile: args.seedFile,
         })
     }
 
@@ -181,6 +180,9 @@ async function main(): Promise<void> {
             type: 'string',
             describe: 'Override the built-in powersoftau command',
         },
+    }
+
+    const seedArgs = {
         'seed-file': {
             type: 'string',
             demand: true,
@@ -224,6 +226,7 @@ async function main(): Promise<void> {
         .command('contribute', 'Run the process to make contributions', {
             ...participateArgs,
             ...powersoftauArgs,
+            ...seedArgs,
         })
         .command('verify', 'Run the process to verify contributions', {
             ...participateArgs,
@@ -232,6 +235,7 @@ async function main(): Promise<void> {
         .command('new', 'Create new challenges for a ceremony', {
             ...participateArgs,
             ...powersoftauArgs,
+            ...seedArgs,
             count: {
                 type: 'number',
                 demand: true,

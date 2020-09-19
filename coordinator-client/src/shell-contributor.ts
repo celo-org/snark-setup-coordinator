@@ -82,17 +82,9 @@ abstract class Powersoftau {
     batchSize = 64
     chunkSize = 512
     power = 10
-    seedFile: string
 
-    constructor({
-        contributorCommand,
-        seedFile,
-    }: {
-        contributorCommand: string
-        seedFile: string
-    }) {
+    constructor({ contributorCommand }: { contributorCommand: string }) {
         this.contributorCommand = contributorCommand
-        this.seedFile = seedFile
     }
 
     _exec(...args: string[]): execa.ExecaChildProcess {
@@ -107,8 +99,6 @@ abstract class Powersoftau {
             this.chunkSize.toString(),
             '--power',
             this.power.toString(),
-            '--seed',
-            this.seedFile,
         ]
 
         const powersoftauArgs = [...baseArgs, ...args]
@@ -123,6 +113,19 @@ abstract class Powersoftau {
 }
 
 export class PowersoftauNew extends Powersoftau {
+    seedFile: string
+
+    constructor({
+        seedFile,
+        contributorCommand,
+    }: {
+        seedFile: string
+        contributorCommand: string
+    }) {
+        super({ contributorCommand })
+        this.seedFile = seedFile
+    }
+
     async run({
         chunkIndex,
         contributionPath,
@@ -131,6 +134,8 @@ export class PowersoftauNew extends Powersoftau {
         contributionPath: string
     }): Promise<void> {
         await this._exec(
+            '--seed',
+            this.seedFile,
             '--chunk-index',
             chunkIndex.toString(),
             'new',
@@ -148,13 +153,11 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
     constructor({
         chunkData,
         contributorCommand,
-        seedFile,
     }: {
         chunkData: ChunkData
         contributorCommand: string
-        seedFile: string
     }) {
-        super({ contributorCommand, seedFile })
+        super({ contributorCommand })
         this.chunkData = chunkData
     }
 
@@ -214,6 +217,7 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
 export class ShellContributor extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     contributionFileName: string
+    seedFile: string
 
     constructor({
         chunkData,
@@ -224,7 +228,8 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         contributorCommand: string
         seedFile: string
     }) {
-        super({ contributorCommand, seedFile })
+        super({ contributorCommand })
+        this.seedFile = seedFile
         this.chunkData = chunkData
     }
 
@@ -242,6 +247,8 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
         await this._exec(
+            '--seed',
+            this.seedFile,
             '--chunk-index',
             chunkIndex,
             'contribute',
