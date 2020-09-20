@@ -1,0 +1,48 @@
+{
+  "version": 0,
+  "contributorIds": ["0xEC60b9a43529c12CA83Af466D8A6F8444392D47C"],
+  "verifierIds": ["0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5"],
+  "chunks": [
+    {
+      "chunkId": "0",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+        "verifiedLocation": "http://coordinator-service:8080/chunks/0/contribution/0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "1",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+        "verifiedLocation": "http://coordinator-service:8080/chunks/1/contribution/0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "2",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+        "verifiedLocation": "http://coordinator-service:8080/chunks/2/contribution/0",
+        "verified": true
+      }]
+    }, {
+      "chunkId": "3",
+      "lockHolder": null,
+      "contributions": [{
+        "contributorId": null,
+        "contributedLocation": null,
+        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+        "verifiedLocation": "http://coordinator-service:8080/chunks/3/contribution/0",
+        "verified": true
+      }]
+    }
+  ]
+}

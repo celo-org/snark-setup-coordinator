@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coordinator-service
+data:
+  COORDINATOR_AUTH_TYPE: celo
+  COORDINATOR_CONFIG_PATH: ceremony/4-chunks-celo-e2e.json
+  COORDINATOR_DISK_CHUNK_STORAGE_URL: 'http://coordinator-service:8080'
