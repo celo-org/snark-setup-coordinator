@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 
+import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 
@@ -23,6 +24,14 @@ export function initExpress({
     chunkStorage: ChunkStorage
 }): express.Application {
     const app = express()
+    const allowParticipants = authorize({
+        coordinator,
+        groups: ['verifierIds', 'contributorIds'],
+    })
+    const allowVerifiers = authorize({
+        coordinator,
+        groups: ['verifierIds'],
+    })
 
     app.get('/ceremony', (req, res) => {
         logger.info('GET /ceremony')
@@ -32,21 +41,27 @@ export function initExpress({
         })
     })
 
-    app.put('/ceremony', auth, bodyParser.json(), (req, res) => {
-        const ceremony = req.body
-        logger.info('PUT /ceremony')
-        try {
-            coordinator.setCeremony(ceremony)
-            res.json({
-                status: 'ok',
-            })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(409).json({ status: 'error', message: err.message })
-        }
-    })
+    app.put(
+        '/ceremony',
+        auth,
+        allowVerifiers,
+        bodyParser.json(),
+        (req, res) => {
+            const ceremony = req.body
+            logger.info('PUT /ceremony')
+            try {
+                coordinator.setCeremony(ceremony)
+                res.json({
+                    status: 'ok',
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(409).json({ status: 'error', message: err.message })
+            }
+        },
+    )
 
-    app.post('/chunks/:id/lock', auth, (req, res) => {
+    app.post('/chunks/:id/lock', auth, allowParticipants, (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
         logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
@@ -65,7 +80,7 @@ export function initExpress({
         }
     })
 
-    app.get('/chunks/:id/contribution', auth, (req, res) => {
+    app.get('/chunks/:id/contribution', auth, allowParticipants, (req, res) => {
         const participantId = req.participantId
         const chunkId = req.params.id
 
@@ -85,36 +100,41 @@ export function initExpress({
         })
     })
 
-    app.post('/chunks/:id/contribution', auth, async (req, res) => {
-        const participantId = req.participantId
-        const chunkId = req.params.id
+    app.post(
+        '/chunks/:id/contribution',
+        auth,
+        allowParticipants,
+        async (req, res) => {
+            const participantId = req.participantId
+            const chunkId = req.params.id
 
-        logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
-        const chunk = coordinator.getChunk(chunkId)
+            logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
+            const chunk = coordinator.getChunk(chunkId)
 
-        let url
-        try {
-            url = await chunkStorage.copyChunk({
-                chunk,
-                participantId,
-            })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(400).json({
-                status: 'error',
-                message: 'Unable to copy contribution',
-            })
-            return
-        }
+            let url
+            try {
+                url = await chunkStorage.copyChunk({
+                    chunk,
+                    participantId,
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({
+                    status: 'error',
+                    message: 'Unable to copy contribution',
+                })
+                return
+            }
 
-        try {
-            await coordinator.contributeChunk(chunkId, participantId, url)
-            res.json({ status: 'ok' })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(400).json({ status: 'error' })
-        }
-    })
+            try {
+                await coordinator.contributeChunk(chunkId, participantId, url)
+                res.json({ status: 'ok' })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error' })
+            }
+        },
+    )
 
     return app
 }
