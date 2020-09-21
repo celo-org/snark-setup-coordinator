@@ -14,5 +14,5 @@ if (process.env.LOG_LEVEL) {
 export const logger = Pino({
     name: 'coordinator-service',
     prettyPrint: true,
-    level
+    level,
 })
