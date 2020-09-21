@@ -2,6 +2,7 @@ import { Ceremony, ChunkData, LockedChunkData } from './ceremony'
 
 export interface Coordinator {
     getCeremony(): Ceremony
+    setCeremony(ceremony: Ceremony): void
     getChunk(chunkId: string): LockedChunkData
     tryLockChunk(chunkId: string, particpantId: string): boolean
     contributeChunk(

@@ -81,6 +81,54 @@ describe('app', () => {
         })
     })
 
+    describe('PUT /ceremony', () => {
+        it('updates ceremony', async () => {
+            let res
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+
+            const newCeremony = res.body.result
+            newCeremony.chunks[0].lockHolder = 'pat'
+
+            res = await chai
+                .request(app)
+                .put('/ceremony')
+                .set('authorization', 'dummy verifier0')
+                .send(newCeremony)
+            expect(res).to.have.status(200)
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+
+            newCeremony.version = 1
+            expect(res.body.result).to.deep.equal(newCeremony)
+        })
+
+        it('rejects invalid versions', async () => {
+            let res
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+
+            const originalCeremony = res.body.result
+            const newCeremony = JSON.parse(JSON.stringify(res.body.result))
+            newCeremony.version = 9999
+            newCeremony.chunks[0].lockHolder = 'pat'
+
+            res = await chai
+                .request(app)
+                .put('/ceremony')
+                .set('authorization', 'dummy verifier0')
+                .send(newCeremony)
+            expect(res).to.have.status(409)
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+            expect(res.body.result).to.deep.equal(originalCeremony)
+        })
+    })
+
     describe('GET /chunks/:id/lock', () => {
         it('locks unlocked chunk', async () => {
             const res = await chai

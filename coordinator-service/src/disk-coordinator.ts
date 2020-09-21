@@ -51,6 +51,16 @@ export class DiskCoordinator implements Coordinator {
         return chunk
     }
 
+    setCeremony(newCeremony: Ceremony): void {
+        const ceremony = this._readDb()
+        if (ceremony.version !== newCeremony.version) {
+            throw new Error(
+                `New ceremony is out of date: ${ceremony.version} vs ${newCeremony.version}`,
+            )
+        }
+        this._writeDb(newCeremony)
+    }
+
     getChunk(chunkId: string): LockedChunkData {
         const ceremony = this._readDb()
         return DiskCoordinator._getChunk(ceremony, chunkId)

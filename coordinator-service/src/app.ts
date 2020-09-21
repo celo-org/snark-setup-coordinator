@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser'
 import express from 'express'
 
 import { ChunkStorage, Coordinator } from './coordinator'
@@ -29,6 +30,20 @@ export function initExpress({
             result: coordinator.getCeremony(),
             status: 'ok',
         })
+    })
+
+    app.put('/ceremony', auth, bodyParser.json(), (req, res) => {
+        const ceremony = req.body
+        logger.info('PUT /ceremony')
+        try {
+            coordinator.setCeremony(ceremony)
+            res.json({
+                status: 'ok',
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(409).json({ status: 'error', message: err.message })
+        }
     })
 
     app.post('/chunks/:id/lock', auth, (req, res) => {
