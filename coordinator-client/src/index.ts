@@ -1,3 +1,4 @@
+import axios from 'axios'
 import dotenv from 'dotenv'
 import execa = require('execa')
 import fs from 'fs'
@@ -169,6 +170,42 @@ async function newChallenge(args): Promise<void> {
     }
 }
 
+async function httpAuth(args): Promise<void> {
+    process.stdout.write(
+        args.auth.getAuthorizationValue({
+            method: args.method,
+            path: args.path,
+        }),
+    )
+}
+
+async function ctl(args): Promise<void> {
+    const method = args.method
+    const path = args.path
+    const url = `${args.apiUrl.replace(/$\//, '')}/${path.replace(/^\//, '')}`
+    let data
+    if (args.data) {
+        data = JSON.parse(fs.readFileSync(args.data).toString())
+    }
+
+    const result = await axios({
+        method,
+        url,
+        data,
+        headers: {
+            Authorization: args.auth.getAuthorizationValue({
+                method,
+                path,
+            }),
+        },
+    })
+    if (result.headers['content-type'].includes('application/json')) {
+        console.log(JSON.stringify(result.data, null, 2))
+    } else {
+        console.log(result.statusText)
+    }
+}
+
 async function main(): Promise<void> {
     if (process.argv[2] === 'powersoftau') {
         await powersoftau()
@@ -242,6 +279,36 @@ async function main(): Promise<void> {
                 describe: 'Number of challenges',
             },
         })
+        .command('ctl', 'Control the coordinator-service', {
+            ...participateArgs,
+            method: {
+                type: 'string',
+                demand: true,
+                describe: 'HTTP method',
+            },
+            path: {
+                type: 'string',
+                demand: true,
+                describe: 'HTTP resource path',
+            },
+            data: {
+                type: 'string',
+                describe: 'JSON request body',
+            },
+        })
+        .command('http-auth', 'Print Authorization header to stdout', {
+            ...participateArgs,
+            method: {
+                type: 'string',
+                demand: true,
+                describe: 'HTTP method',
+            },
+            path: {
+                type: 'string',
+                demand: true,
+                describe: 'HTTP resource path',
+            },
+        })
         .command(
             'powersoftau',
             'Run built-in powersoftau command directly',
@@ -253,14 +320,14 @@ async function main(): Promise<void> {
         .strictCommands()
         .help().argv
 
-    logger.info('invoked with args %o', args)
+    logger.debug('invoked with args %o', args)
 
     const mode = args._[0]
     let powersoftauTmpFile
     if (!args.command) {
         powersoftauTmpFile = await extractPowersoftau()
         args.command = powersoftauTmpFile.name
-        logger.info(`using built-in powersoftau at ${args.command}`)
+        logger.debug(`using built-in powersoftau at ${args.command}`)
     }
 
     if (args.authType === 'celo') {
@@ -284,6 +351,10 @@ async function main(): Promise<void> {
             await verify(args)
         } else if (mode === 'new') {
             await newChallenge(args)
+        } else if (mode === 'http-auth') {
+            await httpAuth(args)
+        } else if (mode === 'ctl') {
+            await ctl(args)
         } else {
             logger.error(`Unexpected mode ${mode}`)
             process.exit(1)
