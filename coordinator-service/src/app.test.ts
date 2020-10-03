@@ -227,9 +227,8 @@ describe('app', () => {
             ).body.result
             const chunk = ceremony.chunks.find((chunk) => chunk.chunkId === '1')
             expect(chunk.lockHolder).to.equal(null)
-            expect(
-                new Date(chunk.metadata.lockHolderTime).getTime(),
-            ).to.not.equal(NaN)
+            const lockHolderTime = new Date(chunk.metadata.lockHolderTime)
+            expect(lockHolderTime).to.be.greaterThan(new Date(null))
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
             const contributedTime = new Date(
