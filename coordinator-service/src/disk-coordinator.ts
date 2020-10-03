@@ -3,6 +3,10 @@ import fs from 'fs'
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
 
+function timestamp(): string {
+    return new Date().toISOString()
+}
+
 export class DiskCoordinator implements Coordinator {
     dbPath: string
 
@@ -24,10 +28,25 @@ export class DiskCoordinator implements Coordinator {
                 return
             }
         }
+
         config = JSON.parse(JSON.stringify(config))
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {}
+
+        // Add metadata fields if they're missing.
+        for (const lockedChunk of config.chunks) {
+            lockedChunk.metadata = lockedChunk.metadata ?? {
+                lockHolderTime: null,
+            }
+            for (const contribution of lockedChunk.contributions) {
+                contribution.metadata = contribution.metadata ?? {
+                    contributedTime: null,
+                    verifiedTime: null,
+                }
+            }
+        }
+
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
@@ -99,6 +118,7 @@ export class DiskCoordinator implements Coordinator {
         }
 
         chunk.lockHolder = participantId
+        chunk.metadata.lockHolderTime = timestamp()
         this._writeDb(ceremony)
         return true
     }
@@ -123,8 +143,13 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
+            contribution.metadata.verifiedTime = timestamp()
         } else {
             chunk.contributions.push({
+                metadata: {
+                    contributedTime: timestamp(),
+                    verifiedTime: null,
+                },
                 contributorId: participantId,
                 contributedLocation: location,
                 verifierId: null,

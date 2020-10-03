@@ -227,6 +227,15 @@ describe('app', () => {
             ).body.result
             const chunk = ceremony.chunks.find((chunk) => chunk.chunkId === '1')
             expect(chunk.lockHolder).to.equal(null)
+            expect(
+                new Date(chunk.metadata.lockHolderTime).getTime(),
+            ).to.not.equal(NaN)
+            const contribution =
+                chunk.contributions[chunk.contributions.length - 1]
+            const contributedTime = new Date(
+                contribution.metadata.contributedTime,
+            )
+            expect(contributedTime).to.be.greaterThan(new Date(null))
         })
 
         it('sets verified flag for verified contributions', async () => {
@@ -247,6 +256,8 @@ describe('app', () => {
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
             expect(contribution.verified).to.equal(true)
+            const verifiedTime = new Date(contribution.metadata.verifiedTime)
+            expect(verifiedTime).to.be.greaterThan(new Date(null))
         })
     })
 })
