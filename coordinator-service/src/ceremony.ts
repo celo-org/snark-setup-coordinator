@@ -15,7 +15,16 @@ export interface LockedChunkData extends ChunkData {
     lockHolder: string
 }
 
+export interface CeremonyParameters {
+    provingSystem?: string
+    curveKind?: string
+    chunkSize?: number
+    batchSize?: number
+    power?: number
+}
+
 export interface Ceremony {
+    parameters: CeremonyParameters
     chunks: LockedChunkData[]
     contributorIds: string[]
     verifierIds: string[]
