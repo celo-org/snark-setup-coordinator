@@ -11,7 +11,8 @@ export class DiskCoordinator implements Coordinator {
         dbPath,
         force = false,
     }: {
-        config: Ceremony
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        config: any
         dbPath: string
         force?: boolean
     }): void {
@@ -23,6 +24,10 @@ export class DiskCoordinator implements Coordinator {
                 return
             }
         }
+        config = JSON.parse(JSON.stringify(config))
+
+        // Add parameters if they're falsy in the config
+        config.parameters = config.parameters || {}
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
