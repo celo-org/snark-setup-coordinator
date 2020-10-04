@@ -60,3 +60,7 @@ Copy one of the below to `.env`:
 
 * [local.env](./config/local.env) is a config for local development
 * [azure.env](./config/azure.env) is congig for storing contributions in Azure blob storage
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
