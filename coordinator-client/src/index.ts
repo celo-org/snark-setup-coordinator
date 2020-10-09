@@ -18,7 +18,7 @@ import {
     CeremonyContributor,
     CeremonyVerifier,
 } from './ceremony-participant'
-import { ChunkData } from './ceremony'
+import { ChunkData, CeremonyParameters } from './ceremony'
 import { DefaultChunkUploader } from './chunk-uploader'
 import { AuthCelo } from './auth-celo'
 import { AuthDummy } from './auth-dummy'
@@ -56,7 +56,10 @@ async function work({
     contributor,
 }: {
     client: CeremonyParticipant
-    contributor: (chunk: ChunkData) => ShellCommand
+    contributor: (
+        parameters: CeremonyParameters,
+        chunk: ChunkData,
+    ) => ShellCommand
 }): Promise<void> {
     const lockBackoffMsecs = 5000
 
@@ -75,7 +78,7 @@ async function work({
             logger.info(`locked chunk ${chunk.chunkId}`)
             try {
                 // TODO: pull up out of if and handle errors
-                const contribute = contributor(chunk)
+                const contribute = contributor(ceremony.parameters, chunk)
                 await contribute.load()
 
                 const contributionPath = await contribute.run()
@@ -110,9 +113,13 @@ async function contribute(args): Promise<void> {
         baseUrl,
         chunkUploader,
     })
-    const contributor = (chunkData: ChunkData): ShellContributor => {
+    const contributor = (
+        parameters: CeremonyParameters,
+        chunkData: ChunkData,
+    ): ShellContributor => {
         return new ShellContributor({
-            chunkData: chunkData,
+            parameters,
+            chunkData,
             contributorCommand: args.command,
             seedFile: args.seedFile,
         })
@@ -133,9 +140,13 @@ async function verify(args): Promise<void> {
         chunkUploader,
     })
 
-    const contributor = (chunkData: ChunkData): ShellVerifier => {
+    const contributor = (
+        parameters: CeremonyParameters,
+        chunkData: ChunkData,
+    ): ShellVerifier => {
         return new ShellVerifier({
-            chunkData: chunkData,
+            parameters,
+            chunkData,
             contributorCommand: args.command,
         })
     }
@@ -145,6 +156,7 @@ async function verify(args): Promise<void> {
 
 async function newChallenge(args): Promise<void> {
     const powersoftauNew = new PowersoftauNew({
+        parameters: {},
         contributorCommand: args.command,
         seedFile: args.seedFile,
     })

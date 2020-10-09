@@ -5,7 +5,7 @@ import path from 'path'
 import os from 'os'
 import tmp from 'tmp'
 
-import { ChunkData } from './ceremony'
+import { ChunkData, CeremonyParameters } from './ceremony'
 import { logger } from './logger'
 
 export interface ShellCommand {
@@ -78,17 +78,31 @@ abstract class Powersoftau {
     contributorCommand: string
     chunkData: ChunkData
 
+    provingSystem = 'groth16'
     curveKind = 'bw6'
     batchSize = 64
     chunkSize = 512
     power = 10
 
-    constructor({ contributorCommand }: { contributorCommand: string }) {
+    constructor({
+        parameters,
+        contributorCommand,
+    }: {
+        parameters: CeremonyParameters
+        contributorCommand: string
+    }) {
         this.contributorCommand = contributorCommand
+        this.provingSystem = parameters.provingSystem ?? this.provingSystem
+        this.curveKind = parameters.curveKind ?? this.curveKind
+        this.batchSize = parameters.batchSize ?? this.batchSize
+        this.chunkSize = parameters.chunkSize ?? this.chunkSize
+        this.power = parameters.power ?? this.power
     }
 
     _exec(...args: string[]): execa.ExecaChildProcess {
         const baseArgs = [
+            '--proving-system',
+            this.provingSystem,
             '--curve-kind',
             this.curveKind,
             '--batch-size',
@@ -117,12 +131,14 @@ export class PowersoftauNew extends Powersoftau {
 
     constructor({
         seedFile,
+        parameters,
         contributorCommand,
     }: {
         seedFile: string
+        parameters: CeremonyParameters
         contributorCommand: string
     }) {
-        super({ contributorCommand })
+        super({ parameters, contributorCommand })
         this.seedFile = seedFile
     }
 
@@ -152,12 +168,14 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
 
     constructor({
         chunkData,
+        parameters,
         contributorCommand,
     }: {
         chunkData: ChunkData
+        parameters: CeremonyParameters
         contributorCommand: string
     }) {
-        super({ contributorCommand })
+        super({ parameters, contributorCommand })
         this.chunkData = chunkData
     }
 
@@ -221,14 +239,16 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
 
     constructor({
         chunkData,
+        parameters,
         contributorCommand,
         seedFile,
     }: {
         chunkData: ChunkData
+        parameters: CeremonyParameters
         contributorCommand: string
         seedFile: string
     }) {
-        super({ contributorCommand })
+        super({ parameters, contributorCommand })
         this.seedFile = seedFile
         this.chunkData = chunkData
     }
