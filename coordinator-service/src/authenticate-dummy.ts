@@ -1,9 +1,9 @@
-/**
- * Middleware for development that authenticates any request with type 'dummy'
- */
-export function authDummy(req, res, next): void {
-    let participantId
-    try {
+import express = require('express')
+
+import { AuthenticateStrategy } from './authenticate'
+
+export class AuthenticateDummy implements AuthenticateStrategy {
+    verify(req: express.Request): string {
         if (!('authorization' in req.headers)) {
             throw new Error('Missing authorization header')
         }
@@ -16,16 +16,7 @@ export function authDummy(req, res, next): void {
                 `Unexpected authorization type ${authorizationType}`,
             )
         }
-        participantId = split[1]
-    } catch (error) {
-        res.status(400).json({
-            status: 'error',
-            message: error.message,
-        })
-        next(error)
-        return
+        const participantId = split[1]
+        return participantId
     }
-
-    req.participantId = participantId
-    next()
 }

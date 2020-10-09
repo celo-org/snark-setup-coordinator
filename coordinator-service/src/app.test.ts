@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http'
 import path from 'path'
 import tmp from 'tmp'
 
-import { authDummy } from './auth-dummy'
+import { AuthenticateDummy } from './authenticate-dummy'
 import { initExpress } from './app'
 import { Ceremony } from './ceremony'
 import { DiskCoordinator } from './disk-coordinator'
@@ -64,10 +64,13 @@ describe('app', () => {
         }
 
         DiskCoordinator.init({ config, dbPath, force: true })
-        const auth = authDummy
         chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
         coordinator = new DiskCoordinator({ dbPath })
-        app = initExpress({ auth, coordinator, chunkStorage })
+        app = initExpress({
+            authenticateStrategy: new AuthenticateDummy(),
+            coordinator,
+            chunkStorage,
+        })
     })
 
     after(() => {

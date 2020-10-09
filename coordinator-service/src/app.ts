@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 
+import { authenticate, AuthenticateStrategy } from './authenticate'
 import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
@@ -15,11 +16,11 @@ declare global {
 }
 
 export function initExpress({
-    auth,
+    authenticateStrategy,
     coordinator,
     chunkStorage,
 }: {
-    auth: (req, res, next) => void
+    authenticateStrategy: AuthenticateStrategy
     coordinator: Coordinator
     chunkStorage: ChunkStorage
 }): express.Application {
@@ -33,6 +34,8 @@ export function initExpress({
         groups: ['verifierIds'],
     })
 
+    const authenticateRequests = authenticate(authenticateStrategy)
+
     app.get('/ceremony', (req, res) => {
         logger.info('GET /ceremony')
         res.json({
@@ -43,7 +46,7 @@ export function initExpress({
 
     app.put(
         '/ceremony',
-        auth,
+        authenticateRequests,
         allowVerifiers,
         bodyParser.json(),
         (req, res) => {
@@ -61,48 +64,58 @@ export function initExpress({
         },
     )
 
-    app.post('/chunks/:id/lock', auth, allowParticipants, (req, res) => {
-        const participantId = req.participantId
-        const chunkId = req.params.id
-        logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
-        try {
-            const locked = coordinator.tryLockChunk(chunkId, participantId)
+    app.post(
+        '/chunks/:id/lock',
+        authenticateRequests,
+        allowParticipants,
+        (req, res) => {
+            const participantId = req.participantId
+            const chunkId = req.params.id
+            logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
+            try {
+                const locked = coordinator.tryLockChunk(chunkId, participantId)
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunkId,
+                        locked,
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+    app.get(
+        '/chunks/:id/contribution',
+        authenticateRequests,
+        allowParticipants,
+        (req, res) => {
+            const participantId = req.participantId
+            const chunkId = req.params.id
+
+            logger.info(`GET /chunks/${chunkId}/contribution ${participantId}`)
+            const chunk = coordinator.getChunk(chunkId)
+            const writeUrl = chunkStorage.getChunkWriteLocation({
+                chunk,
+                participantId,
+            })
             res.json({
                 status: 'ok',
                 result: {
                     chunkId,
-                    locked,
+                    participantId,
+                    writeUrl,
                 },
             })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(400).json({ status: 'error', message: err.message })
-        }
-    })
-
-    app.get('/chunks/:id/contribution', auth, allowParticipants, (req, res) => {
-        const participantId = req.participantId
-        const chunkId = req.params.id
-
-        logger.info(`GET /chunks/${chunkId}/contribution ${participantId}`)
-        const chunk = coordinator.getChunk(chunkId)
-        const writeUrl = chunkStorage.getChunkWriteLocation({
-            chunk,
-            participantId,
-        })
-        res.json({
-            status: 'ok',
-            result: {
-                chunkId,
-                participantId,
-                writeUrl,
-            },
-        })
-    })
+        },
+    )
 
     app.post(
         '/chunks/:id/contribution',
-        auth,
+        authenticateRequests,
         allowParticipants,
         async (req, res) => {
             const participantId = req.participantId

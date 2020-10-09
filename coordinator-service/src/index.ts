@@ -8,8 +8,10 @@ import {
     StorageSharedKeyCredential,
 } from '@azure/storage-blob'
 
-import { authCelo } from './auth-celo'
-import { authDummy } from './auth-dummy'
+import { authenticate } from './authenticate'
+import { AuthenticateCelo } from './authenticate-celo'
+import { AuthenticateDummy } from './authenticate-dummy'
+
 import { BlobChunkStorage } from './blob-chunk-storage'
 import { ChunkStorage } from './coordinator'
 import { DiskCoordinator } from './disk-coordinator'
@@ -18,6 +20,11 @@ import { initExpress } from './app'
 import { logger } from './logger'
 
 dotenv.config()
+
+const authenticateStrategies = {
+    celo: new AuthenticateCelo(),
+    dummy: new AuthenticateDummy(),
+}
 
 const httpArgs = {
     port: {
@@ -103,19 +110,17 @@ function http(args): void {
         })
     }
 
-    const auth = {
-        celo: authCelo,
-        dummy: authDummy,
-    }[args.authType]
-
+    const authenticateStrategy = authenticateStrategies[args.authType]
     const coordinator = new DiskCoordinator({ dbPath: args.dbFile })
-    const app = initExpress({ auth, coordinator, chunkStorage })
+    const app = initExpress({ authenticateStrategy, coordinator, chunkStorage })
 
     if (args.chunkStorageType === 'disk') {
+        const authenticateRequest = authenticate(authenticateStrategy)
+
         app.use(bodyParser.raw({ limit: '5mb' }))
         app.post(
             '/chunks/:chunkId/contribution/:version',
-            auth,
+            authenticateRequest,
             async (req, res) => {
                 const chunkId = req.params.chunkId
                 const version = req.params.version
