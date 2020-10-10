@@ -117,6 +117,7 @@ export function initExpress({
         '/chunks/:id/contribution',
         authenticateRequests,
         allowParticipants,
+        bodyParser.json(),
         async (req, res) => {
             const participantId = req.participantId
             const chunkId = req.params.id
@@ -140,7 +141,16 @@ export function initExpress({
             }
 
             try {
-                await coordinator.contributeChunk(chunkId, participantId, url)
+                const signature = req.body.signature
+                if (!signature) {
+                    throw new Error('Missing signature')
+                }
+                await coordinator.contributeChunk({
+                    chunkId,
+                    participantId,
+                    location: url,
+                    signature,
+                })
                 res.json({ status: 'ok' })
             } catch (err) {
                 logger.warn(err.message)

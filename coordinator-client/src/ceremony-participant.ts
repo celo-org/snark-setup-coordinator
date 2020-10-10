@@ -93,7 +93,15 @@ export abstract class CeremonyParticipant {
         return null
     }
 
-    async contributeChunk(chunkId: string, content: Buffer): Promise<void> {
+    async contributeChunk({
+        chunkId,
+        content,
+        signature,
+    }: {
+        chunkId: string
+        content: Buffer
+        signature: string
+    }): Promise<void> {
         const destinationMethod = 'GET'
         const destinationPath = `/chunks/${chunkId}/contribution`
         const writeUrl = (
@@ -116,6 +124,9 @@ export abstract class CeremonyParticipant {
         await this.axios({
             method: contributeMethod,
             url: contributePath,
+            data: {
+                signature,
+            },
             headers: {
                 Authorization: this.auth.getAuthorizationValue({
                     method: contributeMethod,
