@@ -1,4 +1,13 @@
+export interface ChunkContributionMetadata {
+    contributedTime: string
+    contributedLockHolderTime: string
+    verifiedTime: string
+    verifiedLockHolderTime: string
+}
+
 export interface ChunkContribution {
+    metadata: ChunkContributionMetadata
+
     contributorId: string
     contributedLocation: string
     verifierId: string
@@ -11,7 +20,13 @@ export interface ChunkData {
     contributions: ChunkContribution[]
 }
 
+export interface LockedChunkDataMetadata {
+    lockHolderTime: string
+}
+
 export interface LockedChunkData extends ChunkData {
+    metadata: LockedChunkDataMetadata
+
     lockHolder: string
 }
 

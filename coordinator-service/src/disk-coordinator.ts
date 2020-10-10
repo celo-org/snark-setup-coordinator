@@ -3,6 +3,10 @@ import fs from 'fs'
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
 
+function timestamp(): string {
+    return new Date().toISOString()
+}
+
 export class DiskCoordinator implements Coordinator {
     dbPath: string
 
@@ -24,10 +28,25 @@ export class DiskCoordinator implements Coordinator {
                 return
             }
         }
+
         config = JSON.parse(JSON.stringify(config))
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {}
+
+        // Add metadata fields if they're missing.
+        for (const lockedChunk of config.chunks) {
+            lockedChunk.metadata = lockedChunk.metadata ?? {
+                lockHolderTime: null,
+            }
+            for (const contribution of lockedChunk.contributions) {
+                contribution.metadata = contribution.metadata ?? {
+                    contributedTime: null,
+                    verifiedTime: null,
+                }
+            }
+        }
+
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
@@ -99,6 +118,7 @@ export class DiskCoordinator implements Coordinator {
         }
 
         chunk.lockHolder = participantId
+        chunk.metadata.lockHolderTime = timestamp()
         this._writeDb(ceremony)
         return true
     }
@@ -116,6 +136,7 @@ export class DiskCoordinator implements Coordinator {
                     `on chunk ${chunkId}`,
             )
         }
+        const now = timestamp()
         const verifier = ceremony.verifierIds.includes(participantId)
         if (verifier) {
             const contribution =
@@ -123,8 +144,17 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
+            contribution.metadata.verifiedTime = now
+            contribution.metadata.verifiedLockHolderTime =
+                chunk.metadata.lockHolderTime
         } else {
             chunk.contributions.push({
+                metadata: {
+                    contributedTime: now,
+                    contributedLockHolderTime: chunk.metadata.lockHolderTime,
+                    verifiedTime: null,
+                    verifiedLockHolderTime: null,
+                },
                 contributorId: participantId,
                 contributedLocation: location,
                 verifierId: null,
@@ -133,6 +163,7 @@ export class DiskCoordinator implements Coordinator {
             })
         }
         chunk.lockHolder = null
+        chunk.metadata.lockHolderTime = now
         this._writeDb(ceremony)
     }
 }
