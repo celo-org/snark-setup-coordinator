@@ -136,6 +136,7 @@ export class DiskCoordinator implements Coordinator {
                     `on chunk ${chunkId}`,
             )
         }
+        const now = timestamp()
         const verifier = ceremony.verifierIds.includes(participantId)
         if (verifier) {
             const contribution =
@@ -143,12 +144,16 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
-            contribution.metadata.verifiedTime = timestamp()
+            contribution.metadata.verifiedTime = now
+            contribution.metadata.verifiedLockHolderTime =
+                chunk.metadata.lockHolderTime
         } else {
             chunk.contributions.push({
                 metadata: {
-                    contributedTime: timestamp(),
+                    contributedTime: now,
+                    contributedLockHolderTime: chunk.metadata.lockHolderTime,
                     verifiedTime: null,
+                    verifiedLockHolderTime: null,
                 },
                 contributorId: participantId,
                 contributedLocation: location,
@@ -158,6 +163,7 @@ export class DiskCoordinator implements Coordinator {
             })
         }
         chunk.lockHolder = null
+        chunk.metadata.lockHolderTime = now
         this._writeDb(ceremony)
     }
 }
