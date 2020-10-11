@@ -1,8 +1,10 @@
 export interface ChunkContributionMetadata {
     contributedTime: string
     contributedLockHolderTime: string
+    contributedSignature: string
     verifiedTime: string
     verifiedLockHolderTime: string
+    verifiedSignature: string
 }
 
 export interface ChunkContribution {

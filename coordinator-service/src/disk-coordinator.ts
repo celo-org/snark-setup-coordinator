@@ -42,7 +42,11 @@ export class DiskCoordinator implements Coordinator {
             for (const contribution of lockedChunk.contributions) {
                 contribution.metadata = contribution.metadata ?? {
                     contributedTime: null,
+                    contributedLockHolderTime: null,
+                    contributedSignature: null,
                     verifiedTime: null,
+                    verifiedLockHolderTime: null,
+                    verifiedSignature: null,
                 }
             }
         }
@@ -123,11 +127,17 @@ export class DiskCoordinator implements Coordinator {
         return true
     }
 
-    async contributeChunk(
-        chunkId: string,
-        participantId: string,
-        location: string,
-    ): Promise<void> {
+    async contributeChunk({
+        chunkId,
+        participantId,
+        location,
+        signature,
+    }: {
+        chunkId: string
+        participantId: string
+        location: string
+        signature: string
+    }): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
         if (chunk.lockHolder !== participantId) {
@@ -144,6 +154,7 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
+            contribution.metadata.verifiedSignature = signature
             contribution.metadata.verifiedTime = now
             contribution.metadata.verifiedLockHolderTime =
                 chunk.metadata.lockHolderTime
@@ -152,8 +163,10 @@ export class DiskCoordinator implements Coordinator {
                 metadata: {
                     contributedTime: now,
                     contributedLockHolderTime: chunk.metadata.lockHolderTime,
+                    contributedSignature: signature,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
+                    verifiedSignature: null,
                 },
                 contributorId: participantId,
                 contributedLocation: location,

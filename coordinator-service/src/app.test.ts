@@ -195,6 +195,7 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/lock')
                 .set('authorization', 'dummy frank')
+                .send({ signature: 'dummy-signature' })
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
@@ -208,6 +209,7 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('authorization', 'dummy frank')
+                .send({ signature: 'dummy-signature' })
             expect(res).to.have.status(400)
         })
 
@@ -216,11 +218,13 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/lock')
                 .set('authorization', 'dummy frank')
+                .send({ signature: 'dummy-signature' })
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('authorization', 'dummy frank')
+                .send({ signature: 'dummy-signature' })
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')
@@ -242,11 +246,13 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/2/lock')
                 .set('authorization', 'dummy verifier0')
+                .send({ signature: 'dummy-signature' })
             expect(lockRes).to.have.status(200)
             const contributionRes = await chai
                 .request(app)
                 .post('/chunks/2/contribution')
                 .set('authorization', 'dummy verifier0')
+                .send({ signature: 'dummy-signature' })
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')

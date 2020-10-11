@@ -38,10 +38,18 @@ export async function worker({
                 const contribute = contributor(ceremony.parameters, chunk)
                 await contribute.load()
 
-                const contributionPath = await contribute.run()
-                logger.info('uploading contribution %s', contributionPath)
+                const { contributionPath, signature } = await contribute.run()
+                logger.info(
+                    'uploading contribution %s with signature',
+                    contributionPath,
+                    signature,
+                )
                 const content = fs.readFileSync(contributionPath)
-                await client.contributeChunk(chunk.chunkId, content)
+                await client.contributeChunk({
+                    chunkId: chunk.chunkId,
+                    content,
+                    signature,
+                })
 
                 contribute.cleanup()
             } catch (error) {

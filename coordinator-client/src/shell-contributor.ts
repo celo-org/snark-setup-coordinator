@@ -10,7 +10,7 @@ import { logger } from './logger'
 
 export interface ShellCommand {
     load(): Promise<void>
-    run(): Promise<string>
+    run(): Promise<{ contributionPath: string; signature: string }>
     cleanup(): void
 }
 
@@ -196,7 +196,7 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
         this.responseFile = responseFile
     }
 
-    async run(): Promise<string> {
+    async run(): Promise<{ contributionPath: string; signature: string }> {
         this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
         await this._exec(
@@ -210,7 +210,10 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
             '--new-challenge-fname',
             this.contributionFileName,
         )
-        return this.contributionFileName
+        return {
+            contributionPath: this.contributionFileName,
+            signature: 'dummy-signature',
+        }
     }
 
     // It isn't necessary to call this, but seems prudent to help keep disk
@@ -263,7 +266,7 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         this.challengeFile = challengeFile
     }
 
-    async run(): Promise<string> {
+    async run(): Promise<{ contributionPath: string; signature: string }> {
         this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
         await this._exec(
@@ -277,7 +280,10 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             '--response-fname',
             this.contributionFileName,
         )
-        return this.contributionFileName
+        return {
+            contributionPath: this.contributionFileName,
+            signature: 'dummy-signature',
+        }
     }
 
     // It isn't necessary to call this, but seems prudent to help keep disk
