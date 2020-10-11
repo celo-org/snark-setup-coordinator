@@ -20,6 +20,8 @@ jobs:
         working-directory: ${{ matrix.app }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Setup node
         uses: actions/setup-node@v1
         with:
@@ -32,8 +34,12 @@ jobs:
     name: E2E
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Setup node
         uses: actions/setup-node@v1
         with:
           node-version: 12
+      - uses: satackey/action-docker-layer-caching@v0.0.8
+        continue-on-error: true
       - run: node e2e/run-e2e-suite.js
