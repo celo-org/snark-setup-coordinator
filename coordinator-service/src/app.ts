@@ -141,15 +141,24 @@ export function initExpress({
             }
 
             try {
-                const signature = req.body.signature
-                if (!signature) {
-                    throw new Error('Missing signature')
+                const body = req.body
+                logger.info(body)
+                const data = body.data
+                const signature = body.signature
+                if (
+                    !authenticateStrategy.verifyMessage(
+                        data,
+                        signature,
+                        participantId,
+                    )
+                ) {
+                    throw new Error('Could not verify signed data')
                 }
                 await coordinator.contributeChunk({
                     chunkId,
                     participantId,
                     location: url,
-                    signature,
+                    body,
                 })
                 res.json({ status: 'ok' })
             } catch (err) {

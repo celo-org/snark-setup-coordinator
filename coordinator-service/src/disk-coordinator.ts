@@ -43,10 +43,10 @@ export class DiskCoordinator implements Coordinator {
                 contribution.metadata = contribution.metadata ?? {
                     contributedTime: null,
                     contributedLockHolderTime: null,
-                    contributedSignature: null,
+                    contributedData: null,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
-                    verifiedSignature: null,
+                    verifiedData: null,
                 }
             }
         }
@@ -131,12 +131,13 @@ export class DiskCoordinator implements Coordinator {
         chunkId,
         participantId,
         location,
-        signature,
+        body,
     }: {
         chunkId: string
         participantId: string
         location: string
-        signature: string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        body: any
     }): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
@@ -154,7 +155,7 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
-            contribution.metadata.verifiedSignature = signature
+            contribution.metadata.verifiedData = body
             contribution.metadata.verifiedTime = now
             contribution.metadata.verifiedLockHolderTime =
                 chunk.metadata.lockHolderTime
@@ -163,10 +164,10 @@ export class DiskCoordinator implements Coordinator {
                 metadata: {
                     contributedTime: now,
                     contributedLockHolderTime: chunk.metadata.lockHolderTime,
-                    contributedSignature: signature,
+                    contributedData: body,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
-                    verifiedSignature: null,
+                    verifiedData: null,
                 },
                 contributorId: participantId,
                 contributedLocation: location,

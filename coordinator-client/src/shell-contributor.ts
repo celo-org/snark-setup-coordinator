@@ -7,10 +7,13 @@ import tmp from 'tmp'
 
 import { ChunkData, CeremonyParameters } from './ceremony'
 import { logger } from './logger'
+import { ContributionData } from './contribution-data'
+import { VerificationData } from './verification-data'
 
 export interface ShellCommand {
     load(): Promise<void>
-    run(): Promise<{ contributionPath: string; signature: string }>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    run(): Promise<{ contributionPath: string; result: any }>
     cleanup(): void
 }
 
@@ -196,9 +199,13 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
         this.responseFile = responseFile
     }
 
-    async run(): Promise<{ contributionPath: string; signature: string }> {
+    async run(): Promise<{
+        contributionPath: string
+        result: VerificationData
+    }> {
         this.contributionFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
+        const startTime = new Date().getTime()
         await this._exec(
             '--chunk-index',
             chunkIndex,
@@ -210,9 +217,13 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
             '--new-challenge-fname',
             this.contributionFileName,
         )
+        const endTime = new Date().getTime()
+        const verificationTime = endTime - startTime
         return {
             contributionPath: this.contributionFileName,
-            signature: 'dummy-signature',
+            result: {
+                verificationTime,
+            },
         }
     }
 
@@ -238,6 +249,9 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
 export class ShellContributor extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     contributionFileName: string
+    currentAccumulatorHashFileName: string
+    contributionHashFileName: string
+
     seedFile: string
 
     constructor({
@@ -266,9 +280,16 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         this.challengeFile = challengeFile
     }
 
-    async run(): Promise<{ contributionPath: string; signature: string }> {
+    async run(): Promise<{
+        contributionPath: string
+        result: ContributionData
+    }> {
         this.contributionFileName = tmp.tmpNameSync()
+        this.currentAccumulatorHashFileName = tmp.tmpNameSync()
+        this.contributionHashFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
+
+        const startTime = new Date().getTime()
         await this._exec(
             '--seed',
             this.seedFile,
@@ -277,12 +298,28 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             'contribute',
             '--challenge-fname',
             this.challengeFile.name,
+            '--current-accumulator-hash-fname',
+            this.currentAccumulatorHashFileName,
             '--response-fname',
             this.contributionFileName,
+            '--contribution-hash-fname',
+            this.contributionHashFileName,
         )
+        const endTime = new Date().getTime()
+        const contributionTime = endTime - startTime
+        const currentAccumulatorHash = fs
+            .readFileSync(this.currentAccumulatorHashFileName)
+            .toString('hex')
+        const contributionHash = fs
+            .readFileSync(this.contributionHashFileName)
+            .toString('hex')
         return {
             contributionPath: this.contributionFileName,
-            signature: 'dummy-signature',
+            result: {
+                currentAccumulatorHash,
+                contributionHash,
+                contributionTime,
+            },
         }
     }
 
@@ -296,6 +333,14 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         if (this.contributionFileName) {
             forceUnlink(this.contributionFileName)
             this.contributionFileName = null
+        }
+        if (this.currentAccumulatorHashFileName) {
+            forceUnlink(this.currentAccumulatorHashFileName)
+            this.currentAccumulatorHashFileName = null
+        }
+        if (this.contributionHashFileName) {
+            forceUnlink(this.contributionHashFileName)
+            this.contributionHashFileName = null
         }
     }
 }

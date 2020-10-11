@@ -16,4 +16,10 @@ export class AuthDummy implements Auth {
     }): string {
         return `Dummy ${this.participantId}`
     }
+
+    signMessage(
+        message: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): string {
+        return ''
+    }
 }

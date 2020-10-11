@@ -1,10 +1,12 @@
 export interface ChunkContributionMetadata {
     contributedTime: string
     contributedLockHolderTime: string
-    contributedSignature: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    contributedData: any
     verifiedTime: string
     verifiedLockHolderTime: string
-    verifiedSignature: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    verifiedData: any
 }
 
 export interface ChunkContribution {
