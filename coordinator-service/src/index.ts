@@ -17,6 +17,7 @@ import { ChunkStorage } from './coordinator'
 import { DiskCoordinator } from './disk-coordinator'
 import { DiskChunkStorage } from './disk-chunk-storage'
 import { initExpress } from './app'
+import { initMetrics } from './metrics'
 import { logger } from './logger'
 
 dotenv.config()
@@ -29,6 +30,10 @@ const authenticateStrategies = {
 const httpArgs = {
     port: {
         default: 8080,
+        type: 'number',
+    },
+    'metrics-port': {
+        default: 9090,
         type: 'number',
     },
     'auth-type': {
@@ -147,7 +152,12 @@ function http(args): void {
     }
 
     app.listen(args.port, () => {
-        logger.info(`listening on ${args.port}`)
+        logger.info(`coordinator listening on ${args.port}`)
+    })
+
+    const metricsApp = initMetrics({ coordinator })
+    metricsApp.listen(args.metricsPort, () => {
+        logger.info(`metrics listening on ${args.metricsPort}`)
     })
 }
 
