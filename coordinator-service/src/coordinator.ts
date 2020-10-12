@@ -9,13 +9,13 @@ export interface Coordinator {
         chunkId,
         participantId,
         location,
-        body,
+        signedData,
     }: {
         chunkId: string
         participantId: string
         location: string
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        body: any
+        signedData: any
     }): Promise<void>
 }
 

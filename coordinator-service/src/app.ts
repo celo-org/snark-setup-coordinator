@@ -5,6 +5,11 @@ import { authenticate, AuthenticateStrategy } from './authenticate'
 import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
+import { SignedData } from './signed-data'
+
+function isSignedData(body: any): body is SignedData {
+    return body.data !== undefined && body.signature !== undefined
+}
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -142,7 +147,13 @@ export function initExpress({
 
             try {
                 const body = req.body
-                logger.info(body)
+                if (!isSignedData(body)) {
+                    throw new Error(
+                        `Body should have been signed data: ${JSON.stringify(
+                            body,
+                        )}`,
+                    )
+                }
                 const data = body.data
                 const signature = body.signature
                 if (
@@ -158,7 +169,7 @@ export function initExpress({
                     chunkId,
                     participantId,
                     location: url,
-                    body,
+                    signedData: body,
                 })
                 res.json({ status: 'ok' })
             } catch (err) {

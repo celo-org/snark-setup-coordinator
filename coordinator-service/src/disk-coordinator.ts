@@ -2,9 +2,31 @@ import fs from 'fs'
 
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
+import { SignedContributionData } from './contribution-data'
+import { SignedVerificationData } from './verification-data'
+import { sign } from 'crypto'
 
 function timestamp(): string {
     return new Date().toISOString()
+}
+
+function isContributorData(data: any): data is SignedContributionData {
+    return (
+        data.signature !== undefined &&
+        data.data !== undefined &&
+        data.data.challengeHash !== undefined &&
+        data.data.responseHash !== undefined
+    )
+}
+
+function isVerificationData(data: any): data is SignedVerificationData {
+    return (
+        data.signature !== undefined &&
+        data.data !== undefined &&
+        data.data.challengeHash !== undefined &&
+        data.data.responseHash !== undefined &&
+        data.data.newChallengeHash !== undefined
+    )
 }
 
 export class DiskCoordinator implements Coordinator {
@@ -131,13 +153,13 @@ export class DiskCoordinator implements Coordinator {
         chunkId,
         participantId,
         location,
-        body,
+        signedData,
     }: {
         chunkId: string
         participantId: string
         location: string
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        body: any
+        signedData: any
     }): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
@@ -150,21 +172,35 @@ export class DiskCoordinator implements Coordinator {
         const now = timestamp()
         const verifier = ceremony.verifierIds.includes(participantId)
         if (verifier) {
+            if (!isVerificationData(signedData)) {
+                throw new Error(
+                    `Data is not valid verification data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
-            contribution.metadata.verifiedData = body
+            contribution.metadata.verifiedData = signedData
             contribution.metadata.verifiedTime = now
             contribution.metadata.verifiedLockHolderTime =
                 chunk.metadata.lockHolderTime
         } else {
+            if (!isContributorData(signedData)) {
+                throw new Error(
+                    `Data is not valid contributor data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
             chunk.contributions.push({
                 metadata: {
                     contributedTime: now,
                     contributedLockHolderTime: chunk.metadata.lockHolderTime,
-                    contributedData: body,
+                    contributedData: signedData,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
                     verifiedData: null,

@@ -1,5 +1,5 @@
 export class ContributionData {
-    currentAccumulatorHash: string
-    contributionHash: string
+    challengeHash: string
+    responseHash: string
     contributionTime: number
 }

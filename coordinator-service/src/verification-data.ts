@@ -2,5 +2,9 @@ export class VerificationData {
     challengeHash: string
     responseHash: string
     newChallengeHash: string
-    verificationTime: number
+}
+
+export class SignedVerificationData {
+    data: VerificationData
+    signature: string
 }
