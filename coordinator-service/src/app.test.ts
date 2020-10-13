@@ -45,6 +45,16 @@ describe('app', () => {
                             verifiedLocation: '/some/location/1',
                             verifierId: 'verifier0',
                             verified: true,
+                            metadata: {
+                                verifiedData: {
+                                    data: {
+                                        challengeHash: 'dummy-hash',
+                                        responseHash: 'dummy-hash',
+                                        newChallengeHash: 'dummy-hash',
+                                    },
+                                    signature: 'dummy-signature',
+                                },
+                            },
                         },
                     ],
                 },
@@ -58,6 +68,16 @@ describe('app', () => {
                             verifierId: null,
                             verifiedLocation: null,
                             verified: false,
+                            metadata: {
+                                contributedData: {
+                                    data: {
+                                        challengeHash: 'dummy-hash',
+                                        responseHash: 'dummy-hash',
+                                        newChallengeHash: 'dummy-hash',
+                                    },
+                                    signature: 'dummy-signature',
+                                },
+                            },
                         },
                     ],
                 },
@@ -209,7 +229,10 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('authorization', 'dummy frank')
-                .send({ signature: 'dummy-signature' })
+                .send({
+                    data: { challengeHash: '', responseHash: '' },
+                    signature: 'dummy-signature',
+                })
             expect(res).to.have.status(400)
         })
 
@@ -224,7 +247,13 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/contribution')
                 .set('authorization', 'dummy frank')
-                .send({ signature: 'dummy-signature' })
+                .send({
+                    data: {
+                        challengeHash: 'dummy-hash',
+                        responseHash: 'dummy-hash',
+                    },
+                    signature: 'dummy-signature',
+                })
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')
@@ -241,6 +270,27 @@ describe('app', () => {
             expect(contributedTime).to.be.greaterThan(new Date(null))
         })
 
+        it('rejects contributions with wrong contribution hash', async () => {
+            const lockRes = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('authorization', 'dummy frank')
+                .send({ signature: 'dummy-signature' })
+            expect(lockRes).to.have.status(200)
+            const contributionRes = await chai
+                .request(app)
+                .post('/chunks/1/contribution')
+                .set('authorization', 'dummy frank')
+                .send({
+                    data: {
+                        challengeHash: 'dummy-hash-wrong',
+                        responseHash: 'dummy-hash',
+                    },
+                    signature: 'dummy-signature',
+                })
+            expect(contributionRes).to.have.status(400)
+        })
+
         it('sets verified flag for verified contributions', async () => {
             const lockRes = await chai
                 .request(app)
@@ -252,7 +302,14 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/2/contribution')
                 .set('authorization', 'dummy verifier0')
-                .send({ signature: 'dummy-signature' })
+                .send({
+                    data: {
+                        challengeHash: 'dummy-hash',
+                        responseHash: 'dummy-hash',
+                        newChallengeHash: 'dummy-hash',
+                    },
+                    signature: 'dummy-signature',
+                })
             expect(contributionRes).to.have.status(200)
             const ceremony: Ceremony = (
                 await chai.request(app).get('/ceremony')
@@ -263,6 +320,49 @@ describe('app', () => {
             expect(contribution.verified).to.equal(true)
             const verifiedTime = new Date(contribution.metadata.verifiedTime)
             expect(verifiedTime).to.be.greaterThan(new Date(null))
+        })
+
+        it('rejects verified flag with wrong contribution hash', async () => {
+            const lockRes = await chai
+                .request(app)
+                .post('/chunks/2/lock')
+                .set('authorization', 'dummy verifier0')
+                .send({ signature: 'dummy-signature' })
+            expect(lockRes).to.have.status(200)
+            const contributionRes = await chai
+                .request(app)
+                .post('/chunks/2/contribution')
+                .set('authorization', 'dummy verifier0')
+                .send({
+                    data: {
+                        challengeHash: 'dummy-hash-wrong',
+                        responseHash: 'dummy-hash',
+                        newChallengeHash: 'dummy-hash',
+                    },
+                    signature: 'dummy-signature',
+                })
+            expect(contributionRes).to.have.status(400)
+        })
+        it('rejects verified flag with wrong response hash', async () => {
+            const lockRes = await chai
+                .request(app)
+                .post('/chunks/2/lock')
+                .set('authorization', 'dummy verifier0')
+                .send({ signature: 'dummy-signature' })
+            expect(lockRes).to.have.status(200)
+            const contributionRes = await chai
+                .request(app)
+                .post('/chunks/2/contribution')
+                .set('authorization', 'dummy verifier0')
+                .send({
+                    data: {
+                        challengeHash: 'dummy-hash',
+                        responseHash: 'dummy-hash-wrong',
+                        newChallengeHash: 'dummy-hash',
+                    },
+                    signature: 'dummy-signature',
+                })
+            expect(contributionRes).to.have.status(400)
         })
     })
 })

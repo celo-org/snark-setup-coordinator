@@ -96,31 +96,73 @@ async function verify(args): Promise<void> {
 }
 
 async function newChallenge(args): Promise<void> {
+    const participantId = args.participantId
+    const baseUrl = args.apiUrl
+    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
+    const client = new CeremonyContributor({
+        auth: args.auth,
+        participantId,
+        baseUrl,
+        chunkUploader,
+    })
+    const ceremony = await client.getCeremony()
+
     const powersoftauNew = new PowersoftauNew({
-        parameters: {},
+        parameters: ceremony.parameters,
         contributorCommand: args.command,
         seedFile: args.seedFile,
     })
 
-    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
-
+    const chunks = []
     for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
         logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)
         const contributionPath = tmp.tmpNameSync()
-
+        const newChallengeHashPath = tmp.tmpNameSync()
         await powersoftauNew.run({
             chunkIndex,
             contributionPath,
+            newChallengeHashPath,
         })
+        const newChallengeHash = fs
+            .readFileSync(newChallengeHashPath)
+            .toString('hex')
+
         const url = `${args.apiUrl}/chunks/${chunkIndex}/contribution/0`
         await chunkUploader.upload({
             url,
             content: fs.readFileSync(contributionPath),
         })
         logger.info('uploaded %s', url)
+        logger.info('hash for chunk %d: %s', chunkIndex, newChallengeHash)
 
         fs.unlinkSync(contributionPath)
+        fs.unlinkSync(newChallengeHashPath)
+        const chunk = {
+            chunkId: chunkIndex,
+            lockHolder: null,
+            contributions: [
+                {
+                    contributorId: null,
+                    contributedLocation: null,
+                    verifierId: participantId,
+                    verifiedLocation: url,
+                    verified: true,
+                    metadata: {
+                        verifiedData: {
+                            data: {
+                                challengeHash: 'initial',
+                                responseHash: 'initial',
+                                newChallengeHash,
+                            },
+                            signature: 'initial',
+                        },
+                    },
+                },
+            ],
+        }
+        chunks.push(chunk)
     }
+    logger.info('new chunks: %s', JSON.stringify(chunks, null, 2))
 }
 
 async function httpAuth(args): Promise<void> {
@@ -225,7 +267,6 @@ async function main(): Promise<void> {
         .command('new', 'Create new challenges for a ceremony', {
             ...participateArgs,
             ...powersoftauArgs,
-            ...seedArgs,
             count: {
                 type: 'number',
                 demand: true,

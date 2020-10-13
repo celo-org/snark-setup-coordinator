@@ -148,9 +148,11 @@ export class PowersoftauNew extends Powersoftau {
     async run({
         chunkIndex,
         contributionPath,
+        newChallengeHashPath,
     }: {
         chunkIndex: number
         contributionPath: string
+        newChallengeHashPath: string
     }): Promise<void> {
         await this._exec(
             '--seed',
@@ -160,6 +162,8 @@ export class PowersoftauNew extends Powersoftau {
             'new',
             '--challenge-fname',
             contributionPath,
+            '--challenge-hash-fname',
+            newChallengeHashPath,
         )
     }
 }

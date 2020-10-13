@@ -4,28 +4,31 @@ import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
 import { SignedContributionData } from './contribution-data'
 import { SignedVerificationData } from './verification-data'
-import { sign } from 'crypto'
 
 function timestamp(): string {
     return new Date().toISOString()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isContributorData(data: any): data is SignedContributionData {
     return (
-        data.signature !== undefined &&
-        data.data !== undefined &&
-        data.data.challengeHash !== undefined &&
-        data.data.responseHash !== undefined
+        data != undefined &&
+        data.signature != undefined &&
+        data.data != undefined &&
+        data.data.challengeHash != undefined &&
+        data.data.responseHash != undefined
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isVerificationData(data: any): data is SignedVerificationData {
     return (
-        data.signature !== undefined &&
-        data.data !== undefined &&
-        data.data.challengeHash !== undefined &&
-        data.data.responseHash !== undefined &&
-        data.data.newChallengeHash !== undefined
+        data != undefined &&
+        data.signature != undefined &&
+        data.data != undefined &&
+        data.data.challengeHash != undefined &&
+        data.data.responseHash != undefined &&
+        data.data.newChallengeHash != undefined
     )
 }
 
@@ -181,6 +184,30 @@ export class DiskCoordinator implements Coordinator {
             }
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
+            const contributorSignedData = contribution.metadata.contributedData
+            if (!isContributorData(contributorSignedData)) {
+                throw new Error(
+                    `Data during verification is not valid contributor data: ${JSON.stringify(
+                        contributorSignedData,
+                    )}`,
+                )
+            }
+            if (
+                contributorSignedData.data.challengeHash !==
+                signedData.data.challengeHash
+            ) {
+                throw new Error(
+                    `During verification, contribution and verification challenge hashes were different: ${contributorSignedData.data.challengeHash} != ${signedData.data.challengeHash}`,
+                )
+            }
+            if (
+                contributorSignedData.data.responseHash !==
+                signedData.data.responseHash
+            ) {
+                throw new Error(
+                    `During verification, contribution and verification response hashes were different: ${contributorSignedData.data.responseHash} != ${signedData.data.responseHash}`,
+                )
+            }
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
@@ -194,6 +221,25 @@ export class DiskCoordinator implements Coordinator {
                     `Data is not valid contributor data: ${JSON.stringify(
                         signedData,
                     )}`,
+                )
+            }
+            const previousContribution =
+                chunk.contributions[chunk.contributions.length - 1]
+            const previousVerificationSignedData =
+                previousContribution.metadata.verifiedData
+            if (!isVerificationData(previousVerificationSignedData)) {
+                throw new Error(
+                    `During contribution, data is not valid verification data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
+            if (
+                signedData.data.challengeHash !==
+                previousVerificationSignedData.data.newChallengeHash
+            ) {
+                throw new Error(
+                    `During contribution, contribution and verification challenge hashes were different: ${signedData.data.challengeHash} != ${previousVerificationSignedData.data.newChallengeHash}`,
                 )
             }
             chunk.contributions.push({

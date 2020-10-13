@@ -7,8 +7,13 @@ import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 import { SignedData } from './signed-data'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isSignedData(body: any): body is SignedData {
-    return body.data !== undefined && body.signature !== undefined
+    return (
+        body != undefined &&
+        body.data != undefined &&
+        body.signature != undefined
+    )
 }
 
 declare global {
