@@ -234,7 +234,7 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
             this.newChallengeHashFileName,
         )
         const endTime = new Date().getTime()
-        const verificationTime = endTime - startTime
+        const verificationDuration = endTime - startTime
         const challengeHash = fs
             .readFileSync(this.challengeHashFileName)
             .toString('hex')
@@ -251,7 +251,7 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
                 challengeHash,
                 responseHash,
                 newChallengeHash,
-                verificationTime,
+                verificationDuration,
             },
         }
     }
@@ -347,7 +347,7 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             this.responseHashFileName,
         )
         const endTime = new Date().getTime()
-        const contributionTime = endTime - startTime
+        const contributionDuration = endTime - startTime
         const challengeHash = fs
             .readFileSync(this.challengeHashFileName)
             .toString('hex')
@@ -359,7 +359,7 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             result: {
                 challengeHash,
                 responseHash,
-                contributionTime,
+                contributionDuration,
             },
         }
     }

@@ -184,7 +184,7 @@ export class DiskCoordinator implements Coordinator {
             }
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
-            const contributorSignedData = contribution.metadata.contributedData
+            const contributorSignedData = contribution.contributedData
             if (!isContributorData(contributorSignedData)) {
                 throw new Error(
                     `Data during verification is not valid contributor data: ${JSON.stringify(
@@ -211,7 +211,7 @@ export class DiskCoordinator implements Coordinator {
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
-            contribution.metadata.verifiedData = signedData
+            contribution.verifiedData = signedData
             contribution.metadata.verifiedTime = now
             contribution.metadata.verifiedLockHolderTime =
                 chunk.metadata.lockHolderTime
@@ -226,7 +226,7 @@ export class DiskCoordinator implements Coordinator {
             const previousContribution =
                 chunk.contributions[chunk.contributions.length - 1]
             const previousVerificationSignedData =
-                previousContribution.metadata.verifiedData
+                previousContribution.verifiedData
             if (!isVerificationData(previousVerificationSignedData)) {
                 throw new Error(
                     `During contribution, data is not valid verification data: ${JSON.stringify(
@@ -246,16 +246,16 @@ export class DiskCoordinator implements Coordinator {
                 metadata: {
                     contributedTime: now,
                     contributedLockHolderTime: chunk.metadata.lockHolderTime,
-                    contributedData: signedData,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
-                    verifiedData: null,
                 },
                 contributorId: participantId,
                 contributedLocation: location,
+                contributedData: signedData,
                 verifierId: null,
                 verifiedLocation: null,
                 verified: false,
+                verifiedData: null,
             })
         }
         chunk.lockHolder = null

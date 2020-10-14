@@ -18,15 +18,13 @@
                     "verifierId": "verifier0",
                     "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.0",
                     "verified": true,
-                    "metadata": {
-                        "verifiedData": {
-                            "data": {
-                                "challengeHash": "initial",
-                                "responseHash": "initial",
-                                "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
-                            },
-                            "signature": "initial"
-                        }
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "initial",
+                            "responseHash": "initial",
+                            "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
+                        },
+                        "signature": "initial"
                     }
                 }
             ]
@@ -41,15 +39,13 @@
                     "verifierId": "verifier0",
                     "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/1.0",
                     "verified": true,
-                    "metadata": {
-                        "verifiedData": {
-                            "data": {
-                                "challengeHash": "initial",
-                                "responseHash": "initial",
-                                "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
-                            },
-                            "signature": "initial"
-                        }
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "initial",
+                            "responseHash": "initial",
+                            "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
+                        },
+                        "signature": "initial"
                     }
                 }
             ]
@@ -64,15 +60,13 @@
                     "verifierId": "verifier0",
                     "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/2.0",
                     "verified": true,
-                    "metadata": {
-                        "verifiedData": {
-                            "data": {
-                                "challengeHash": "initial",
-                                "responseHash": "initial",
-                                "newChallengeHash": "d110dc827710c1f19f0106f7dfd581dcd99630335b2e5cd23c6d5161d0a7a466c861bc4232a04481dc8ade0f694ce1a6c52bc98dada9c98e5b0e11383ef6926f"
-                            },
-                            "signature": "initial"
-                        }
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "initial",
+                            "responseHash": "initial",
+                            "newChallengeHash": "d110dc827710c1f19f0106f7dfd581dcd99630335b2e5cd23c6d5161d0a7a466c861bc4232a04481dc8ade0f694ce1a6c52bc98dada9c98e5b0e11383ef6926f"
+                        },
+                        "signature": "initial"
                     }
                 }
             ]
@@ -87,15 +81,13 @@
                     "verifierId": "verifier0",
                     "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/3.0",
                     "verified": true,
-                    "metadata": {
-                        "verifiedData": {
-                            "data": {
-                                "challengeHash": "initial",
-                                "responseHash": "initial",
-                                "newChallengeHash": "d884d4cf9d1d07f3e63ebbc1407084ae4ceb745bbe655a0ee950de5aaf6b279a6500d0710dbf2099a7c32b9020d29a83a82c24cc3259d144c17ef49a77c2919e"
-                            },
-                            "signature": "initial"
-                        }
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "initial",
+                            "responseHash": "initial",
+                            "newChallengeHash": "d884d4cf9d1d07f3e63ebbc1407084ae4ceb745bbe655a0ee950de5aaf6b279a6500d0710dbf2099a7c32b9020d29a83a82c24cc3259d144c17ef49a77c2919e"
+                        },
+                        "signature": "initial"
                     }
                 }
             ]

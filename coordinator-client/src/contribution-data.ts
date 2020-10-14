@@ -1,5 +1,5 @@
 export class ContributionData {
     challengeHash: string
     responseHash: string
-    contributionTime: number
+    contributionDuration: number
 }

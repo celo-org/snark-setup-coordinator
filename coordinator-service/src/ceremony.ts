@@ -1,12 +1,8 @@
 export interface ChunkContributionMetadata {
     contributedTime: string
     contributedLockHolderTime: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    contributedData: any
     verifiedTime: string
     verifiedLockHolderTime: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    verifiedData: any
 }
 
 export interface ChunkContribution {
@@ -14,9 +10,13 @@ export interface ChunkContribution {
 
     contributorId: string
     contributedLocation: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    contributedData: any
     verifierId: string
     verifiedLocation: string
     verified: boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    verifiedData: any
 }
 
 export interface ChunkData {

@@ -45,15 +45,13 @@ describe('app', () => {
                             verifiedLocation: '/some/location/1',
                             verifierId: 'verifier0',
                             verified: true,
-                            metadata: {
-                                verifiedData: {
-                                    data: {
-                                        challengeHash: 'dummy-hash',
-                                        responseHash: 'dummy-hash',
-                                        newChallengeHash: 'dummy-hash',
-                                    },
-                                    signature: 'dummy-signature',
+                            verifiedData: {
+                                data: {
+                                    challengeHash: 'dummy-hash',
+                                    responseHash: 'dummy-hash',
+                                    newChallengeHash: 'dummy-hash',
                                 },
+                                signature: 'dummy-signature',
                             },
                         },
                     ],
@@ -65,19 +63,17 @@ describe('app', () => {
                         {
                             contributorId: 'pat',
                             contributedLocation: '/some/location/2',
+                            contributedData: {
+                                data: {
+                                    challengeHash: 'dummy-hash',
+                                    responseHash: 'dummy-hash',
+                                    newChallengeHash: 'dummy-hash',
+                                },
+                                signature: 'dummy-signature',
+                            },
                             verifierId: null,
                             verifiedLocation: null,
                             verified: false,
-                            metadata: {
-                                contributedData: {
-                                    data: {
-                                        challengeHash: 'dummy-hash',
-                                        responseHash: 'dummy-hash',
-                                        newChallengeHash: 'dummy-hash',
-                                    },
-                                    signature: 'dummy-signature',
-                                },
-                            },
                         },
                     ],
                 },
