@@ -1,5 +1,5 @@
 import express = require('express')
-import { verifySignature } from '@celo/utils/lib/signatureUtils'
+import { verifySignature, hashMessage } from '@celo/utils/lib/signatureUtils'
 
 import { AuthenticateStrategy } from './authenticate'
 
@@ -44,6 +44,8 @@ export class AuthenticateCelo implements AuthenticateStrategy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     verifyMessage(data: any, signature: string, address: string): boolean {
         const message = JSON.stringify(data)
+        const hash = hashMessage(message)
+        console.log('hash: ', hash, message.length)
         return verifySignature(message, signature, address)
     }
 }

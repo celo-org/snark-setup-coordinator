@@ -43,6 +43,7 @@ export async function worker({
                 const signature = client.auth.signMessage(
                     JSON.stringify(result),
                 )
+                logger.info(`signing: %s`, JSON.stringify(result))
                 const signedContributionData: SignedData = {
                     data: result,
                     signature,

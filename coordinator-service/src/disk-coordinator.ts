@@ -2,34 +2,11 @@ import fs from 'fs'
 
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
-import { SignedContributionData } from './contribution-data'
-import { SignedVerificationData } from './verification-data'
+import { isContributorData } from './contribution-data'
+import { isVerificationData } from './verification-data'
 
 function timestamp(): string {
     return new Date().toISOString()
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isContributorData(data: any): data is SignedContributionData {
-    return (
-        data != undefined &&
-        data.signature != undefined &&
-        data.data != undefined &&
-        data.data.challengeHash != undefined &&
-        data.data.responseHash != undefined
-    )
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isVerificationData(data: any): data is SignedVerificationData {
-    return (
-        data != undefined &&
-        data.signature != undefined &&
-        data.data != undefined &&
-        data.data.challengeHash != undefined &&
-        data.data.responseHash != undefined &&
-        data.data.newChallengeHash != undefined
-    )
 }
 
 export class DiskCoordinator implements Coordinator {
@@ -57,7 +34,13 @@ export class DiskCoordinator implements Coordinator {
         config = JSON.parse(JSON.stringify(config))
 
         // Add parameters if they're falsy in the config
-        config.parameters = config.parameters || {}
+        config.parameters = config.parameters || {
+            provingSystem: 'groth16',
+            curveKind: 'bw6',
+            batchSize: 64,
+            chunkSize: 512,
+            power: 10,
+        }
 
         // Add metadata fields if they're missing.
         for (const lockedChunk of config.chunks) {

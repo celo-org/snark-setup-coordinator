@@ -5,16 +5,7 @@ import { authenticate, AuthenticateStrategy } from './authenticate'
 import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
-import { SignedData } from './signed-data'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isSignedData(body: any): body is SignedData {
-    return (
-        body != undefined &&
-        body.data != undefined &&
-        body.signature != undefined
-    )
-}
+import { isSignedData } from './signed-data'
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
