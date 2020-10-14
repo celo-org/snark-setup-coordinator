@@ -1,0 +1,3 @@
+[submodule "coordinator-client/snark-setup"]
+	path = coordinator-client/snark-setup
+	url = https://github.com/celo-org/snark-setup

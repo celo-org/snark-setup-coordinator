@@ -117,3 +117,6 @@ dist
 
 # pkg out-path
 pkg
+
+# powersoftau binaries
+powersoftau
