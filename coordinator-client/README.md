@@ -42,6 +42,13 @@ Build:
 npm run build
 ```
 
+Build powersoftau binaries (requires Docker):
+
+```
+cd coordinator-client
+./build_binaries.sh
+```
+
 ### Testing
 
 Set `COORDINATOR_PARTICIPANT_ID` and contribute:
