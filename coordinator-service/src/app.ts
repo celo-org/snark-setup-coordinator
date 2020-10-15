@@ -150,8 +150,7 @@ export function initExpress({
                         )}`,
                     )
                 }
-                const data = body.data
-                const signature = body.signature
+                const { data, signature } = body
                 if (
                     !authenticateStrategy.verifyMessage(
                         data,

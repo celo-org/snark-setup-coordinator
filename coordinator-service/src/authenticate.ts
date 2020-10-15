@@ -6,8 +6,7 @@ export interface AuthenticateStrategy {
      */
 
     verify(req: express.Request): string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    verifyMessage(data: any, signature: string, address: string): boolean
+    verifyMessage(data: object, signature: string, address: string): boolean
 }
 
 export function authenticate(

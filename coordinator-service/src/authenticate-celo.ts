@@ -41,11 +41,9 @@ export class AuthenticateCelo implements AuthenticateStrategy {
         const participantId = address
         return participantId
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    verifyMessage(data: any, signature: string, address: string): boolean {
+    verifyMessage(data: object, signature: string, address: string): boolean {
         const message = JSON.stringify(data)
         const hash = hashMessage(message)
-        console.log('hash: ', hash, message.length)
         return verifySignature(message, signature, address)
     }
 }

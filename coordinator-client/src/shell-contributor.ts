@@ -12,8 +12,7 @@ import { VerificationData } from './verification-data'
 
 export interface ShellCommand {
     load(): Promise<void>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    run(): Promise<{ contributionPath: string; result: any }>
+    run(): Promise<{ contributionPath: string; result: object }>
     cleanup(): void
 }
 

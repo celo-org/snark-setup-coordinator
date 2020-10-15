@@ -14,8 +14,7 @@ export interface Coordinator {
         chunkId: string
         participantId: string
         location: string
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        signedData: any
+        signedData: object
     }): Promise<void>
 }
 

@@ -7,19 +7,18 @@ export const challengeHashLength = 128
 export const responseHashLength = 128
 export const newChallengeHashLength = 128
 
-export class VerificationData {
-    challengeHash: string
-    responseHash: string
-    newChallengeHash: string
-}
-
-export class SignedVerificationData {
-    data: VerificationData
+export interface SignedVerificationData {
+    data: {
+        challengeHash: string
+        responseHash: string
+        newChallengeHash: string
+    }
     signature: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isVerificationData(data: any): data is SignedVerificationData {
+export function isVerificationData(
+    data: object,
+): data is SignedVerificationData {
     const schema = Joi.object({
         data: Joi.object({
             challengeHash: Joi.string().length(challengeHashLength).required(),

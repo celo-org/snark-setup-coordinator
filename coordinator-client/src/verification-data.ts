@@ -1,4 +1,4 @@
-export class VerificationData {
+export interface VerificationData {
     challengeHash: string
     responseHash: string
     newChallengeHash: string

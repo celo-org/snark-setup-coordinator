@@ -144,8 +144,7 @@ export class DiskCoordinator implements Coordinator {
         chunkId: string
         participantId: string
         location: string
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        signedData: any
+        signedData: object
     }): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)

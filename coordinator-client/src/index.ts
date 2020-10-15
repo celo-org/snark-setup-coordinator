@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { Method } from 'axios'
 import dotenv from 'dotenv'
 import execa = require('execa')
 import fs from 'fs'
@@ -13,11 +13,12 @@ import {
     ShellVerifier,
 } from './shell-contributor'
 import { CeremonyContributor, CeremonyVerifier } from './ceremony-participant'
-import { ChunkData, CeremonyParameters } from './ceremony'
+import { LockedChunkData, ChunkData, CeremonyParameters } from './ceremony'
 import { DefaultChunkUploader } from './chunk-uploader'
 import { AuthCelo } from './auth-celo'
 import { AuthDummy } from './auth-dummy'
 import { worker } from './worker'
+import { Auth } from './auth'
 
 dotenv.config()
 tmp.setGracefulCleanup()
@@ -43,15 +44,24 @@ async function powersoftau(): Promise<void> {
     }
 }
 
-async function contribute(args): Promise<void> {
-    const participantId = args.participantId
-    const baseUrl = args.apiUrl
-
-    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
+async function contribute({
+    participantId,
+    apiUrl,
+    auth,
+    command,
+    seedFile,
+}: {
+    participantId: string
+    apiUrl: string
+    auth: Auth
+    command: string
+    seedFile: string
+}): Promise<void> {
+    const chunkUploader = new DefaultChunkUploader({ auth: auth })
     const client = new CeremonyContributor({
-        auth: args.auth,
+        auth,
         participantId,
-        baseUrl,
+        baseUrl: apiUrl,
         chunkUploader,
     })
     const contributor = (
@@ -61,23 +71,30 @@ async function contribute(args): Promise<void> {
         return new ShellContributor({
             parameters,
             chunkData,
-            contributorCommand: args.command,
-            seedFile: args.seedFile,
+            contributorCommand: command,
+            seedFile: seedFile,
         })
     }
 
     await worker({ client, contributor })
 }
 
-async function verify(args): Promise<void> {
-    const participantId = args.participantId
-    const baseUrl = args.apiUrl
-
-    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
+async function verify({
+    participantId,
+    apiUrl,
+    auth,
+    command,
+}: {
+    participantId: string
+    apiUrl: string
+    auth: Auth
+    command: string
+}): Promise<void> {
+    const chunkUploader = new DefaultChunkUploader({ auth })
     const client = new CeremonyVerifier({
-        auth: args.auth,
+        auth,
         participantId,
-        baseUrl,
+        baseUrl: apiUrl,
         chunkUploader,
     })
 
@@ -88,34 +105,46 @@ async function verify(args): Promise<void> {
         return new ShellVerifier({
             parameters,
             chunkData,
-            contributorCommand: args.command,
+            contributorCommand: command,
         })
     }
 
     await worker({ client, contributor })
 }
 
-async function newChallenge(args): Promise<void> {
-    const participantId = args.participantId
-    const baseUrl = args.apiUrl
-    const chunkUploader = new DefaultChunkUploader({ auth: args.auth })
+async function newChallenge({
+    participantId,
+    apiUrl,
+    auth,
+    command,
+    seedFile,
+    count,
+}: {
+    participantId: string
+    apiUrl: string
+    auth: Auth
+    command: string
+    seedFile: string
+    count: number
+}): Promise<void> {
+    const chunkUploader = new DefaultChunkUploader({ auth })
     const client = new CeremonyContributor({
-        auth: args.auth,
+        auth,
         participantId,
-        baseUrl,
+        baseUrl: apiUrl,
         chunkUploader,
     })
     const ceremony = await client.getCeremony()
 
     const powersoftauNew = new PowersoftauNew({
         parameters: ceremony.parameters,
-        contributorCommand: args.command,
-        seedFile: args.seedFile,
+        contributorCommand: command,
+        seedFile: seedFile,
     })
 
     const chunks = []
-    for (let chunkIndex = 0; chunkIndex < args.count; chunkIndex++) {
-        logger.info(`creating challenge ${chunkIndex + 1} of ${args.count}`)
+    for (let chunkIndex = 0; chunkIndex < count; chunkIndex++) {
+        logger.info(`creating challenge ${chunkIndex + 1} of ${count}`)
         const contributionPath = tmp.tmpNameSync()
         const newChallengeHashPath = tmp.tmpNameSync()
         await powersoftauNew.run({
@@ -127,7 +156,7 @@ async function newChallenge(args): Promise<void> {
             .readFileSync(newChallengeHashPath)
             .toString('hex')
 
-        const url = `${args.apiUrl}/chunks/${chunkIndex}/contribution/0`
+        const url = `${apiUrl}/chunks/${chunkIndex}/contribution/0`
         await chunkUploader.upload({
             url,
             content: fs.readFileSync(contributionPath),
@@ -137,8 +166,8 @@ async function newChallenge(args): Promise<void> {
 
         fs.unlinkSync(contributionPath)
         fs.unlinkSync(newChallengeHashPath)
-        const chunk = {
-            chunkId: chunkIndex,
+        const chunk: LockedChunkData = {
+            chunkId: chunkIndex.toString(),
             lockHolder: null,
             contributions: [
                 {
@@ -147,40 +176,69 @@ async function newChallenge(args): Promise<void> {
                     verifierId: participantId,
                     verifiedLocation: url,
                     verified: true,
-                    metadata: {
-                        verifiedData: {
-                            data: {
-                                challengeHash: 'initial',
-                                responseHash: 'initial',
-                                newChallengeHash,
-                            },
-                            signature: 'initial',
+                    verifiedData: {
+                        data: {
+                            challengeHash:
+                                '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            responseHash:
+                                '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            newChallengeHash,
                         },
+                        signature:
+                            '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                     },
+                    metadata: {
+                        contributedTime: null,
+                        contributedLockHolderTime: null,
+                        verifiedTime: null,
+                        verifiedLockHolderTime: null,
+                    },
+                    contributedData: null,
                 },
             ],
+            metadata: {
+                lockHolderTime: null,
+            },
         }
         chunks.push(chunk)
     }
     logger.info('new chunks: %s', JSON.stringify(chunks, null, 2))
 }
 
-async function httpAuth(args): Promise<void> {
+async function httpAuth({
+    auth,
+    method,
+    path,
+}: {
+    auth: Auth
+    method: string
+    path: string
+}): Promise<void> {
     process.stdout.write(
-        args.auth.getAuthorizationValue({
-            method: args.method,
-            path: args.path,
+        auth.getAuthorizationValue({
+            method: method,
+            path: path,
         }),
     )
 }
 
-async function ctl(args): Promise<void> {
-    const method = args.method
-    const path = args.path
-    const url = `${args.apiUrl.replace(/$\//, '')}/${path.replace(/^\//, '')}`
+async function ctl({
+    apiUrl,
+    auth,
+    method,
+    path,
+    dataPath,
+}: {
+    apiUrl: string
+    auth: Auth
+    method: Method
+    path: string
+    dataPath: string
+}): Promise<void> {
+    const url = `${apiUrl.replace(/$\//, '')}/${path.replace(/^\//, '')}`
     let data
-    if (args.data) {
-        data = JSON.parse(fs.readFileSync(args.data).toString())
+    if (dataPath) {
+        data = JSON.parse(fs.readFileSync(dataPath).toString())
     }
 
     const result = await axios({
@@ -188,7 +246,7 @@ async function ctl(args): Promise<void> {
         url,
         data,
         headers: {
-            Authorization: args.auth.getAuthorizationValue({
+            Authorization: auth.getAuthorizationValue({
                 method,
                 path,
             }),

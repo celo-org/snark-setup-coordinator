@@ -10,13 +10,11 @@ export interface ChunkContribution {
 
     contributorId: string
     contributedLocation: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    contributedData: any
+    contributedData: object
     verifierId: string
     verifiedLocation: string
     verified: boolean
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    verifiedData: any
+    verifiedData: object
 }
 
 export interface ChunkData {

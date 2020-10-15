@@ -19,8 +19,8 @@ export class AuthenticateDummy implements AuthenticateStrategy {
         const participantId = split[1]
         return participantId
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    verifyMessage(data: any, signature: string, address: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    verifyMessage(data: object, signature: string, address: string): boolean {
         return true
     }
 }
