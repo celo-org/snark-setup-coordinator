@@ -1,4 +1,5 @@
 import Pino from 'pino'
+import fs from 'fs'
 
 const runningMocha = typeof global.it === 'function'
 
@@ -11,8 +12,13 @@ if (process.env.LOG_LEVEL) {
     level = 'info'
 }
 
-export const logger = Pino({
-    name: 'coordinator-service',
-    prettyPrint: true,
-    level,
-})
+export const logFile = fs.createWriteStream('snark-setup.log')
+
+export const logger = Pino(
+    {
+        name: 'coordinator-service',
+        prettyPrint: true,
+        level,
+    },
+    logFile,
+)

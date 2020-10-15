@@ -4,9 +4,10 @@ import fs from 'fs'
 import path from 'path'
 import os from 'os'
 import tmp from 'tmp'
+import { PassThrough } from 'stream'
 
 import { ChunkData, CeremonyParameters } from './ceremony'
-import { logger } from './logger'
+import { logger, logFile } from './logger'
 import { ContributionData } from './contribution-data'
 import { VerificationData } from './verification-data'
 
@@ -122,8 +123,10 @@ abstract class Powersoftau {
         logger.info([this.contributorCommand, ...powersoftauArgs].join(' '))
         const subprocess = execa(this.contributorCommand, powersoftauArgs)
 
-        subprocess.stdout.pipe(process.stdout)
-        subprocess.stderr.pipe(process.stderr)
+        const stdoutPassThrough = new PassThrough(logFile)
+        subprocess.stdout.pipe(stdoutPassThrough)
+        const stderrPassThrough = new PassThrough(logFile)
+        subprocess.stderr.pipe(stderrPassThrough)
         return subprocess
     }
 }
