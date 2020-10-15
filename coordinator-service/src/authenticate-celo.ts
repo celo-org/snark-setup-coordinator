@@ -43,7 +43,6 @@ export class AuthenticateCelo implements AuthenticateStrategy {
     }
     verifyMessage(data: object, signature: string, address: string): boolean {
         const message = JSON.stringify(data)
-        const hash = hashMessage(message)
         return verifySignature(message, signature, address)
     }
 }
