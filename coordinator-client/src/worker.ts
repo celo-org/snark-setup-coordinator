@@ -3,6 +3,7 @@ import { ChunkData, CeremonyParameters } from './ceremony'
 import { CeremonyParticipant } from './ceremony-participant'
 import { ShellCommand } from './shell-contributor'
 import { logger } from './logger'
+import { SignedData } from './signed-data'
 
 function sleep(msec): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, msec))
@@ -38,17 +39,25 @@ export async function worker({
                 const contribute = contributor(ceremony.parameters, chunk)
                 await contribute.load()
 
-                const { contributionPath, signature } = await contribute.run()
-                logger.info(
-                    'uploading contribution %s with signature',
-                    contributionPath,
+                const { contributionPath, result } = await contribute.run()
+                const signature = client.auth.signMessage(
+                    JSON.stringify(result),
+                )
+                logger.info(`signing: %s`, JSON.stringify(result))
+                const signedContributionData: SignedData = {
+                    data: result,
                     signature,
+                }
+                logger.info(
+                    'uploading contribution %s with data %s',
+                    contributionPath,
+                    JSON.stringify(signedContributionData),
                 )
                 const content = fs.readFileSync(contributionPath)
                 await client.contributeChunk({
                     chunkId: chunk.chunkId,
                     content,
-                    signature,
+                    signedData: signedContributionData,
                 })
 
                 contribute.cleanup()

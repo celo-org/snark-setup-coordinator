@@ -6,4 +6,5 @@ export interface Auth {
         method: string
         path: string
     }): string
+    signMessage(message: string): string
 }

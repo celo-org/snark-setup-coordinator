@@ -1,5 +1,5 @@
 import express = require('express')
-import { verifySignature } from '@celo/utils/lib/signatureUtils'
+import { verifySignature, hashMessage } from '@celo/utils/lib/signatureUtils'
 
 import { AuthenticateStrategy } from './authenticate'
 
@@ -40,5 +40,9 @@ export class AuthenticateCelo implements AuthenticateStrategy {
         }
         const participantId = address
         return participantId
+    }
+    verifyMessage(data: object, signature: string, address: string): boolean {
+        const message = JSON.stringify(data)
+        return verifySignature(message, signature, address)
     }
 }

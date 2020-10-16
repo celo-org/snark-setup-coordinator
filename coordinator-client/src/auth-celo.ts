@@ -28,12 +28,17 @@ export class AuthCelo implements Auth {
         path: string
     }): string {
         const message = `${method.toLowerCase()} ${path.toLowerCase()}`
+        const serializedSignature = this.signMessage(message)
+        return `Celo ${this.address}:${serializedSignature}`
+    }
+
+    signMessage(message: string): string {
         const signature = SignatureUtils.signMessage(
             message,
             this.privateKey,
             this.address,
         )
         const serializedSignature = SignatureUtils.serializeSignature(signature)
-        return `Celo ${this.address}:${serializedSignature}`
+        return serializedSignature
     }
 }

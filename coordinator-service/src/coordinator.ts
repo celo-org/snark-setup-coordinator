@@ -9,12 +9,12 @@ export interface Coordinator {
         chunkId,
         participantId,
         location,
-        signature,
+        signedData,
     }: {
         chunkId: string
         participantId: string
         location: string
-        signature: string
+        signedData: object
     }): Promise<void>
 }
 

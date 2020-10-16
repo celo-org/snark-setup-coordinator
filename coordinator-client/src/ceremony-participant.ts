@@ -5,6 +5,7 @@ import { Auth } from './auth'
 import { ChunkData, LockedChunkData, Ceremony } from './ceremony'
 import { ChunkUploader } from './chunk-uploader'
 import { logger } from './logger'
+import { SignedData } from './signed-data'
 
 export abstract class CeremonyParticipant {
     auth: Auth
@@ -96,11 +97,11 @@ export abstract class CeremonyParticipant {
     async contributeChunk({
         chunkId,
         content,
-        signature,
+        signedData,
     }: {
         chunkId: string
         content: Buffer
-        signature: string
+        signedData: SignedData
     }): Promise<void> {
         const destinationMethod = 'GET'
         const destinationPath = `/chunks/${chunkId}/contribution`
@@ -124,9 +125,7 @@ export abstract class CeremonyParticipant {
         await this.axios({
             method: contributeMethod,
             url: contributePath,
-            data: {
-                signature,
-            },
+            data: signedData,
             headers: {
                 Authorization: this.auth.getAuthorizationValue({
                     method: contributeMethod,

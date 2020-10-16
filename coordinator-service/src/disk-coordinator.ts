@@ -2,6 +2,8 @@ import fs from 'fs'
 
 import { Coordinator } from './coordinator'
 import { Ceremony, LockedChunkData } from './ceremony'
+import { isContributorData } from './contribution-data'
+import { isVerificationData } from './verification-data'
 
 function timestamp(): string {
     return new Date().toISOString()
@@ -32,7 +34,13 @@ export class DiskCoordinator implements Coordinator {
         config = JSON.parse(JSON.stringify(config))
 
         // Add parameters if they're falsy in the config
-        config.parameters = config.parameters || {}
+        config.parameters = config.parameters || {
+            provingSystem: 'groth16',
+            curveKind: 'bw6',
+            batchSize: 64,
+            chunkSize: 512,
+            power: 10,
+        }
 
         // Add metadata fields if they're missing.
         for (const lockedChunk of config.chunks) {
@@ -43,10 +51,10 @@ export class DiskCoordinator implements Coordinator {
                 contribution.metadata = contribution.metadata ?? {
                     contributedTime: null,
                     contributedLockHolderTime: null,
-                    contributedSignature: null,
+                    contributedData: null,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
-                    verifiedSignature: null,
+                    verifiedData: null,
                 }
             }
         }
@@ -131,12 +139,12 @@ export class DiskCoordinator implements Coordinator {
         chunkId,
         participantId,
         location,
-        signature,
+        signedData,
     }: {
         chunkId: string
         participantId: string
         location: string
-        signature: string
+        signedData: object
     }): Promise<void> {
         const ceremony = this._readDb()
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
@@ -149,30 +157,87 @@ export class DiskCoordinator implements Coordinator {
         const now = timestamp()
         const verifier = ceremony.verifierIds.includes(participantId)
         if (verifier) {
+            if (!isVerificationData(signedData)) {
+                throw new Error(
+                    `Data is not valid verification data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
             const contribution =
                 chunk.contributions[chunk.contributions.length - 1]
+            const contributorSignedData = contribution.contributedData
+            if (!isContributorData(contributorSignedData)) {
+                throw new Error(
+                    `Data during verification is not valid contributor data: ${JSON.stringify(
+                        contributorSignedData,
+                    )}`,
+                )
+            }
+            if (
+                contributorSignedData.data.challengeHash !==
+                signedData.data.challengeHash
+            ) {
+                throw new Error(
+                    `During verification, contribution and verification challenge hashes were different: ${contributorSignedData.data.challengeHash} != ${signedData.data.challengeHash}`,
+                )
+            }
+            if (
+                contributorSignedData.data.responseHash !==
+                signedData.data.responseHash
+            ) {
+                throw new Error(
+                    `During verification, contribution and verification response hashes were different: ${contributorSignedData.data.responseHash} != ${signedData.data.responseHash}`,
+                )
+            }
             contribution.verifierId = participantId
             contribution.verifiedLocation = location
             contribution.verified = true
-            contribution.metadata.verifiedSignature = signature
+            contribution.verifiedData = signedData
             contribution.metadata.verifiedTime = now
             contribution.metadata.verifiedLockHolderTime =
                 chunk.metadata.lockHolderTime
         } else {
+            if (!isContributorData(signedData)) {
+                throw new Error(
+                    `Data is not valid contributor data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
+            const previousContribution =
+                chunk.contributions[chunk.contributions.length - 1]
+            const previousVerificationSignedData =
+                previousContribution.verifiedData
+            if (!isVerificationData(previousVerificationSignedData)) {
+                throw new Error(
+                    `During contribution, data is not valid verification data: ${JSON.stringify(
+                        signedData,
+                    )}`,
+                )
+            }
+            if (
+                signedData.data.challengeHash !==
+                previousVerificationSignedData.data.newChallengeHash
+            ) {
+                throw new Error(
+                    `During contribution, contribution and verification challenge hashes were different: ${signedData.data.challengeHash} != ${previousVerificationSignedData.data.newChallengeHash}`,
+                )
+            }
             chunk.contributions.push({
                 metadata: {
                     contributedTime: now,
                     contributedLockHolderTime: chunk.metadata.lockHolderTime,
-                    contributedSignature: signature,
                     verifiedTime: null,
                     verifiedLockHolderTime: null,
-                    verifiedSignature: null,
                 },
                 contributorId: participantId,
                 contributedLocation: location,
+                contributedData: signedData,
                 verifierId: null,
                 verifiedLocation: null,
                 verified: false,
+                verifiedData: null,
             })
         }
         chunk.lockHolder = null

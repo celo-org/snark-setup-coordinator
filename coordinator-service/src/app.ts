@@ -5,6 +5,7 @@ import { authenticate, AuthenticateStrategy } from './authenticate'
 import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
+import { isSignedData } from './signed-data'
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -141,15 +142,29 @@ export function initExpress({
             }
 
             try {
-                const signature = req.body.signature
-                if (!signature) {
-                    throw new Error('Missing signature')
+                const body = req.body
+                if (!isSignedData(body)) {
+                    throw new Error(
+                        `Body should have been signed data: ${JSON.stringify(
+                            body,
+                        )}`,
+                    )
+                }
+                const { data, signature } = body
+                if (
+                    !authenticateStrategy.verifyMessage(
+                        data,
+                        signature,
+                        participantId,
+                    )
+                ) {
+                    throw new Error('Could not verify signed data')
                 }
                 await coordinator.contributeChunk({
                     chunkId,
                     participantId,
                     location: url,
-                    signature,
+                    signedData: body,
                 })
                 res.json({ status: 'ok' })
             } catch (err) {

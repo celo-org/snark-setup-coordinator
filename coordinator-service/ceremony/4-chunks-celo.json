@@ -1,48 +1,95 @@
 {
-  "version": 0,
-  "contributorIds": ["0xEC60b9a43529c12CA83Af466D8A6F8444392D47C"],
-  "verifierIds": ["0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5"],
-  "chunks": [
-    {
-      "chunkId": "0",
-      "lockHolder": null,
-      "contributions": [{
-        "contributorId": null,
-        "contributedLocation": null,
-        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-        "verifiedLocation": "http://localhost:8080/chunks/0/contribution/0",
-        "verified": true
-      }]
-    }, {
-      "chunkId": "1",
-      "lockHolder": null,
-      "contributions": [{
-        "contributorId": null,
-        "contributedLocation": null,
-        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-        "verifiedLocation": "http://localhost:8080/chunks/1/contribution/0",
-        "verified": true
-      }]
-    }, {
-      "chunkId": "2",
-      "lockHolder": null,
-      "contributions": [{
-        "contributorId": null,
-        "contributedLocation": null,
-        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-        "verifiedLocation": "http://localhost:8080/chunks/2/contribution/0",
-        "verified": true
-      }]
-    }, {
-      "chunkId": "3",
-      "lockHolder": null,
-      "contributions": [{
-        "contributorId": null,
-        "contributedLocation": null,
-        "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-        "verifiedLocation": "http://localhost:8080/chunks/3/contribution/0",
-        "verified": true
-      }]
-    }
-  ]
+    "version": 0,
+    "contributorIds": [
+        "0xEC60b9a43529c12CA83Af466D8A6F8444392D47C"
+    ],
+    "verifierIds": [
+        "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5"
+    ],
+    "chunks": [
+        {
+            "chunkId": "0",
+            "lockHolder": null,
+            "contributions": [
+                {
+                    "contributorId": null,
+                    "contributedLocation": null,
+                    "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+                    "verifiedLocation": "http://localhost:8080/chunks/0/contribution/0",
+                    "verified": true,
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "responseHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
+                        },
+                        "signature": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                }
+            ]
+        },
+        {
+            "chunkId": "1",
+            "lockHolder": null,
+            "contributions": [
+                {
+                    "contributorId": null,
+                    "contributedLocation": null,
+                    "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+                    "verifiedLocation": "http://localhost:8080/chunks/1/contribution/0",
+                    "verified": true,
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "responseHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "newChallengeHash": "614619e69b5b7ecb5b92d7e902454527d9f452e2552edc076d5a496ef9c9ab4ef13b59dbc5d57b44ccb5a56f0a3a244794394dae6942d25cea1486ac43d966b1"
+                        },
+                        "signature": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                }
+            ]
+        },
+        {
+            "chunkId": "2",
+            "lockHolder": null,
+            "contributions": [
+                {
+                    "contributorId": null,
+                    "contributedLocation": null,
+                    "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+                    "verifiedLocation": "http://localhost:8080/chunks/2/contribution/0",
+                    "verified": true,
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "responseHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "newChallengeHash": "d110dc827710c1f19f0106f7dfd581dcd99630335b2e5cd23c6d5161d0a7a466c861bc4232a04481dc8ade0f694ce1a6c52bc98dada9c98e5b0e11383ef6926f"
+                        },
+                        "signature": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                }
+            ]
+        },
+        {
+            "chunkId": "3",
+            "lockHolder": null,
+            "contributions": [
+                {
+                    "contributorId": null,
+                    "contributedLocation": null,
+                    "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
+                    "verifiedLocation": "http://localhost:8080/chunks/3/contribution/0",
+                    "verified": true,
+                    "verifiedData": {
+                        "data": {
+                            "challengeHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "responseHash": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "newChallengeHash": "d884d4cf9d1d07f3e63ebbc1407084ae4ceb745bbe655a0ee950de5aaf6b279a6500d0710dbf2099a7c32b9020d29a83a82c24cc3259d144c17ef49a77c2919e"
+                        },
+                        "signature": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                }
+            ]
+        }
+    ]
 }

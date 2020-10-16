@@ -7,10 +7,12 @@ import tmp from 'tmp'
 
 import { ChunkData, CeremonyParameters } from './ceremony'
 import { logger } from './logger'
+import { ContributionData } from './contribution-data'
+import { VerificationData } from './verification-data'
 
 export interface ShellCommand {
     load(): Promise<void>
-    run(): Promise<{ contributionPath: string; signature: string }>
+    run(): Promise<{ contributionPath: string; result: object }>
     cleanup(): void
 }
 
@@ -145,9 +147,11 @@ export class PowersoftauNew extends Powersoftau {
     async run({
         chunkIndex,
         contributionPath,
+        newChallengeHashPath,
     }: {
         chunkIndex: number
         contributionPath: string
+        newChallengeHashPath: string
     }): Promise<void> {
         await this._exec(
             '--seed',
@@ -157,6 +161,8 @@ export class PowersoftauNew extends Powersoftau {
             'new',
             '--challenge-fname',
             contributionPath,
+            '--challenge-hash-fname',
+            newChallengeHashPath,
         )
     }
 }
@@ -165,6 +171,9 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     responseFile: tmp.FileResult
     contributionFileName: string
+    challengeHashFileName: string
+    responseHashFileName: string
+    newChallengeHashFileName: string
 
     constructor({
         chunkData,
@@ -196,23 +205,53 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
         this.responseFile = responseFile
     }
 
-    async run(): Promise<{ contributionPath: string; signature: string }> {
+    async run(): Promise<{
+        contributionPath: string
+        result: VerificationData
+    }> {
         this.contributionFileName = tmp.tmpNameSync()
+        this.challengeHashFileName = tmp.tmpNameSync()
+        this.responseHashFileName = tmp.tmpNameSync()
+        this.newChallengeHashFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
+        const startTime = new Date().getTime()
         await this._exec(
             '--chunk-index',
             chunkIndex,
             'verify-and-transform-pok-and-correctness',
             '--challenge-fname',
             this.challengeFile.name,
+            '--challenge-hash-fname',
+            this.challengeHashFileName,
             '--response-fname',
             this.responseFile.name,
+            '--response-hash-fname',
+            this.responseHashFileName,
             '--new-challenge-fname',
             this.contributionFileName,
+            '--new-challenge-hash-fname',
+            this.newChallengeHashFileName,
         )
+        const endTime = new Date().getTime()
+        const verificationDuration = endTime - startTime
+        const challengeHash = fs
+            .readFileSync(this.challengeHashFileName)
+            .toString('hex')
+        const responseHash = fs
+            .readFileSync(this.responseHashFileName)
+            .toString('hex')
+        const newChallengeHash = fs
+            .readFileSync(this.newChallengeHashFileName)
+            .toString('hex')
+
         return {
             contributionPath: this.contributionFileName,
-            signature: 'dummy-signature',
+            result: {
+                challengeHash,
+                responseHash,
+                newChallengeHash,
+                verificationDuration,
+            },
         }
     }
 
@@ -231,6 +270,18 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
             forceUnlink(this.contributionFileName)
             this.contributionFileName = null
         }
+        if (this.challengeHashFileName) {
+            forceUnlink(this.challengeHashFileName)
+            this.challengeHashFileName = null
+        }
+        if (this.responseHashFileName) {
+            forceUnlink(this.responseHashFileName)
+            this.responseHashFileName = null
+        }
+        if (this.newChallengeHashFileName) {
+            forceUnlink(this.newChallengeHashFileName)
+            this.newChallengeHashFileName = null
+        }
     }
 }
 
@@ -238,6 +289,9 @@ export class ShellVerifier extends Powersoftau implements ShellCommand {
 export class ShellContributor extends Powersoftau implements ShellCommand {
     challengeFile: tmp.FileResult
     contributionFileName: string
+    challengeHashFileName: string
+    responseHashFileName: string
+
     seedFile: string
 
     constructor({
@@ -266,9 +320,16 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         this.challengeFile = challengeFile
     }
 
-    async run(): Promise<{ contributionPath: string; signature: string }> {
+    async run(): Promise<{
+        contributionPath: string
+        result: ContributionData
+    }> {
         this.contributionFileName = tmp.tmpNameSync()
+        this.challengeHashFileName = tmp.tmpNameSync()
+        this.responseHashFileName = tmp.tmpNameSync()
         const chunkIndex = this.chunkData.chunkId
+
+        const startTime = new Date().getTime()
         await this._exec(
             '--seed',
             this.seedFile,
@@ -277,12 +338,28 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
             'contribute',
             '--challenge-fname',
             this.challengeFile.name,
+            '--challenge-hash-fname',
+            this.challengeHashFileName,
             '--response-fname',
             this.contributionFileName,
+            '--response-hash-fname',
+            this.responseHashFileName,
         )
+        const endTime = new Date().getTime()
+        const contributionDuration = endTime - startTime
+        const challengeHash = fs
+            .readFileSync(this.challengeHashFileName)
+            .toString('hex')
+        const responseHash = fs
+            .readFileSync(this.responseHashFileName)
+            .toString('hex')
         return {
             contributionPath: this.contributionFileName,
-            signature: 'dummy-signature',
+            result: {
+                challengeHash,
+                responseHash,
+                contributionDuration,
+            },
         }
     }
 
@@ -296,6 +373,14 @@ export class ShellContributor extends Powersoftau implements ShellCommand {
         if (this.contributionFileName) {
             forceUnlink(this.contributionFileName)
             this.contributionFileName = null
+        }
+        if (this.challengeHashFileName) {
+            forceUnlink(this.challengeHashFileName)
+            this.challengeHashFileName = null
+        }
+        if (this.responseHashFileName) {
+            forceUnlink(this.responseHashFileName)
+            this.responseHashFileName = null
         }
     }
 }

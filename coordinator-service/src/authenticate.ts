@@ -6,6 +6,7 @@ export interface AuthenticateStrategy {
      */
 
     verify(req: express.Request): string
+    verifyMessage(data: object, signature: string, address: string): boolean
 }
 
 export function authenticate(
