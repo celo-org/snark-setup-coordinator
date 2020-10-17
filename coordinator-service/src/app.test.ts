@@ -31,6 +31,7 @@ describe('app', () => {
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
             version: 0,
+            maxLocks: 1,
             parameters: {},
             contributorIds: ['frank', 'becky'],
             verifierIds: ['verifier0'],
@@ -82,6 +83,31 @@ describe('app', () => {
                             verifierId: null,
                             verifiedLocation: null,
                             verified: false,
+                        },
+                    ],
+                },
+                {
+                    chunkId: '3',
+                    lockHolder: null,
+                    contributions: [
+                        {
+                            contributorId: 'pat',
+                            contributedLocation: '/some/location/2',
+                            contributedData: {
+                                data: {
+                                    challengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    responseHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    newChallengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                },
+                                signature:
+                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            },
+                            verifierId: null,
+                            verifiedLocation: null,
+                            verified: true,
                         },
                     ],
                 },
@@ -196,6 +222,77 @@ describe('app', () => {
                 .set('authorization', 'dummy verifier0')
             expect(res).to.have.status(200)
             expect(res.body.result.locked).to.equal(false)
+        })
+
+        it('accepts locks <= max locks and rejects otherwise', async () => {
+            let res
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+
+            const newCeremony = res.body.result
+            newCeremony.maxLocks = 2
+
+            res = await chai
+                .request(app)
+                .put('/ceremony')
+                .set('authorization', 'dummy verifier0')
+                .send(newCeremony)
+            expect(res).to.have.status(200)
+
+            res = await chai.request(app).get('/ceremony')
+            expect(res).to.have.status(200)
+            expect(res.body.result.maxLocks).to.equal(2)
+
+            res = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.locked).to.equal(true)
+
+            res = await chai
+                .request(app)
+                .post('/chunks/3/lock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.locked).to.equal(true)
+
+            res = await chai
+                .request(app)
+                .post('/chunks/3/lock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(400)
+        })
+    })
+
+    describe('GET /chunks/:id/unlock', () => {
+        it('unlocks locked chunk', async () => {
+            let res
+
+            res = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.chunkId).to.equal('1')
+            expect(res.body.result.locked).to.equal(true)
+
+            res = await chai
+                .request(app)
+                .post('/chunks/1/unlock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.chunkId).to.equal('1')
+            expect(res.body.result.unlocked).to.equal(true)
+        })
+
+        it('returns 400 if participant does not hold lock', async () => {
+            const res = await chai
+                .request(app)
+                .post('/chunks/1/unlock')
+                .set('authorization', 'dummy frank')
+            expect(res).to.have.status(400)
         })
     })
 

@@ -101,7 +101,7 @@ export class DiskCoordinator implements Coordinator {
     }
 
     tryLockChunk(chunkId: string, participantId: string): boolean {
-        const holding = this.db.chunks.find(
+        const holding = this.db.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
         if (holding) {
@@ -129,6 +129,19 @@ export class DiskCoordinator implements Coordinator {
         chunk.metadata.lockHolderTime = timestamp()
         this._writeDb()
         return true
+    }
+
+    tryUnlockChunk(chunkId: string, participantId: string): boolean {
+        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
+        if (chunk.lockHolder !== participantId) {
+            throw new Error(
+                `${participantId} does not hold lock on chunk ${chunkId}`,
+            )
+        }
+
+        chunk.lockHolder = null
+        chunk.metadata.lockHolderTime = timestamp()
+        this._writeDb()
     }
 
     async contributeChunk({
