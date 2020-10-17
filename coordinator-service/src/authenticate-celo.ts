@@ -1,5 +1,5 @@
 import express = require('express')
-import { verifySignature, hashMessage } from '@celo/utils/lib/signatureUtils'
+import { verifySignature } from '@celo/utils/lib/signatureUtils'
 
 import { AuthenticateStrategy } from './authenticate'
 
