@@ -116,7 +116,7 @@ function http(args): void {
     }
 
     const authenticateStrategy = authenticateStrategies[args.authType]
-    const coordinator = new DiskCoordinator({ dbPath: args.dbFiles })
+    const coordinator = new DiskCoordinator({ dbPath: args.dbFile })
     const app = initExpress({ authenticateStrategy, coordinator, chunkStorage })
 
     if (args.chunkStorageType === 'disk') {
