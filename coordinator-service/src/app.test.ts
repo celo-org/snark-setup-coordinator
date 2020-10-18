@@ -31,6 +31,7 @@ describe('app', () => {
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
             version: 0,
+            maxLocks: 1,
             parameters: {},
             contributorIds: ['frank', 'becky'],
             verifierIds: ['verifier0'],
