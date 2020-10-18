@@ -5,6 +5,7 @@ export interface Coordinator {
     setCeremony(ceremony: Ceremony): void
     getChunk(chunkId: string): LockedChunkData
     tryLockChunk(chunkId: string, particpantId: string): boolean
+    tryUnlockChunk(chunkId: string, particpantId: string): boolean
     contributeChunk({
         chunkId,
         participantId,

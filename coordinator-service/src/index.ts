@@ -66,6 +66,11 @@ const httpArgs = {
         type: 'string',
         describe: 'Azure container name to write contributions to',
     },
+    'max-locks': {
+        default: 3,
+        type: 'number',
+        describe: 'the maximum amount of locks a participant can hold',
+    },
 }
 
 const dbArgs = {
@@ -116,7 +121,7 @@ function http(args): void {
     }
 
     const authenticateStrategy = authenticateStrategies[args.authType]
-    const coordinator = new DiskCoordinator({ dbPath: args.dbFile })
+    const coordinator = new DiskCoordinator({ dbPath: args.dbFile, maxLocks: args.maxLocks })
     const app = initExpress({ authenticateStrategy, coordinator, chunkStorage })
 
     if (args.chunkStorageType === 'disk') {

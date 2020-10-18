@@ -89,6 +89,32 @@ export function initExpress({
         },
     )
 
+    app.post(
+        '/chunks/:id/unlock',
+        authenticateRequests,
+        allowParticipants,
+        (req, res) => {
+            const participantId = req.participantId
+            const chunkId = req.params.id
+            logger.info(`POST /chunks/${chunkId}/unlock ${participantId}`)
+            try {
+                const locked = coordinator.tryUnlockChunk(chunkId, participantId)
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunkId,
+                        locked,
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+
+
     app.get(
         '/chunks/:id/contribution',
         authenticateRequests,

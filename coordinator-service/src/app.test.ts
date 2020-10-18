@@ -90,7 +90,7 @@ describe('app', () => {
 
         DiskCoordinator.init({ config, dbPath, force: true })
         chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
-        coordinator = new DiskCoordinator({ dbPath })
+        coordinator = new DiskCoordinator({ dbPath, maxLocks: 1 })
         app = initExpress({
             authenticateStrategy: new AuthenticateDummy(),
             coordinator,

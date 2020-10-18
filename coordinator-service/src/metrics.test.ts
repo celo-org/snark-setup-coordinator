@@ -59,7 +59,7 @@ describe('metrics', () => {
         }
 
         DiskCoordinator.init({ config, dbPath, force: true })
-        coordinator = new DiskCoordinator({ dbPath })
+        coordinator = new DiskCoordinator({ dbPath, maxLocks: 1 })
         metricsApp = initMetrics({
             coordinator,
         })

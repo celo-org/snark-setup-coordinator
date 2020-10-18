@@ -11,6 +11,7 @@ function timestamp(): string {
 
 export class DiskCoordinator implements Coordinator {
     dbPath: string
+    maxLocks: number
 
     static init({
         config,
@@ -62,8 +63,9 @@ export class DiskCoordinator implements Coordinator {
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
-    constructor({ dbPath }: { dbPath: string }) {
+    constructor({ dbPath, maxLocks }: { dbPath: string, maxLocks: number }) {
         this.dbPath = dbPath
+        this.maxLocks = maxLocks
     }
 
     _readDb(): Ceremony {
@@ -105,12 +107,12 @@ export class DiskCoordinator implements Coordinator {
     tryLockChunk(chunkId: string, participantId: string): boolean {
         const ceremony = this._readDb()
 
-        const holding = ceremony.chunks.find(
+        const holding = ceremony.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
-        if (holding) {
+        if (holding.length >= this.maxLocks) {
             throw new Error(
-                `${participantId} already holds lock on chunk ${holding.chunkId}`,
+                `${participantId} already holds too many locks on chunk ${chunkId}`,
             )
         }
 
@@ -131,6 +133,22 @@ export class DiskCoordinator implements Coordinator {
 
         chunk.lockHolder = participantId
         chunk.metadata.lockHolderTime = timestamp()
+        this._writeDb(ceremony)
+        return true
+    }
+
+    tryUnlockChunk(chunkId: string, participantId: string): boolean {
+        const ceremony = this._readDb()
+
+        const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
+        if (chunk.lockHolder !== participantId) {
+            throw new Error(
+                `${participantId} does not hold lock on chunk ${chunkId}`,
+            )
+        }
+
+        chunk.lockHolder = null
+        chunk.metadata.lockHolderTime = null
         this._writeDb(ceremony)
         return true
     }
