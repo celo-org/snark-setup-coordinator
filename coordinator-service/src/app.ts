@@ -49,7 +49,7 @@ export function initExpress({
         '/ceremony',
         authenticateRequests,
         allowVerifiers,
-        bodyParser.json(),
+        bodyParser.json({ limit: '1000mb' }),
         (req, res) => {
             const ceremony = req.body
             logger.info('PUT /ceremony')
