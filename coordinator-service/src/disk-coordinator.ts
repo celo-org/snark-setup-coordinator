@@ -11,7 +11,6 @@ function timestamp(): string {
 
 export class DiskCoordinator implements Coordinator {
     dbPath: string
-    maxLocks: number
 
     static init({
         config,
@@ -63,9 +62,8 @@ export class DiskCoordinator implements Coordinator {
         fs.writeFileSync(dbPath, JSON.stringify(config, null, 2))
     }
 
-    constructor({ dbPath, maxLocks }: { dbPath: string, maxLocks: number }) {
+    constructor({ dbPath }: { dbPath: string }) {
         this.dbPath = dbPath
-        this.maxLocks = maxLocks
     }
 
     _readDb(): Ceremony {
@@ -110,9 +108,13 @@ export class DiskCoordinator implements Coordinator {
         const holding = ceremony.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
-        if (holding.length >= this.maxLocks) {
+        if (holding.length >= ceremony.maxLocks) {
             throw new Error(
-                `${participantId} already holds too many locks on chunk ${chunkId}`,
+                `${participantId} already holds too many locks ( >= ${
+                    ceremony.maxLocks
+                } ) on chunks: ${JSON.stringify(
+                    holding.map((c) => c.chunkId),
+                )}`,
             )
         }
 

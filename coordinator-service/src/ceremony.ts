@@ -46,4 +46,5 @@ export interface Ceremony {
     contributorIds: string[]
     verifierIds: string[]
     version: number
+    maxLocks: number
 }

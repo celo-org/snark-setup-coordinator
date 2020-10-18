@@ -25,7 +25,7 @@ describe('authorizer', () => {
         }
 
         DiskCoordinator.init({ config, dbPath, force: true })
-        coordinator = new DiskCoordinator({ dbPath, maxLocks: 1 })
+        coordinator = new DiskCoordinator({ dbPath })
     })
 
     after(() => {

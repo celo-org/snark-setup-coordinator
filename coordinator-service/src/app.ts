@@ -98,12 +98,15 @@ export function initExpress({
             const chunkId = req.params.id
             logger.info(`POST /chunks/${chunkId}/unlock ${participantId}`)
             try {
-                const locked = coordinator.tryUnlockChunk(chunkId, participantId)
+                const unlocked = coordinator.tryUnlockChunk(
+                    chunkId,
+                    participantId,
+                )
                 res.json({
                     status: 'ok',
                     result: {
                         chunkId,
-                        locked,
+                        unlocked,
                     },
                 })
             } catch (err) {
@@ -112,8 +115,6 @@ export function initExpress({
             }
         },
     )
-
-
 
     app.get(
         '/chunks/:id/contribution',
