@@ -90,6 +90,28 @@ export function initExpress({
     )
 
     app.post(
+        '/filter-chunks',
+        authenticateRequests,
+        allowParticipants,
+        (req, res) => {
+            const participantId = req.participantId
+            logger.info(`POST /filter-chunks ${participantId}`)
+            try {
+                const chunks = coordinator.filterChunks(participantId)
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunks
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+    app.post(
         '/chunks/:id/unlock',
         authenticateRequests,
         allowParticipants,

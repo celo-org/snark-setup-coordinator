@@ -22,6 +22,12 @@ export interface ChunkData {
     contributions: ChunkContribution[]
 }
 
+export interface ChunkInfo {
+    chunkId: string
+    lockHolder: string
+    contributed: boolean
+}
+
 export interface LockedChunkDataMetadata {
     lockHolderTime: string
 }

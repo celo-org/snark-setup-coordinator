@@ -1,8 +1,9 @@
-import { Ceremony, ChunkData, LockedChunkData } from './ceremony'
+import { Ceremony, ChunkData, ChunkInfo, LockedChunkData } from './ceremony'
 
 export interface Coordinator {
     getCeremony(): Ceremony
     setCeremony(ceremony: Ceremony): void
+    filterChunks(participantId: string): ChunkInfo[]
     getChunk(chunkId: string): LockedChunkData
     tryLockChunk(chunkId: string, particpantId: string): boolean
     tryUnlockChunk(chunkId: string, particpantId: string): boolean

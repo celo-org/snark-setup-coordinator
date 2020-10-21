@@ -34,6 +34,7 @@ export class AuthenticateCelo implements AuthenticateStrategy {
         const address = split[0]
         const serializedSignature = split[1]
         const message = `${req.method.toLowerCase()} ${req.path.toLowerCase()}`
+        console.log("auth", message, serializedSignature, address)
         const verified = verifySignature(message, serializedSignature, address)
         if (!verified) {
             throw new Error('Invalid authorization')
