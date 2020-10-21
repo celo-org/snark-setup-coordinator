@@ -1,7 +1,7 @@
 import prometheus = require('prom-client')
 import express from 'express'
 
-import { Ceremony } from './ceremony'
+import { ReadonlyCeremony } from './ceremony'
 import { Coordinator } from './coordinator'
 
 export function initMetrics({
@@ -9,7 +9,7 @@ export function initMetrics({
 }: {
     coordinator: Coordinator
 }): express.Application {
-    let ceremony: Ceremony
+    let ceremony: ReadonlyCeremony
 
     const registry = new prometheus.Registry()
 
