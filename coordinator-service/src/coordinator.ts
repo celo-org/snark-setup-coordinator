@@ -1,7 +1,12 @@
-import { Ceremony, ChunkData, LockedChunkData } from './ceremony'
+import {
+    ReadonlyCeremony,
+    Ceremony,
+    ChunkData,
+    LockedChunkData,
+} from './ceremony'
 
 export interface Coordinator {
-    getCeremony(): Ceremony
+    getCeremony(): ReadonlyCeremony
     setCeremony(ceremony: Ceremony): void
     getChunk(chunkId: string): LockedChunkData
     tryLockChunk(chunkId: string, particpantId: string): boolean

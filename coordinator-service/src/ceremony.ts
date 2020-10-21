@@ -47,3 +47,9 @@ export interface Ceremony {
     verifierIds: string[]
     version: number
 }
+
+type DeepReadonly<T> = {
+    readonly [P in keyof T]: DeepReadonly<T[P]>
+}
+
+export type ReadonlyCeremony = DeepReadonly<Ceremony>
