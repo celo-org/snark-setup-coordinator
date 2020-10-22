@@ -1,7 +1,8 @@
 import fs from 'fs'
+import clonedeep = require('clone-deep')
 
 import { Coordinator } from './coordinator'
-import { Ceremony, LockedChunkData, ChunkInfo, CeremonyParameters } from './ceremony'
+import { Ceremony, CeremonyParameters, ChunkInfo, LockedChunkData, ReadonlyCeremony } from './ceremony'
 import { isContributorData } from './contribution-data'
 import { isVerificationData } from './verification-data'
 
@@ -11,6 +12,7 @@ function timestamp(): string {
 
 export class DiskCoordinator implements Coordinator {
     dbPath: string
+    db: Ceremony
 
     static init({
         config,
@@ -64,27 +66,24 @@ export class DiskCoordinator implements Coordinator {
 
     constructor({ dbPath }: { dbPath: string }) {
         this.dbPath = dbPath
+        this.db = JSON.parse(fs.readFileSync(this.dbPath).toString())
     }
 
-    _readDb(): Ceremony {
-        return JSON.parse(fs.readFileSync(this.dbPath).toString())
+    _writeDb(): void {
+        this.db.version += 1
+        fs.writeFileSync(this.dbPath, JSON.stringify(this.db, null, 2))
     }
 
-    _writeDb(ceremony: Ceremony): void {
-        ceremony.version += 1
-        fs.writeFileSync(this.dbPath, JSON.stringify(ceremony, null, 2))
-    }
-
-    getCeremony(): Ceremony {
-        return this._readDb()
+    getCeremony(): ReadonlyCeremony {
+        return this.db
     }
 
     getParameters(): CeremonyParameters {
-        return this._readDb().parameters
+        return clonedeep(this.db.parameters)
     }
 
     getContributorChunks(contributorId: string): ChunkInfo[] {
-        const ceremony = this._readDb()
+        const ceremony = this.db
         return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
             return {
                 lockHolder,
@@ -95,7 +94,7 @@ export class DiskCoordinator implements Coordinator {
     }
 
     getVerifierChunks(contributorId: string): ChunkInfo[] {
-        const ceremony = this._readDb()
+        const ceremony = this.db
         return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
             return {
                 lockHolder,
@@ -114,22 +113,21 @@ export class DiskCoordinator implements Coordinator {
     }
 
     setCeremony(newCeremony: Ceremony): void {
-        const ceremony = this._readDb()
-        if (ceremony.version !== newCeremony.version) {
+        if (this.db.version !== newCeremony.version) {
             throw new Error(
-                `New ceremony is out of date: ${ceremony.version} vs ${newCeremony.version}`,
+                `New ceremony is out of date: ${this.db.version} vs ${newCeremony.version}`,
             )
         }
-        this._writeDb(newCeremony)
+        this.db = clonedeep(newCeremony)
+        this._writeDb()
     }
 
     getChunk(chunkId: string): LockedChunkData {
-        const ceremony = this._readDb()
-        return DiskCoordinator._getChunk(ceremony, chunkId)
+        return clonedeep(DiskCoordinator._getChunk(this.db, chunkId))
     }
 
     tryLockChunk(chunkId: string, participantId: string): boolean {
-        const ceremony = this._readDb()
+        const ceremony = this.db
 
         const holding = ceremony.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
@@ -144,7 +142,7 @@ export class DiskCoordinator implements Coordinator {
             )
         }
 
-        const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
+        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
         if (chunk.lockHolder) {
             return false
         }
@@ -152,7 +150,7 @@ export class DiskCoordinator implements Coordinator {
         // Return false if contributor trying to lock unverified chunk or
         // if verifier trying to lock verified chunk.
         //
-        const verifier = ceremony.verifierIds.includes(participantId)
+        const verifier = this.db.verifierIds.includes(participantId)
         const lastContribution =
             chunk.contributions[chunk.contributions.length - 1]
         if (lastContribution.verified === verifier) {
@@ -161,12 +159,12 @@ export class DiskCoordinator implements Coordinator {
 
         chunk.lockHolder = participantId
         chunk.metadata.lockHolderTime = timestamp()
-        this._writeDb(ceremony)
+        this._writeDb()
         return true
     }
 
     tryUnlockChunk(chunkId: string, participantId: string): boolean {
-        const ceremony = this._readDb()
+        const ceremony = this.db
 
         const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
         if (chunk.lockHolder !== participantId) {
@@ -177,7 +175,7 @@ export class DiskCoordinator implements Coordinator {
 
         chunk.lockHolder = null
         chunk.metadata.lockHolderTime = null
-        this._writeDb(ceremony)
+        this._writeDb()
         return true
     }
 
@@ -192,8 +190,7 @@ export class DiskCoordinator implements Coordinator {
         location: string
         signedData: object
     }): Promise<void> {
-        const ceremony = this._readDb()
-        const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
+        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
         if (chunk.lockHolder !== participantId) {
             throw new Error(
                 `Participant ${participantId} does not hold lock ` +
@@ -201,7 +198,7 @@ export class DiskCoordinator implements Coordinator {
             )
         }
         const now = timestamp()
-        const verifier = ceremony.verifierIds.includes(participantId)
+        const verifier = this.db.verifierIds.includes(participantId)
         if (verifier) {
             if (!isVerificationData(signedData)) {
                 throw new Error(
@@ -288,6 +285,6 @@ export class DiskCoordinator implements Coordinator {
         }
         chunk.lockHolder = null
         chunk.metadata.lockHolderTime = now
-        this._writeDb(ceremony)
+        this._writeDb()
     }
 }
