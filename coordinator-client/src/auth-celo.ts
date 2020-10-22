@@ -38,7 +38,6 @@ export class AuthCelo implements Auth {
             this.privateKey,
             this.address,
         )
-        console.log("here", message)
         const serializedSignature = SignatureUtils.serializeSignature(signature)
         return serializedSignature
     }
