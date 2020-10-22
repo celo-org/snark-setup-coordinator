@@ -65,6 +65,50 @@ export function initExpress({
         },
     )
 
+    app.get(
+        '/contributor-chunks/:id',
+        (req, res) => {
+            const participantId = req.params.id
+            logger.info(`GET /contributor-chunks/${participantId}`)
+            try {
+                const chunks = coordinator.getContributorChunks(participantId)
+                const parameters = coordinator.getParameters()
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunks,
+                        parameters,
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+    app.get(
+        '/verifier-chunks/:id',
+        (req, res) => {
+            const participantId = req.params.id
+            logger.info(`GET /verifier-chunks/${participantId}`)
+            try {
+                const chunks = coordinator.getVerifierChunks(participantId)
+                const parameters = coordinator.getParameters()
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunks,
+                        parameters,
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
     app.post(
         '/chunks/:id/lock',
         authenticateRequests,
@@ -89,20 +133,16 @@ export function initExpress({
         },
     )
 
-    app.post(
-        '/filter-chunks',
-        authenticateRequests,
-        allowParticipants,
+    app.get(
+        '/chunks/:id',
         (req, res) => {
-            const participantId = req.participantId
-            logger.info(`POST /filter-chunks ${participantId}`)
+            const chunkId = req.params.id
+            logger.info(`GET /chunks/${chunkId}`)
             try {
-                const chunks = coordinator.filterChunks(participantId)
+                const chunk = coordinator.getChunk(chunkId)
                 res.json({
                     status: 'ok',
-                    result: {
-                        chunks
-                    },
+                    result: chunk,
                 })
             } catch (err) {
                 logger.warn(err.message)

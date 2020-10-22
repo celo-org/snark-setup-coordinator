@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 import { Coordinator } from './coordinator'
-import { Ceremony, LockedChunkData, ChunkInfo } from './ceremony'
+import { Ceremony, LockedChunkData, ChunkInfo, CeremonyParameters } from './ceremony'
 import { isContributorData } from './contribution-data'
 import { isVerificationData } from './verification-data'
 
@@ -79,13 +79,28 @@ export class DiskCoordinator implements Coordinator {
         return this._readDb()
     }
 
-    filterChunks(contributorId: string): ChunkInfo[] {
+    getParameters(): CeremonyParameters {
+        return this._readDb().parameters
+    }
+
+    getContributorChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this._readDb()
         return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
             return {
                 lockHolder,
                 chunkId,
                 contributed: contributions.some(a => a.contributorId == contributorId),
+            }
+        })
+    }
+
+    getVerifierChunks(contributorId: string): ChunkInfo[] {
+        const ceremony = this._readDb()
+        return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
+            return {
+                lockHolder,
+                chunkId,
+                contributed: contributions.some(a => a.verifierId == contributorId),
             }
         })
     }
