@@ -104,9 +104,9 @@ export class DiskCoordinator implements Coordinator {
         const holding = this.db.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
-        if (holding) {
+        if (holding.length >= this.db.maxLocks) {
             throw new Error(
-                `${participantId} already holds lock on chunk ${holding.chunkId}`,
+                `${participantId} already holds too many locks (${holding.length}) on chunk ${chunkId}`,
             )
         }
 
@@ -142,6 +142,7 @@ export class DiskCoordinator implements Coordinator {
         chunk.lockHolder = null
         chunk.metadata.lockHolderTime = timestamp()
         this._writeDb()
+        return true
     }
 
     async contributeChunk({
