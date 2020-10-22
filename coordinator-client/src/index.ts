@@ -393,7 +393,6 @@ async function main(): Promise<void> {
             privateKey,
         })
     } else {
-        logger.debug("using dummy auth")
         args.auth = new AuthDummy(args.participantId)
     }
 

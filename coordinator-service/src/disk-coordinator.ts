@@ -2,7 +2,13 @@ import fs from 'fs'
 import clonedeep = require('clone-deep')
 
 import { Coordinator } from './coordinator'
-import { Ceremony, CeremonyParameters, ChunkInfo, LockedChunkData, ReadonlyCeremony } from './ceremony'
+import {
+    Ceremony,
+    CeremonyParameters,
+    ChunkInfo,
+    LockedChunkData,
+    ReadonlyCeremony,
+} from './ceremony'
 import { isContributorData } from './contribution-data'
 import { isVerificationData } from './verification-data'
 
@@ -84,22 +90,26 @@ export class DiskCoordinator implements Coordinator {
 
     getContributorChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this.db
-        return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
+        return ceremony.chunks.map(({ lockHolder, chunkId, contributions }) => {
             return {
                 lockHolder,
                 chunkId,
-                contributed: contributions.some(a => a.contributorId == contributorId),
+                contributed: contributions.some(
+                    (a) => a.contributorId == contributorId,
+                ),
             }
         })
     }
 
     getVerifierChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this.db
-        return ceremony.chunks.map(({lockHolder, chunkId, contributions}) => {
+        return ceremony.chunks.map(({ lockHolder, chunkId, contributions }) => {
             return {
                 lockHolder,
                 chunkId,
-                contributed: contributions.some(a => a.verifierId == contributorId),
+                contributed: contributions.some(
+                    (a) => a.verifierId == contributorId,
+                ),
             }
         })
     }
