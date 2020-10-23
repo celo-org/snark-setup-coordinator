@@ -142,8 +142,9 @@ export class DiskCoordinator implements Coordinator {
         return {
             chunkId,
             lockHolder,
-            latestURL: contributions.length > 0 ? contributions[contributions.length-1].contributedLocation : null,
-            previousURL: contributions.length > 1 ? contributions[contributions.length-2].contributedLocation : null,
+            lastResponseUrl: contributions.length > 0 ? contributions[contributions.length-1].contributedLocation : null,
+            lastChallengeUrl: contributions.length > 0 ? contributions[contributions.length-1].verifiedLocation : null,
+            previousChallengeUrl: contributions.length > 1 ? contributions[contributions.length-2].verifiedLocation : null,
         }
     }
 

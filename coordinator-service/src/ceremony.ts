@@ -30,8 +30,9 @@ export interface ChunkInfo {
 export interface ChunkDownloadInfo {
     chunkId: string
     lockHolder: string
-    latestURL: string
-    previousURL: string
+    lastResponseUrl: string
+    lastChallengeUrl: string
+    previousChallengeUrl: string
 }
 
 export interface LockedChunkDataMetadata {
