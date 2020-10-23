@@ -49,7 +49,7 @@ export function initExpress({
         '/ceremony',
         authenticateRequests,
         allowVerifiers,
-        bodyParser.json(),
+        bodyParser.json({ limit: '1000mb' }),
         (req, res) => {
             const ceremony = req.body
             logger.info('PUT /ceremony')
@@ -80,6 +80,33 @@ export function initExpress({
                     result: {
                         chunkId,
                         locked,
+                    },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+    app.post(
+        '/chunks/:id/unlock',
+        authenticateRequests,
+        allowParticipants,
+        (req, res) => {
+            const participantId = req.participantId
+            const chunkId = req.params.id
+            logger.info(`POST /chunks/${chunkId}/unlock ${participantId}`)
+            try {
+                const unlocked = coordinator.tryUnlockChunk(
+                    chunkId,
+                    participantId,
+                )
+                res.json({
+                    status: 'ok',
+                    result: {
+                        chunkId,
+                        unlocked,
                     },
                 })
             } catch (err) {
