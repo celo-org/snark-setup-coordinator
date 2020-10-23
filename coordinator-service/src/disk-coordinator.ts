@@ -101,14 +101,14 @@ export class DiskCoordinator implements Coordinator {
         })
     }
 
-    getVerifierChunks(contributorId: string): ChunkInfo[] {
+    getVerifierChunks(): ChunkInfo[] {
         const ceremony = this.db
         return ceremony.chunks.map(({ lockHolder, chunkId, contributions }) => {
             return {
                 lockHolder,
                 chunkId,
-                contributed: contributions.some(
-                    (a) => a.verifierId == contributorId,
+                contributed: contributions.every(
+                    (a) => a.verified,
                 ),
             }
         })
