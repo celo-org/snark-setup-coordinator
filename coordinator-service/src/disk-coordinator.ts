@@ -108,9 +108,7 @@ export class DiskCoordinator implements Coordinator {
             return {
                 lockHolder,
                 chunkId,
-                contributed: contributions.every(
-                    (a) => a.verified,
-                ),
+                contributed: contributions.every((a) => a.verified),
             }
         })
     }
@@ -138,13 +136,26 @@ export class DiskCoordinator implements Coordinator {
     }
 
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo {
-        const { lockHolder, contributions } = DiskCoordinator._getChunk(this.db, chunkId)
+        const { lockHolder, contributions } = DiskCoordinator._getChunk(
+            this.db,
+            chunkId,
+        )
         return {
             chunkId,
             lockHolder,
-            lastResponseUrl: contributions.length > 0 ? contributions[contributions.length-1].contributedLocation : null,
-            lastChallengeUrl: contributions.length > 0 ? contributions[contributions.length-1].verifiedLocation : null,
-            previousChallengeUrl: contributions.length > 1 ? contributions[contributions.length-2].verifiedLocation : null,
+            lastResponseUrl:
+                contributions.length > 0
+                    ? contributions[contributions.length - 1]
+                          .contributedLocation
+                    : null,
+            lastChallengeUrl:
+                contributions.length > 0
+                    ? contributions[contributions.length - 1].verifiedLocation
+                    : null,
+            previousChallengeUrl:
+                contributions.length > 1
+                    ? contributions[contributions.length - 2].verifiedLocation
+                    : null,
         }
     }
 
