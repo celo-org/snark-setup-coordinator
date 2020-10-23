@@ -88,7 +88,7 @@ export function initExpress({
         const participantId = req.params.id
         logger.info(`GET /verifier-chunks/${participantId}`)
         try {
-            const chunks = coordinator.getVerifierChunks(participantId)
+            const chunks = coordinator.getVerifierChunks()
             const parameters = coordinator.getParameters()
             res.json({
                 status: 'ok',
@@ -132,6 +132,21 @@ export function initExpress({
         logger.info(`GET /chunks/${chunkId}`)
         try {
             const chunk = coordinator.getChunk(chunkId)
+            res.json({
+                status: 'ok',
+                result: chunk,
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
+
+    app.get('/chunk-info/:id', (req, res) => {
+        const chunkId = req.params.id
+        logger.info(`GET /chunk-info/${chunkId}`)
+        try {
+            const chunk = coordinator.getChunkDownloadInfo(chunkId)
             res.json({
                 status: 'ok',
                 result: chunk,

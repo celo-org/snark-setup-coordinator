@@ -6,6 +6,7 @@ import {
     Ceremony,
     CeremonyParameters,
     ChunkInfo,
+    ChunkDownloadInfo,
     LockedChunkData,
     ReadonlyCeremony,
 } from './ceremony'
@@ -136,19 +137,23 @@ export class DiskCoordinator implements Coordinator {
         return clonedeep(DiskCoordinator._getChunk(this.db, chunkId))
     }
 
-    tryLockChunk(chunkId: string, participantId: string): boolean {
-        const ceremony = this.db
+    getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo {
+        const { lockHolder, contributions } = DiskCoordinator._getChunk(this.db, chunkId)
+        return {
+            chunkId,
+            lockHolder,
+            latestURL: contributions.length > 0 ? contributions[contributions.length-1].contributedLocation : null,
+            previousURL: contributions.length > 1 ? contributions[contributions.length-2].contributedLocation : null,
+        }
+    }
 
-        const holding = ceremony.chunks.filter(
+    tryLockChunk(chunkId: string, participantId: string): boolean {
+        const holding = this.db.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
-        if (holding.length >= ceremony.maxLocks) {
+        if (holding.length >= this.db.maxLocks) {
             throw new Error(
-                `${participantId} already holds too many locks ( >= ${
-                    ceremony.maxLocks
-                } ) on chunks: ${JSON.stringify(
-                    holding.map((c) => c.chunkId),
-                )}`,
+                `${participantId} already holds too many locks (${holding.length}) on chunk ${chunkId}`,
             )
         }
 
@@ -174,9 +179,7 @@ export class DiskCoordinator implements Coordinator {
     }
 
     tryUnlockChunk(chunkId: string, participantId: string): boolean {
-        const ceremony = this.db
-
-        const chunk = DiskCoordinator._getChunk(ceremony, chunkId)
+        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
         if (chunk.lockHolder !== participantId) {
             throw new Error(
                 `${participantId} does not hold lock on chunk ${chunkId}`,
@@ -184,7 +187,7 @@ export class DiskCoordinator implements Coordinator {
         }
 
         chunk.lockHolder = null
-        chunk.metadata.lockHolderTime = null
+        chunk.metadata.lockHolderTime = timestamp()
         this._writeDb()
         return true
     }

@@ -2,6 +2,7 @@ import {
     ReadonlyCeremony,
     Ceremony,
     CeremonyParameters,
+    ChunkDownloadInfo,
     ChunkInfo,
     ChunkData,
     LockedChunkData,
@@ -12,8 +13,9 @@ export interface Coordinator {
     setCeremony(ceremony: Ceremony): void
     getParameters(): CeremonyParameters
     getContributorChunks(participantId: string): ChunkInfo[]
-    getVerifierChunks(participantId: string): ChunkInfo[]
+    getVerifierChunks(): ChunkInfo[]
     getChunk(chunkId: string): LockedChunkData
+    getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
     tryLockChunk(chunkId: string, particpantId: string): boolean
     tryUnlockChunk(chunkId: string, particpantId: string): boolean
     contributeChunk({

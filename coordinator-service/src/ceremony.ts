@@ -25,7 +25,13 @@ export interface ChunkData {
 export interface ChunkInfo {
     chunkId: string
     lockHolder: string
-    contributed: boolean
+}
+
+export interface ChunkDownloadInfo {
+    chunkId: string
+    lockHolder: string
+    latestURL: string
+    previousURL: string
 }
 
 export interface LockedChunkDataMetadata {
