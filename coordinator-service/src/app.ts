@@ -38,7 +38,7 @@ export function initExpress({
     const authenticateRequests = authenticate(authenticateStrategy)
 
     app.get('/ceremony', (req, res) => {
-        logger.info('GET /ceremony')
+        logger.debug('GET /ceremony')
         res.json({
             result: coordinator.getCeremony(),
             status: 'ok',
