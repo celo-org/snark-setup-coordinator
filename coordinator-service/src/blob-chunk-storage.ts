@@ -1,3 +1,4 @@
+import { AbortController } from '@azure/abort-controller'
 import {
     BlobSASPermissions,
     ContainerClient,
@@ -10,6 +11,7 @@ import { ChunkStorage, chunkVersion } from './coordinator'
 
 const expireMinutes = 60 * 2
 const expireMilliseconds = 1000 * 60 * expireMinutes
+const timeoutMilliseconds = 10 * 1000
 
 export class BlobChunkStorage implements ChunkStorage {
     sharedKeyCredential: StorageSharedKeyCredential
@@ -91,7 +93,10 @@ export class BlobChunkStorage implements ChunkStorage {
         const destinationClient = this.containerClient.getBlobClient(
             destinationBlobName,
         )
-        const poller = await destinationClient.beginCopyFromURL(sourceUrl)
+        const abortSignal = AbortController.timeout(timeoutMilliseconds)
+        const poller = await destinationClient.beginCopyFromURL(sourceUrl, {
+            abortSignal,
+        })
         const result = await poller.pollUntilDone()
         if (result.copyStatus !== 'success') {
             throw new Error(`Copy '${sourceUrl}' failed '${result.copyStatus}'`)
