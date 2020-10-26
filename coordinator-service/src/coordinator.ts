@@ -2,11 +2,22 @@ import {
     ReadonlyCeremony,
     Ceremony,
     CeremonyParameters,
-    ChunkDownloadInfo,
-    ChunkInfo,
     ChunkData,
     LockedChunkData,
 } from './ceremony'
+
+export interface ChunkInfo {
+    chunkId: string
+    lockHolder: string
+}
+
+export interface ChunkDownloadInfo {
+    chunkId: string
+    lockHolder: string
+    lastResponseUrl: string
+    lastChallengeUrl: string
+    previousChallengeUrl: string
+}
 
 export interface Coordinator {
     getCeremony(): ReadonlyCeremony
@@ -14,6 +25,7 @@ export interface Coordinator {
     getParameters(): CeremonyParameters
     getContributorChunks(participantId: string): ChunkInfo[]
     getVerifierChunks(): ChunkInfo[]
+    getNumChunks(): number
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
     tryLockChunk(chunkId: string, particpantId: string): boolean

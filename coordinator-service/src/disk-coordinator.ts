@@ -1,12 +1,11 @@
 import fs from 'fs'
 import clonedeep = require('clone-deep')
 
-import { Coordinator } from './coordinator'
+import { Coordinator, ChunkInfo, ChunkDownloadInfo } from './coordinator'
 import {
     Ceremony,
     CeremonyParameters,
-    ChunkInfo,
-    ChunkDownloadInfo,
+    ChunkData,
     LockedChunkData,
     ReadonlyCeremony,
 } from './ceremony'
@@ -15,6 +14,14 @@ import { isVerificationData } from './verification-data'
 
 function timestamp(): string {
     return new Date().toISOString()
+}
+
+function isVerified({ contributions }: ChunkData): boolean {
+    return contributions.every((a) => a.verified)
+}
+
+function hasContributed(id: string, { contributions }: ChunkData): boolean {
+    return contributions.some((a) => a.contributorId == id)
 }
 
 export class DiskCoordinator implements Coordinator {
@@ -91,26 +98,30 @@ export class DiskCoordinator implements Coordinator {
 
     getContributorChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this.db
-        return ceremony.chunks.map(({ lockHolder, chunkId, contributions }) => {
-            return {
-                lockHolder,
-                chunkId,
-                contributed: contributions.some(
-                    (a) => a.contributorId == contributorId,
-                ),
-            }
-        })
+        return ceremony.chunks
+            .filter((a) => !hasContributed(contributorId, a))
+            .map(({ lockHolder, chunkId }) => {
+                return {
+                    lockHolder,
+                    chunkId,
+                }
+            })
     }
 
     getVerifierChunks(): ChunkInfo[] {
         const ceremony = this.db
-        return ceremony.chunks.map(({ lockHolder, chunkId, contributions }) => {
-            return {
-                lockHolder,
-                chunkId,
-                contributed: contributions.every((a) => a.verified),
-            }
-        })
+        return ceremony.chunks
+            .filter((a) => !isVerified(a))
+            .map(({ lockHolder, chunkId }) => {
+                return {
+                    lockHolder,
+                    chunkId,
+                }
+            })
+    }
+
+    getNumChunks(): number {
+        return this.db.chunks.length
     }
 
     static _getChunk(ceremony: Ceremony, chunkId: string): LockedChunkData {
@@ -176,8 +187,12 @@ export class DiskCoordinator implements Coordinator {
         //
         // Return false if contributor trying to lock unverified chunk or
         // if verifier trying to lock verified chunk.
-        //
+        // Also return false if contributor has already contributed
+        // to the chunk.
         const verifier = this.db.verifierIds.includes(participantId)
+        if (!verifier && hasContributed(participantId, chunk)) {
+            return false
+        }
         const lastContribution =
             chunk.contributions[chunk.contributions.length - 1]
         if (lastContribution.verified === verifier) {

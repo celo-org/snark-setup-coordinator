@@ -29,11 +29,23 @@ describe('app', () => {
     beforeEach(() => {
         const storagePath = storageDir.name
         const dbPath = path.join(storagePath, 'db.json')
+        const testData = {
+            data: {
+                challengeHash:
+                    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                responseHash:
+                    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                newChallengeHash:
+                    '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+            },
+            signature:
+                '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        }
         const config = {
             version: 0,
             maxLocks: 1,
             parameters: {},
-            contributorIds: ['frank', 'becky'],
+            contributorIds: ['frank', 'becky', 'pat'],
             verifierIds: ['verifier0'],
             chunks: [
                 {
@@ -46,18 +58,7 @@ describe('app', () => {
                             verifiedLocation: '/some/location/1',
                             verifierId: 'verifier0',
                             verified: true,
-                            verifiedData: {
-                                data: {
-                                    challengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    responseHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    newChallengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                },
-                                signature:
-                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                            },
+                            verifiedData: testData,
                         },
                     ],
                 },
@@ -68,18 +69,7 @@ describe('app', () => {
                         {
                             contributorId: 'pat',
                             contributedLocation: '/some/location/2',
-                            contributedData: {
-                                data: {
-                                    challengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    responseHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    newChallengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                },
-                                signature:
-                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                            },
+                            contributedData: testData,
                             verifierId: null,
                             verifiedLocation: null,
                             verified: false,
@@ -93,18 +83,7 @@ describe('app', () => {
                         {
                             contributorId: 'pat',
                             contributedLocation: '/some/location/2',
-                            contributedData: {
-                                data: {
-                                    challengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    responseHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    newChallengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                },
-                                signature:
-                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                            },
+                            contributedData: testData,
                             verifierId: null,
                             verifiedLocation: null,
                             verified: true,
@@ -118,37 +97,15 @@ describe('app', () => {
                         {
                             contributorId: 'pat',
                             contributedLocation: '/some/location/2',
-                            contributedData: {
-                                data: {
-                                    challengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    responseHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    newChallengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                },
-                                signature:
-                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                            },
+                            contributedData: testData,
                             verifierId: null,
                             verifiedLocation: '/some/location/123',
                             verified: true,
                         },
                         {
-                            contributorId: 'pat',
+                            contributorId: 'bill',
                             contributedLocation: '/some/location/234',
-                            contributedData: {
-                                data: {
-                                    challengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    responseHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                    newChallengeHash:
-                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                                },
-                                signature:
-                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                            },
+                            contributedData: testData,
                             verifierId: null,
                             verifiedLocation: null,
                             verified: false,
@@ -227,24 +184,20 @@ describe('app', () => {
         })
     })
 
-    describe('GET /contributor-chunks', () => {
+    describe('GET /contributor/:id/chunks', () => {
         it('matches ceremony', async () => {
-            const res = await chai.request(app).get('/contributor-chunks/pat')
+            const res = await chai.request(app).get('/contributor/pat/chunks')
             expect(res).to.have.status(200)
             const expected = {
-                chunks: [
-                    { lockHolder: null, chunkId: '1', contributed: false },
-                    { lockHolder: null, chunkId: '2', contributed: true },
-                    { lockHolder: null, chunkId: '3', contributed: true },
-                    { lockHolder: null, chunkId: '4', contributed: true },
-                ],
+                chunks: [{ lockHolder: null, chunkId: '1' }],
                 parameters: {},
+                numChunks: 4,
             }
             expect(res.body.result).to.deep.equal(expected)
         })
 
         it('a new contributor', async () => {
-            const res = await chai.request(app).get('/contributor-chunks/bill')
+            const res = await chai.request(app).get('/contributor/bill/chunks')
             expect(res).to.have.status(200)
             expect(
                 res.body.result.chunks.every((a) => !a.contributed),
@@ -252,27 +205,26 @@ describe('app', () => {
         })
     })
 
-    describe('GET /verifier-chunks', () => {
+    describe('GET /verifier/chunks', () => {
         it('matches ceremony', async () => {
-            const res = await chai.request(app).get('/verifier-chunks')
+            const res = await chai.request(app).get('/verifier/chunks')
             expect(res).to.have.status(200)
 
             const expected = {
                 chunks: [
-                    { lockHolder: null, chunkId: '1', contributed: true },
-                    { lockHolder: null, chunkId: '2', contributed: false },
-                    { lockHolder: null, chunkId: '3', contributed: true },
-                    { lockHolder: null, chunkId: '4', contributed: false },
+                    { lockHolder: null, chunkId: '2' },
+                    { lockHolder: null, chunkId: '4' },
                 ],
                 parameters: {},
+                numChunks: 4,
             }
             expect(res.body.result).to.deep.equal(expected)
         })
     })
 
-    describe('GET /chunk-info', () => {
+    describe('GET /chunks/:id/info', () => {
         it('info for chunk 1', async () => {
-            const res = await chai.request(app).get('/chunk-info/1')
+            const res = await chai.request(app).get('/chunks/1/info')
             expect(res).to.have.status(200)
             const expected = {
                 chunkId: '1',
@@ -284,7 +236,7 @@ describe('app', () => {
             expect(res.body.result).to.deep.equal(expected)
         })
         it('info for chunk 2', async () => {
-            const res = await chai.request(app).get('/chunk-info/2')
+            const res = await chai.request(app).get('/chunks/2/info')
             expect(res).to.have.status(200)
             const expected = {
                 chunkId: '2',
@@ -296,7 +248,7 @@ describe('app', () => {
             expect(res.body.result).to.deep.equal(expected)
         })
         it('info for chunk 4', async () => {
-            const res = await chai.request(app).get('/chunk-info/4')
+            const res = await chai.request(app).get('/chunks/4/info')
             expect(res).to.have.status(200)
             const expected = {
                 chunkId: '4',
@@ -306,6 +258,10 @@ describe('app', () => {
                 previousChallengeUrl: '/some/location/123',
             }
             expect(res.body.result).to.deep.equal(expected)
+        })
+        it('info for unknown chunk', async () => {
+            const res = await chai.request(app).get('/chunks/2345/info')
+            expect(res).to.have.status(400)
         })
     })
 
@@ -337,6 +293,15 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/2/lock')
                 .set('authorization', 'dummy frank')
+            expect(res).to.have.status(200)
+            expect(res.body.result.locked).to.equal(false)
+        })
+
+        it('returns false if contributor attempts to lock a chunk it has already contributed to', async () => {
+            const res = await chai
+                .request(app)
+                .post('/chunks/3/lock')
+                .set('authorization', 'dummy pat')
             expect(res).to.have.status(200)
             expect(res.body.result.locked).to.equal(false)
         })

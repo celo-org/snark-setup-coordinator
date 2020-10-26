@@ -22,19 +22,6 @@ export interface ChunkData {
     contributions: ChunkContribution[]
 }
 
-export interface ChunkInfo {
-    chunkId: string
-    lockHolder: string
-}
-
-export interface ChunkDownloadInfo {
-    chunkId: string
-    lockHolder: string
-    lastResponseUrl: string
-    lastChallengeUrl: string
-    previousChallengeUrl: string
-}
-
 export interface LockedChunkDataMetadata {
     lockHolderTime: string
 }
