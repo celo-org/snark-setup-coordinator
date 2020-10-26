@@ -111,6 +111,50 @@ describe('app', () => {
                         },
                     ],
                 },
+                {
+                    chunkId: '4',
+                    lockHolder: null,
+                    contributions: [
+                        {
+                            contributorId: 'pat',
+                            contributedLocation: '/some/location/2',
+                            contributedData: {
+                                data: {
+                                    challengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    responseHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    newChallengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                },
+                                signature:
+                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            },
+                            verifierId: null,
+                            verifiedLocation: '/some/location/123',
+                            verified: true,
+                        },
+                        {
+                            contributorId: 'pat',
+                            contributedLocation: '/some/location/234',
+                            contributedData: {
+                                data: {
+                                    challengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    responseHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                    newChallengeHash:
+                                        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                                },
+                                signature:
+                                    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            },
+                            verifierId: null,
+                            verifiedLocation: null,
+                            verified: false,
+                        },
+                    ],
+                },
             ],
         }
 
@@ -180,6 +224,88 @@ describe('app', () => {
             res = await chai.request(app).get('/ceremony')
             expect(res).to.have.status(200)
             expect(res.body.result).to.deep.equal(originalCeremony)
+        })
+    })
+
+    describe('GET /contributor-chunks', () => {
+        it('matches ceremony', async () => {
+            const res = await chai.request(app).get('/contributor-chunks/pat')
+            expect(res).to.have.status(200)
+            const expected = {
+                chunks: [
+                    { lockHolder: null, chunkId: '1', contributed: false },
+                    { lockHolder: null, chunkId: '2', contributed: true },
+                    { lockHolder: null, chunkId: '3', contributed: true },
+                    { lockHolder: null, chunkId: '4', contributed: true },
+                ],
+                parameters: {},
+            }
+            expect(res.body.result).to.deep.equal(expected)
+        })
+
+        it('a new contributor', async () => {
+            const res = await chai.request(app).get('/contributor-chunks/bill')
+            expect(res).to.have.status(200)
+            expect(
+                res.body.result.chunks.every((a) => !a.contributed),
+            ).to.equal(true)
+        })
+    })
+
+    describe('GET /verifier-chunks', () => {
+        it('matches ceremony', async () => {
+            const res = await chai.request(app).get('/verifier-chunks')
+            expect(res).to.have.status(200)
+
+            const expected = {
+                chunks: [
+                    { lockHolder: null, chunkId: '1', contributed: true },
+                    { lockHolder: null, chunkId: '2', contributed: false },
+                    { lockHolder: null, chunkId: '3', contributed: true },
+                    { lockHolder: null, chunkId: '4', contributed: false },
+                ],
+                parameters: {},
+            }
+            expect(res.body.result).to.deep.equal(expected)
+        })
+    })
+
+    describe('GET /chunk-info', () => {
+        it('info for chunk 1', async () => {
+            const res = await chai.request(app).get('/chunk-info/1')
+            expect(res).to.have.status(200)
+            const expected = {
+                chunkId: '1',
+                lockHolder: null,
+                lastResponseUrl: null,
+                lastChallengeUrl: '/some/location/1',
+                previousChallengeUrl: null,
+            }
+            expect(res.body.result).to.deep.equal(expected)
+        })
+        it('info for chunk 2', async () => {
+            const res = await chai.request(app).get('/chunk-info/2')
+            expect(res).to.have.status(200)
+            const expected = {
+                chunkId: '2',
+                lockHolder: null,
+                lastResponseUrl: '/some/location/2',
+                lastChallengeUrl: null,
+                previousChallengeUrl: null,
+            }
+            expect(res.body.result).to.deep.equal(expected)
+        })
+        it('info for chunk 4', async () => {
+            const res = await chai.request(app).get('/chunk-info/4')
+            expect(res).to.have.status(200)
+            const expected = {
+                chunkId: '4',
+                lockHolder: null,
+                lastResponseUrl: '/some/location/234',
+                lastChallengeUrl: null,
+                previousChallengeUrl: '/some/location/123',
+            }
+            expect(res.body.result).to.deep.equal(expected)
         })
     })
 
