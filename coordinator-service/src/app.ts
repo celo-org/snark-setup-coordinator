@@ -150,7 +150,9 @@ export function initExpress({
             const participantId = req.participantId
             const chunkId = req.params.id
 
-            logger.debug(`POST /chunks/${chunkId}/contribution ${participantId}`)
+            logger.debug(
+                `POST /chunks/${chunkId}/contribution ${participantId}`,
+            )
             const chunk = coordinator.getChunk(chunkId)
 
             let url
