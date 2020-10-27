@@ -47,6 +47,7 @@ export interface Ceremony {
     verifierIds: string[]
     version: number
     maxLocks: number
+    shutdownSignal: boolean
 }
 
 type DeepReadonly<T> = {

@@ -124,6 +124,14 @@ export class DiskCoordinator implements Coordinator {
         return this.db.chunks.length
     }
 
+    getMaxLocks(): number {
+        return this.db.maxLocks
+    }
+
+    getShutdownSignal(): boolean {
+        return this.db.shutdownSignal
+    }
+
     static _getChunk(ceremony: Ceremony, chunkId: string): LockedChunkData {
         const chunk = ceremony.chunks.find((chunk) => chunk.chunkId == chunkId)
         if (!chunk) {

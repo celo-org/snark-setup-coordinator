@@ -26,6 +26,7 @@ describe('metrics', () => {
         const config = {
             version: 0,
             maxLocks: 1,
+            shutdownSignal: false,
             parameters: {},
             contributorIds: ['frank', 'becky'],
             verifierIds: ['verifier0'],

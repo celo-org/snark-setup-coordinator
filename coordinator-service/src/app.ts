@@ -72,12 +72,16 @@ export function initExpress({
             const chunks = coordinator.getContributorChunks(participantId)
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
             res.json({
                 status: 'ok',
                 result: {
                     chunks,
                     parameters,
                     numChunks,
+                    maxLocks,
+                    shutdownSignal,
                 },
             })
         } catch (err) {
@@ -92,12 +96,16 @@ export function initExpress({
             const chunks = coordinator.getVerifierChunks()
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
             res.json({
                 status: 'ok',
                 result: {
                     chunks,
                     parameters,
                     numChunks,
+                    maxLocks,
+                    shutdownSignal,
                 },
             })
         } catch (err) {
