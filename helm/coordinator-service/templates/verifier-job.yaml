@@ -1,0 +1,29 @@
+{{ if $.Values.verifier.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ tpl $.Values.verifier.fullName }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ tpl $.Values.verifier.fullName }}
+    spec:
+      containers:
+        - image: {{ tpl $.Values.verifier.image.full }}
+          name: {{ tpl $.Values.verifier.fullName }}
+          envFrom:
+            - configMapRef:
+                name: {{ tpl $.Values.verifier.fullName }}-configmap
+          volumeMounts:
+            - name: {{ tpl $.Values.verifier.fullName }}-secret
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          command: ["npm"]
+          args: ["start", "--", "verify"]
+      restartPolicy: Never
+      volumes:
+        - name: {{ tpl $.Values.verifier.fullName }}-secret
+          secret:
+            secretName: {{ tpl $.Values.verifier.fullName }}-secret
+{{ end }}

@@ -1,9 +1,13 @@
 environment: development
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2b16424... initial helm chart
 coordinator: 
   enabled: true
   fullName: "ceremony-coordinator-{{$.Values.environment}}"
   image: 
+<<<<<<< HEAD
     repo: "us.gcr.io/celo-testnet"
     image: coordinator-service
     tag: test
@@ -16,3 +20,41 @@ coordinator:
   azureAccessKey: "nHx8SjML9BOWD6n3jeGTB6ARvihNGfIyi/Oadg3d07OXglxb6TfSqIpt0i/kOiosV6PmzY8MvNPTrMLpqQnPDw=="
   container: chunks
   initialVerifier: 0x07dfadb3483c474fc0913a232cc3a06483d17060
+=======
+    repo: ""
+    image: coordinator-service
+    tag: test
+    full: {{ {{$.Values.coordinator.image.repo}}/{{$.Values.coordinator.image.image}}:{{$.Values.coordinator.image.tag}} }}
+  authType: celo
+  configPath: ceremony/4-chunks-celo-e2e.json
+  apiURL: 'http://{{ $.Values.coordinator.fullName }}:8080'
+
+verifier: 
+  enabled: true
+  fullName: "ceremony-verifier-{{$.Values.environment}}"
+  image: 
+    repo: ""
+    image: coordinator-client
+    tag: test
+    full: {{ {{$.Values.verifier.image.repo}}/{{$.Values.verifier.image.image}}:{{$.Values.verifier.image.tag}} }}
+  participantId: 0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5
+
+contributor: 
+  enable: false
+  fullName: "ceremony-contributor-{{$.Values.environment}}"
+  image: 
+    repo: ""
+    image: coordinator-client
+    tag: test
+    full: {{ {{$.Values.contributor.image.repo}}/{{$.Values.contributor.image.image}}:{{$.Values.contributor.image.tag}} }}
+  participantId: 0xEC60b9a43529c12CA83Af466D8A6F8444392D47C
+
+new_challenge: 
+  enable: false
+  fullName: "new-challenge-{{$.Values.environment}}"
+  image: 
+    repo: ""
+    image: coordinator-client
+    tag: test
+    full: {{ {{$.Values.new_challenge.image.repo}}/{{$.Values.new_challenge.image.image}}:{{$.Values.new_challenge.image.tag}} }}
+>>>>>>> 2b16424... initial helm chart

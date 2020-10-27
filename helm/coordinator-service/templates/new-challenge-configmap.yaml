@@ -1,0 +1,13 @@
+{{ if $.Values.new_challenge.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.new_challenge.fullName }}-configmap
+data:
+  COORDINATOR_API_URL: {{ tpl $.Values.coordinator.apiURL }}
+  COORDINATOR_AUTH_TYPE: {{ $.Values.coordinator.authType}}
+  COORDINATOR_SEED_FILE: '/mnt/secrets/seed'
+  COORDINATOR_PARTICIPANT_ID: {{ $.Values.coordinator.participantId }}
+  COORDINATOR_CELO_PRIVATE_KEY_FILE: '/mnt/secrets/key'
+  LOG_FILE: '-'
+{{ end }}
