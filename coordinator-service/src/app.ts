@@ -38,7 +38,7 @@ export function initExpress({
     const authenticateRequests = authenticate(authenticateStrategy)
 
     app.get('/ceremony', (req, res) => {
-        logger.info('GET /ceremony')
+        logger.debug('GET /ceremony')
         res.json({
             result: coordinator.getCeremony(),
             status: 'ok',
@@ -52,7 +52,7 @@ export function initExpress({
         bodyParser.json({ limit: '1000mb' }),
         (req, res) => {
             const ceremony = req.body
-            logger.info('PUT /ceremony')
+            logger.debug('PUT /ceremony')
             try {
                 coordinator.setCeremony(ceremony)
                 res.json({
@@ -113,7 +113,7 @@ export function initExpress({
         (req, res) => {
             const participantId = req.participantId
             const chunkId = req.params.id
-            logger.info(`POST /chunks/${chunkId}/lock ${participantId}`)
+            logger.debug(`POST /chunks/${chunkId}/lock ${participantId}`)
             try {
                 const locked = coordinator.tryLockChunk(chunkId, participantId)
                 res.json({
@@ -152,7 +152,7 @@ export function initExpress({
         (req, res) => {
             const participantId = req.participantId
             const chunkId = req.params.id
-            logger.info(`POST /chunks/${chunkId}/unlock ${participantId}`)
+            logger.debug(`POST /chunks/${chunkId}/unlock ${participantId}`)
             try {
                 const unlocked = coordinator.tryUnlockChunk(
                     chunkId,
@@ -180,7 +180,7 @@ export function initExpress({
             const participantId = req.participantId
             const chunkId = req.params.id
 
-            logger.info(`GET /chunks/${chunkId}/contribution ${participantId}`)
+            logger.debug(`GET /chunks/${chunkId}/contribution ${participantId}`)
             const chunk = coordinator.getChunk(chunkId)
             const writeUrl = chunkStorage.getChunkWriteLocation({
                 chunk,
@@ -206,7 +206,9 @@ export function initExpress({
             const participantId = req.participantId
             const chunkId = req.params.id
 
-            logger.info(`POST /chunks/${chunkId}/contribution ${participantId}`)
+            logger.debug(
+                `POST /chunks/${chunkId}/contribution ${participantId}`,
+            )
             const chunk = coordinator.getChunk(chunkId)
 
             let url

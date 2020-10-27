@@ -94,9 +94,10 @@ export class BlobChunkStorage implements ChunkStorage {
             destinationBlobName,
         )
         const abortSignal = AbortController.timeout(timeoutMilliseconds)
-        const result = await destinationClient.syncCopyFromURL(sourceUrl, {
+        const poller = await destinationClient.beginCopyFromURL(sourceUrl, {
             abortSignal,
         })
+        const result = await poller.pollUntilDone()
         if (result.copyStatus !== 'success') {
             throw new Error(`Copy '${sourceUrl}' failed '${result.copyStatus}'`)
         }
