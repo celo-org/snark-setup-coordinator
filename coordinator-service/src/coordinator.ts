@@ -26,6 +26,8 @@ export interface Coordinator {
     getContributorChunks(participantId: string): ChunkInfo[]
     getVerifierChunks(): ChunkInfo[]
     getNumChunks(): number
+    getMaxLocks(): number
+    getShutdownSignal(): boolean
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
     tryLockChunk(chunkId: string, particpantId: string): boolean

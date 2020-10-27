@@ -67,17 +67,21 @@ export function initExpress({
 
     app.get('/contributor/:id/chunks', (req, res) => {
         const participantId = req.params.id
-        logger.info(`GET /contributor/${participantId}/chunks`)
+        logger.debug(`GET /contributor/${participantId}/chunks`)
         try {
             const chunks = coordinator.getContributorChunks(participantId)
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
             res.json({
                 status: 'ok',
                 result: {
                     chunks,
                     parameters,
                     numChunks,
+                    maxLocks,
+                    shutdownSignal,
                 },
             })
         } catch (err) {
@@ -87,17 +91,21 @@ export function initExpress({
     })
 
     app.get('/verifier/chunks', (req, res) => {
-        logger.info(`GET /verifier/chunks`)
+        logger.debug(`GET /verifier/chunks`)
         try {
             const chunks = coordinator.getVerifierChunks()
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
             res.json({
                 status: 'ok',
                 result: {
                     chunks,
                     parameters,
                     numChunks,
+                    maxLocks,
+                    shutdownSignal,
                 },
             })
         } catch (err) {
@@ -132,7 +140,7 @@ export function initExpress({
 
     app.get('/chunks/:id/info', (req, res) => {
         const chunkId = req.params.id
-        logger.info(`GET /chunks/${chunkId}/info`)
+        logger.debug(`GET /chunks/${chunkId}/info`)
         try {
             const chunk = coordinator.getChunkDownloadInfo(chunkId)
             res.json({

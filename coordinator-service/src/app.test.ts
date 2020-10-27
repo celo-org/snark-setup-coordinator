@@ -44,6 +44,7 @@ describe('app', () => {
         const config = {
             version: 0,
             maxLocks: 1,
+            shutdownSignal: false,
             parameters: {},
             contributorIds: ['frank', 'becky', 'pat'],
             verifierIds: ['verifier0'],
@@ -192,6 +193,8 @@ describe('app', () => {
                 chunks: [{ lockHolder: null, chunkId: '1' }],
                 parameters: {},
                 numChunks: 4,
+                maxLocks: 1,
+                shutdownSignal: false,
             }
             expect(res.body.result).to.deep.equal(expected)
         })
@@ -217,6 +220,8 @@ describe('app', () => {
                 ],
                 parameters: {},
                 numChunks: 4,
+                maxLocks: 1,
+                shutdownSignal: false,
             }
             expect(res.body.result).to.deep.equal(expected)
         })
