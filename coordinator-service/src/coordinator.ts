@@ -28,6 +28,7 @@ export interface Coordinator {
     getNumChunks(): number
     getMaxLocks(): number
     getShutdownSignal(): boolean
+    setShutdownSignal(signal: boolean): void
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
     tryLockChunk(chunkId: string, particpantId: string): boolean

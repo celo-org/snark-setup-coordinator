@@ -1,4 +1,5 @@
 import express = require('express')
+import { logger } from './logger'
 
 export interface AuthenticateStrategy {
     /**
@@ -16,6 +17,7 @@ export function authenticate(
         try {
             req.participantId = strategy.verify(req)
         } catch (error) {
+            logger.warn(error.message)
             res.status(401).json({
                 status: 'error',
                 message: error.message,

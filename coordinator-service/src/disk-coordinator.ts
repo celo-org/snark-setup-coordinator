@@ -99,7 +99,7 @@ export class DiskCoordinator implements Coordinator {
     getContributorChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this.db
         return ceremony.chunks
-            .filter((a) => !hasContributed(contributorId, a))
+            .filter((a) => !hasContributed(contributorId, a) && isVerified(a))
             .map(({ lockHolder, chunkId }) => {
                 return {
                     lockHolder,
@@ -130,6 +130,11 @@ export class DiskCoordinator implements Coordinator {
 
     getShutdownSignal(): boolean {
         return this.db.shutdownSignal
+    }
+
+    setShutdownSignal(signal: boolean): void {
+        this.db.shutdownSignal = signal
+        this._writeDb()
     }
 
     static _getChunk(ceremony: Ceremony, chunkId: string): LockedChunkData {
@@ -179,6 +184,17 @@ export class DiskCoordinator implements Coordinator {
     }
 
     tryLockChunk(chunkId: string, participantId: string): boolean {
+        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
+        if (chunk.lockHolder) {
+            if (chunk.lockHolder == participantId) {
+                return false
+            } else {
+                throw new Error(
+                    `${participantId} can't lock chunk ${chunkId} since it's already locked by ${chunk.lockHolder}`,
+                )
+            }
+        }
+
         const holding = this.db.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
         )
@@ -188,10 +204,6 @@ export class DiskCoordinator implements Coordinator {
             )
         }
 
-        const chunk = DiskCoordinator._getChunk(this.db, chunkId)
-        if (chunk.lockHolder) {
-            return false
-        }
         //
         // Return false if contributor trying to lock unverified chunk or
         // if verifier trying to lock verified chunk.
@@ -199,12 +211,16 @@ export class DiskCoordinator implements Coordinator {
         // to the chunk.
         const verifier = this.db.verifierIds.includes(participantId)
         if (!verifier && hasContributed(participantId, chunk)) {
-            return false
+            throw new Error(
+                `${participantId} can't lock chunk ${chunkId} since they already contributed to it`,
+            )
         }
         const lastContribution =
             chunk.contributions[chunk.contributions.length - 1]
         if (lastContribution.verified === verifier) {
-            return false
+            throw new Error(
+                `${participantId} can't lock chunk ${chunkId} since it's either verified and they're a verifier or it's unverified and they're a contributor`,
+            )
         }
 
         chunk.lockHolder = participantId
