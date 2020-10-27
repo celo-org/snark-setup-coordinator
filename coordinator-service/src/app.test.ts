@@ -219,6 +219,7 @@ describe('app', () => {
                     { lockHolder: null, chunkId: '2' },
                     { lockHolder: null, chunkId: '4' },
                 ],
+                numNonContributed: 2,
                 parameters: {},
                 numChunks: 4,
                 maxLocks: 1,
