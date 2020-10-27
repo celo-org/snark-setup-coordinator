@@ -23,6 +23,7 @@ export interface Coordinator {
     getCeremony(): ReadonlyCeremony
     setCeremony(ceremony: Ceremony): void
     getParameters(): CeremonyParameters
+    getNumNonContributedChunks(contributorId: string): number
     getContributorChunks(participantId: string): ChunkInfo[]
     getVerifierChunks(): ChunkInfo[]
     getNumChunks(): number
