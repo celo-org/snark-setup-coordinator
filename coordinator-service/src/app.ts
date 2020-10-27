@@ -65,6 +65,47 @@ export function initExpress({
         },
     )
 
+    app.get('/contributor/:id/chunks', (req, res) => {
+        const participantId = req.params.id
+        logger.info(`GET /contributor/${participantId}/chunks`)
+        try {
+            const chunks = coordinator.getContributorChunks(participantId)
+            const numChunks = coordinator.getNumChunks()
+            const parameters = coordinator.getParameters()
+            res.json({
+                status: 'ok',
+                result: {
+                    chunks,
+                    parameters,
+                    numChunks,
+                },
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
+
+    app.get('/verifier/chunks', (req, res) => {
+        logger.info(`GET /verifier/chunks`)
+        try {
+            const chunks = coordinator.getVerifierChunks()
+            const numChunks = coordinator.getNumChunks()
+            const parameters = coordinator.getParameters()
+            res.json({
+                status: 'ok',
+                result: {
+                    chunks,
+                    parameters,
+                    numChunks,
+                },
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
+
     app.post(
         '/chunks/:id/lock',
         authenticateRequests,
@@ -88,6 +129,21 @@ export function initExpress({
             }
         },
     )
+
+    app.get('/chunks/:id/info', (req, res) => {
+        const chunkId = req.params.id
+        logger.info(`GET /chunks/${chunkId}/info`)
+        try {
+            const chunk = coordinator.getChunkDownloadInfo(chunkId)
+            res.json({
+                status: 'ok',
+                result: chunk,
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
 
     app.post(
         '/chunks/:id/unlock',

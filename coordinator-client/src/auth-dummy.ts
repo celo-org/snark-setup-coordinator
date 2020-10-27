@@ -20,6 +20,6 @@ export class AuthDummy implements Auth {
     signMessage(
         message: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): string {
-        return ''
+        return 'dummy'.padEnd(132, '_')
     }
 }

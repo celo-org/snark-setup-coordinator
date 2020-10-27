@@ -1,13 +1,27 @@
 import fs from 'fs'
 import clonedeep = require('clone-deep')
 
-import { Coordinator } from './coordinator'
-import { Ceremony, ReadonlyCeremony, LockedChunkData } from './ceremony'
+import { Coordinator, ChunkInfo, ChunkDownloadInfo } from './coordinator'
+import {
+    Ceremony,
+    CeremonyParameters,
+    ChunkData,
+    LockedChunkData,
+    ReadonlyCeremony,
+} from './ceremony'
 import { isContributorData } from './contribution-data'
 import { isVerificationData } from './verification-data'
 
 function timestamp(): string {
     return new Date().toISOString()
+}
+
+function isVerified({ contributions }: ChunkData): boolean {
+    return contributions.every((a) => a.verified)
+}
+
+function hasContributed(id: string, { contributions }: ChunkData): boolean {
+    return contributions.some((a) => a.contributorId == id)
 }
 
 export class DiskCoordinator implements Coordinator {
@@ -78,6 +92,38 @@ export class DiskCoordinator implements Coordinator {
         return this.db
     }
 
+    getParameters(): CeremonyParameters {
+        return clonedeep(this.db.parameters)
+    }
+
+    getContributorChunks(contributorId: string): ChunkInfo[] {
+        const ceremony = this.db
+        return ceremony.chunks
+            .filter((a) => !hasContributed(contributorId, a))
+            .map(({ lockHolder, chunkId }) => {
+                return {
+                    lockHolder,
+                    chunkId,
+                }
+            })
+    }
+
+    getVerifierChunks(): ChunkInfo[] {
+        const ceremony = this.db
+        return ceremony.chunks
+            .filter((a) => !isVerified(a))
+            .map(({ lockHolder, chunkId }) => {
+                return {
+                    lockHolder,
+                    chunkId,
+                }
+            })
+    }
+
+    getNumChunks(): number {
+        return this.db.chunks.length
+    }
+
     static _getChunk(ceremony: Ceremony, chunkId: string): LockedChunkData {
         const chunk = ceremony.chunks.find((chunk) => chunk.chunkId == chunkId)
         if (!chunk) {
@@ -100,6 +146,30 @@ export class DiskCoordinator implements Coordinator {
         return clonedeep(DiskCoordinator._getChunk(this.db, chunkId))
     }
 
+    getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo {
+        const { lockHolder, contributions } = DiskCoordinator._getChunk(
+            this.db,
+            chunkId,
+        )
+        return {
+            chunkId,
+            lockHolder,
+            lastResponseUrl:
+                contributions.length > 0
+                    ? contributions[contributions.length - 1]
+                          .contributedLocation
+                    : null,
+            lastChallengeUrl:
+                contributions.length > 0
+                    ? contributions[contributions.length - 1].verifiedLocation
+                    : null,
+            previousChallengeUrl:
+                contributions.length > 1
+                    ? contributions[contributions.length - 2].verifiedLocation
+                    : null,
+        }
+    }
+
     tryLockChunk(chunkId: string, participantId: string): boolean {
         const holding = this.db.chunks.filter(
             (chunk) => chunk.lockHolder === participantId,
@@ -117,8 +187,12 @@ export class DiskCoordinator implements Coordinator {
         //
         // Return false if contributor trying to lock unverified chunk or
         // if verifier trying to lock verified chunk.
-        //
+        // Also return false if contributor has already contributed
+        // to the chunk.
         const verifier = this.db.verifierIds.includes(participantId)
+        if (!verifier && hasContributed(participantId, chunk)) {
+            return false
+        }
         const lastContribution =
             chunk.contributions[chunk.contributions.length - 1]
         if (lastContribution.verified === verifier) {
