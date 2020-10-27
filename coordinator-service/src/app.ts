@@ -98,6 +98,7 @@ export function initExpress({
         logger.debug(`GET /verifier/chunks`)
         try {
             const chunks = coordinator.getVerifierChunks()
+            const numNonContributed = chunks.length
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
@@ -106,6 +107,7 @@ export function initExpress({
                 status: 'ok',
                 result: {
                     chunks,
+                    numNonContributed,
                     parameters,
                     numChunks,
                     maxLocks,
