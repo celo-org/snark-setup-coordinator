@@ -1,0 +1,29 @@
+{{ if $.Values.new_challenge.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ tpl $.Values.new_challenge.fullName }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ tpl $.Values.new_challenge.fullName }}
+    spec:
+      containers:
+        - image: {{ tpl $.Values.new_challenge.image.full }}
+          name: {{ tpl $.Values.new_challenge.fullName }}
+          envFrom:
+            - configMapRef:
+                name: {{ tpl $.Values.new_challenge.fullName }}-configmap
+          volumeMounts:
+            - name: {{ tpl $.Values.new_challenge.fullName }}-secret
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          command: ["npm"]
+          args: ["start", "--", "new", "--count=4"]
+      restartPolicy: Never
+      volumes:
+        - name: {{ tpl $.Values.new_challenge.fullName }}-secret
+          secret:
+            secretName: {{ tpl $.Values.new_challenge.fullName }}-secret
+{{ end }}
