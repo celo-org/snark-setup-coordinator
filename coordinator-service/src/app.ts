@@ -70,6 +70,9 @@ export function initExpress({
         logger.debug(`GET /contributor/${participantId}/chunks`)
         try {
             const chunks = coordinator.getContributorChunks(participantId)
+            const numNonContributed = coordinator.getNumNonContributedChunks(
+                participantId,
+            )
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
@@ -78,6 +81,7 @@ export function initExpress({
                 status: 'ok',
                 result: {
                     chunks,
+                    numNonContributed,
                     parameters,
                     numChunks,
                     maxLocks,

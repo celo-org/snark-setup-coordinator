@@ -96,6 +96,12 @@ export class DiskCoordinator implements Coordinator {
         return clonedeep(this.db.parameters)
     }
 
+    getNumNonContributedChunks(contributorId: string): number {
+        const ceremony = this.db
+        return ceremony.chunks.filter((a) => !hasContributed(contributorId, a))
+            .length
+    }
+
     getContributorChunks(contributorId: string): ChunkInfo[] {
         const ceremony = this.db
         return ceremony.chunks

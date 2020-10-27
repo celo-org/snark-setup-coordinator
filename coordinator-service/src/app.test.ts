@@ -191,6 +191,7 @@ describe('app', () => {
             expect(res).to.have.status(200)
             const expected = {
                 chunks: [{ lockHolder: null, chunkId: '1' }],
+                numNonContributed: 1,
                 parameters: {},
                 numChunks: 4,
                 maxLocks: 1,
