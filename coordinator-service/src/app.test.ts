@@ -281,7 +281,7 @@ describe('app', () => {
             expect(res.body.result.locked).to.equal(true)
         })
 
-        it('returns 400 if lock holder tries another lock', async () => {
+        it('returns false if lock holder tries another lock', async () => {
             await chai
                 .request(app)
                 .post('/chunks/1/lock')
@@ -290,34 +290,32 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/lock')
                 .set('authorization', 'dummy frank')
-            expect(res).to.have.status(400)
+            expect(res).to.have.status(200)
+            expect(res.body.result.locked).to.equal(false)
         })
 
-        it('returns false if contributor attempts to lock unverified', async () => {
+        it('rejects if contributor attempts to lock unverified', async () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/2/lock')
                 .set('authorization', 'dummy frank')
-            expect(res).to.have.status(200)
-            expect(res.body.result.locked).to.equal(false)
+            expect(res).to.have.status(400)
         })
 
-        it('returns false if contributor attempts to lock a chunk it has already contributed to', async () => {
+        it('rejects if contributor attempts to lock a chunk it has already contributed to', async () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/3/lock')
                 .set('authorization', 'dummy pat')
-            expect(res).to.have.status(200)
-            expect(res.body.result.locked).to.equal(false)
+            expect(res).to.have.status(400)
         })
 
-        it('returns false if verifier attempts to lock verified', async () => {
+        it('rejects if verifier attempts to lock verified', async () => {
             const res = await chai
                 .request(app)
                 .post('/chunks/1/lock')
                 .set('authorization', 'dummy verifier0')
-            expect(res).to.have.status(200)
-            expect(res.body.result.locked).to.equal(false)
+            expect(res).to.have.status(400)
         })
 
         it('accepts locks <= max locks and rejects otherwise', async () => {
@@ -356,7 +354,7 @@ describe('app', () => {
 
             res = await chai
                 .request(app)
-                .post('/chunks/3/lock')
+                .post('/chunks/4/lock')
                 .set('authorization', 'dummy frank')
             expect(res).to.have.status(400)
         })

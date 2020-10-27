@@ -1,4 +1,5 @@
 import { Coordinator } from './coordinator'
+import { logger } from './logger'
 
 /**
  * Return a middleware that authorizes requests based on `groups`.
@@ -25,6 +26,7 @@ export function authorize({
         }
 
         const err = new Error(`Not authorized for ${req.path}`)
+        logger.warn(err.message)
         res.status(403).json({
             status: 'error',
             message: err.message,

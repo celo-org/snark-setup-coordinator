@@ -267,5 +267,24 @@ export function initExpress({
         },
     )
 
+    app.post(
+        '/shutdown-signal',
+        authenticateRequests,
+        allowVerifiers,
+        bodyParser.json(),
+        (req, res) => {
+            logger.debug('POST /shutdown-signal')
+            try {
+                coordinator.setShutdownSignal(req.body.signal)
+                res.json({
+                    status: 'ok',
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
     return app
 }
