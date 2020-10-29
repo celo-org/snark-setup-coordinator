@@ -31,11 +31,13 @@ export class DiskCoordinator implements Coordinator {
     static init({
         config,
         dbPath,
+        initialVerifier = null,
         force = false,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any
         dbPath: string
+        initialVerifier?: string
         force?: boolean
     }): void {
         const configVersion =
@@ -48,6 +50,12 @@ export class DiskCoordinator implements Coordinator {
         }
 
         config = JSON.parse(JSON.stringify(config))
+        if (!config.verifierIds) {
+            config.verifierIds = []
+        }
+        if (initialVerifier) {
+            config.verifierIds.push(initialVerifier)
+        }
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {

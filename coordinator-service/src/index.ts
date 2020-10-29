@@ -85,6 +85,11 @@ const argv = yargs
             demand: true,
             describe: 'Initial ceremony state file',
         },
+        'initial-verifier': {
+            type: 'string',
+            demand: false,
+            describe: 'Initial verifier address',
+        },
     })
     .demandCommand(1, 'You must specify a command.')
     .strictCommands()
@@ -163,6 +168,7 @@ function http(args): void {
 
 function init(args): void {
     const dbPath = args.dbFile
+    const initialVerifier = args.initialVerifier
     const storagePath = path.dirname(dbPath)
     try {
         fs.mkdirSync(storagePath, { recursive: true })
@@ -172,7 +178,7 @@ function init(args): void {
         }
     }
     const config = JSON.parse(fs.readFileSync(args.configPath).toString())
-    DiskCoordinator.init({ config, dbPath })
+    DiskCoordinator.init({ config, dbPath, initialVerifier })
 }
 
 function main(args): void {
