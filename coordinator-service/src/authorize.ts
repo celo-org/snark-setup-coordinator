@@ -25,7 +25,7 @@ export function authorize({
             }
         }
 
-        const err = new Error(`Not authorized for ${req.path}`)
+        const err = new Error(`${participantId} not authorized for ${req.path}`)
         logger.warn(err.message)
         res.status(403).json({
             status: 'error',

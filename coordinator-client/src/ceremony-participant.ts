@@ -154,7 +154,7 @@ export class CeremonyContributor extends CeremonyParticipant {
         return ceremony.chunks.filter((chunk) => {
             const contributions = chunk.contributions
             if (!contributions.length) {
-                logger.warn(`missing contributions for chunk ${chunk.chunkId}`)
+                logger.warn(`Missing contributions for chunk ${chunk.chunkId}`)
                 return false
             }
             //
@@ -178,7 +178,7 @@ export class CeremonyVerifier extends CeremonyParticipant {
         return ceremony.chunks.filter((chunk) => {
             const contributions = chunk.contributions
             if (!contributions.length) {
-                logger.warn(`missing contributions for chunk ${chunk.chunkId}`)
+                logger.warn(`Missing contributions for chunk ${chunk.chunkId}`)
                 return false
             }
             //
