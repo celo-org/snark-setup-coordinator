@@ -1,12 +1,11 @@
-{{ if $.Values.contributor.enabled }}
+{{ if $.Values.coordinator.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $.Values.coordinator.fullName }}
+  name: {{ tpl $.Values.coordinator.fullName . }}-pvc
   labels:
-    app: {{ $.Values.coordinator.fullName }}
+    app: {{ tpl $.Values.coordinator.fullName . }}
 spec:
-  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:

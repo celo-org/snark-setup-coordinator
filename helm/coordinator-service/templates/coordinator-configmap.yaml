@@ -2,9 +2,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $.Values.coordinator.fullName }}
+  name: {{ tpl $.Values.coordinator.fullName . }}-configmap
 data:
   COORDINATOR_AUTH_TYPE: {{ $.Values.coordinator.authType }}
   COORDINATOR_CONFIG_PATH: {{ $.Values.coordinator.configPath }}
-  COORDINATOR_DISK_CHUNK_STORAGE_URL: {{ tpl $.Values.coordinator.apiURL }}
+  COORDINATOR_DISK_CHUNK_STORAGE_URL: {{ tpl $.Values.coordinator.apiURL . }}
+  COORDINATOR_AZURE_ACCESS_KEY_FILE: /secrets/azure_key
+  COORDINATOR_CHUNK_STORAGE_TYPE: {{ $.Values.coordinator.storageType }} 
+  COORDINATOR_AZURE_STORAGE_ACCOUNT: {{ $.Values.coordinator.storageAccount }}
+  COORDINATOR_AZURE_CONTAINER: {{ $.Values.coordinator.container }}
+  COORDINATOR_INITIAL_VERIFIER: {{ $.Values.coordinator.initialVerifier }}
 {{ end }}
