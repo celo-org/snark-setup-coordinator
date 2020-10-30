@@ -31,11 +31,13 @@ export class DiskCoordinator implements Coordinator {
     static init({
         config,
         dbPath,
+        initialVerifier = null,
         force = false,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any
         dbPath: string
+        initialVerifier?: string
         force?: boolean
     }): void {
         const configVersion =
@@ -48,6 +50,12 @@ export class DiskCoordinator implements Coordinator {
         }
 
         config = JSON.parse(JSON.stringify(config))
+        if (!config.verifierIds) {
+            config.verifierIds = []
+        }
+        if (initialVerifier) {
+            config.verifierIds.push(initialVerifier)
+        }
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {
@@ -272,7 +280,7 @@ export class DiskCoordinator implements Coordinator {
         if (verifier) {
             if (!isVerificationData(signedData)) {
                 throw new Error(
-                    `Data is not valid verification data: ${JSON.stringify(
+                    `Data for chunk ${chunkId} by participant ${participantId} is not valid verification data: ${JSON.stringify(
                         signedData,
                     )}`,
                 )
@@ -282,7 +290,7 @@ export class DiskCoordinator implements Coordinator {
             const contributorSignedData = contribution.contributedData
             if (!isContributorData(contributorSignedData)) {
                 throw new Error(
-                    `Data during verification is not valid contributor data: ${JSON.stringify(
+                    `Data for chunk ${chunkId} by participant ${participantId} during verification is not valid contributor data: ${JSON.stringify(
                         contributorSignedData,
                     )}`,
                 )
@@ -292,7 +300,7 @@ export class DiskCoordinator implements Coordinator {
                 signedData.data.challengeHash
             ) {
                 throw new Error(
-                    `During verification, contribution and verification challenge hashes were different: ${contributorSignedData.data.challengeHash} != ${signedData.data.challengeHash}`,
+                    `During verification for chunk ${chunkId} by participant ${participantId}, contribution and verification challenge hashes were different: ${contributorSignedData.data.challengeHash} != ${signedData.data.challengeHash}`,
                 )
             }
             if (
@@ -300,7 +308,7 @@ export class DiskCoordinator implements Coordinator {
                 signedData.data.responseHash
             ) {
                 throw new Error(
-                    `During verification, contribution and verification response hashes were different: ${contributorSignedData.data.responseHash} != ${signedData.data.responseHash}`,
+                    `During verification for chunk ${chunkId} by participant ${participantId}, contribution and verification response hashes were different: ${contributorSignedData.data.responseHash} != ${signedData.data.responseHash}`,
                 )
             }
             contribution.verifierId = participantId
@@ -313,7 +321,7 @@ export class DiskCoordinator implements Coordinator {
         } else {
             if (!isContributorData(signedData)) {
                 throw new Error(
-                    `Data is not valid contributor data: ${JSON.stringify(
+                    `Data for chunk ${chunkId} by participant ${participantId} is not valid contributor data: ${JSON.stringify(
                         signedData,
                     )}`,
                 )
@@ -324,7 +332,7 @@ export class DiskCoordinator implements Coordinator {
                 previousContribution.verifiedData
             if (!isVerificationData(previousVerificationSignedData)) {
                 throw new Error(
-                    `During contribution, data is not valid verification data: ${JSON.stringify(
+                    `During contribution for chunk ${chunkId} by participant ${participantId}, data is not valid verification data: ${JSON.stringify(
                         signedData,
                     )}`,
                 )
@@ -334,7 +342,7 @@ export class DiskCoordinator implements Coordinator {
                 previousVerificationSignedData.data.newChallengeHash
             ) {
                 throw new Error(
-                    `During contribution, contribution and verification challenge hashes were different: ${signedData.data.challengeHash} != ${previousVerificationSignedData.data.newChallengeHash}`,
+                    `During contribution for chunk ${chunkId} by participant ${participantId}, contribution and verification challenge hashes were different: ${signedData.data.challengeHash} != ${previousVerificationSignedData.data.newChallengeHash}`,
                 )
             }
             chunk.contributions.push({

@@ -244,7 +244,7 @@ export function initExpress({
                 const body = req.body
                 if (!isSignedData(body)) {
                     throw new Error(
-                        `Body should have been signed data: ${JSON.stringify(
+                        `Body for chunk ${chunkId} by participant ${participantId} should have been signed data: ${JSON.stringify(
                             body,
                         )}`,
                     )
@@ -257,7 +257,9 @@ export function initExpress({
                         participantId,
                     )
                 ) {
-                    throw new Error('Could not verify signed data')
+                    throw new Error(
+                        `Could not verify signed data for chunk ${chunkId} by participant ${participantId}`,
+                    )
                 }
                 await coordinator.contributeChunk({
                     chunkId,
