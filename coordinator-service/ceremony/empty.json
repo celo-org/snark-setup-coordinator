@@ -2,15 +2,15 @@
     "round": 0,
     "version": 0,
     "maxLocks": 3,
-    "parameters": {
-        "provingSystem": "groth16",
-        "curveKind": "bw6",
-        "chunkSize": 512,
-        "batchSize": 64,
-        "power": 10
-    },
-    "contributorIds": [
-    ],
+    "shutdownSignal": false,
+    "contributorIds": [],
     "verifierIds": [],
-    "chunks": []
+    "chunks": [],
+    "parameters": {
+      "provingSystem": "groth16",
+      "curveKind": "bw6",
+      "chunkSize": 1024,
+      "batchSize": 1024,
+      "power": 12
+    }
 }

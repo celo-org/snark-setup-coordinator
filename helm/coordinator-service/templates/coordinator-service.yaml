@@ -11,4 +11,5 @@ spec:
       name: coordinator-web
   selector:
     app: {{ tpl $.Values.coordinator.fullName . }}
+  type: LoadBalancer
 {{ end }}
