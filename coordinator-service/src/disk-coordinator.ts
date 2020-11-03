@@ -365,4 +365,8 @@ export class DiskCoordinator implements Coordinator {
         chunk.metadata.lockHolderTime = now
         this._writeDb()
     }
+
+    getRound(): number {
+        return this.db.round
+    }
 }

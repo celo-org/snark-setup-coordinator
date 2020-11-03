@@ -17,6 +17,7 @@ describe('authorizer', () => {
         const storagePath = storageDir.name
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
+            round: 0,
             version: 0,
             parameters: {},
             contributorIds: ['frank', 'becky'],

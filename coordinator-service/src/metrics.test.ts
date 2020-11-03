@@ -24,6 +24,7 @@ describe('metrics', () => {
         const storagePath = storageDir.name
         const dbPath = path.join(storagePath, 'db.json')
         const config = {
+            round: 0,
             version: 0,
             maxLocks: 1,
             shutdownSignal: false,
