@@ -371,6 +371,7 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/lock')
                 .set('authorization', 'dummy frank')
+                .send({})
             expect(res).to.have.status(200)
             expect(res.body.result.chunkId).to.equal('1')
             expect(res.body.result.locked).to.equal(true)
@@ -379,6 +380,7 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/unlock')
                 .set('authorization', 'dummy frank')
+                .send({})
             expect(res).to.have.status(200)
             expect(res.body.result.chunkId).to.equal('1')
             expect(res.body.result.unlocked).to.equal(true)
@@ -389,7 +391,31 @@ describe('app', () => {
                 .request(app)
                 .post('/chunks/1/unlock')
                 .set('authorization', 'dummy frank')
+                .send({})
             expect(res).to.have.status(400)
+        })
+
+        it('accepts an error', async () => {
+            let res
+
+            res = await chai
+                .request(app)
+                .post('/chunks/1/lock')
+                .set('authorization', 'dummy frank')
+                .send({})
+            expect(res).to.have.status(200)
+            expect(res.body.result.chunkId).to.equal('1')
+            expect(res.body.result.locked).to.equal(true)
+
+            res = await chai
+                .request(app)
+                .post('/chunks/1/unlock')
+                .set('authorization', 'dummy frank')
+                .send({ error: 'stuff' })
+            expect(res).to.have.status(200)
+            expect(res.body.result.chunkId).to.equal('1')
+            expect(res.body.result.unlocked).to.equal(true)
+            expect(res.body.result.error).to.equal('stuff')
         })
     })
 
