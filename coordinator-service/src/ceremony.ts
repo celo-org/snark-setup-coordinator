@@ -46,6 +46,7 @@ export interface Ceremony {
     contributorIds: string[]
     verifierIds: string[]
     version: number
+    round: number
     maxLocks: number
     shutdownSignal: boolean
 }

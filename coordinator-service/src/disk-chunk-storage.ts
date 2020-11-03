@@ -20,36 +20,51 @@ export class DiskChunkStorage implements ChunkStorage {
     }
 
     getChunkWriteLocation({
+        round,
         chunk,
         participantId, // eslint-disable-line @typescript-eslint/no-unused-vars
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     }): string {
         const chunkId = chunk.chunkId
         const version = chunkVersion(chunk)
-        const path = `/${chunkId}/contribution/${version}`
+        const path = `/${round}/${chunkId}/contribution/${version}`
         return `${this.chunkStorageUrl}${path}`
     }
 
     async copyChunk({
+        round,
         chunk,
         participantId,
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     }): Promise<string> {
         // It's the same as the write location.
-        return this.getChunkWriteLocation({ chunk, participantId })
+        return this.getChunkWriteLocation({ round, chunk, participantId })
     }
 
-    setChunk(chunkId: string, version: string, content: Buffer): void {
-        const contentPath = path.join(this.storagePath, `${chunkId}.${version}`)
+    setChunk(
+        round: number,
+        chunkId: string,
+        version: string,
+        content: Buffer,
+    ): void {
+        const contentPath = path.join(
+            this.storagePath,
+            `${round}.${chunkId}.${version}`,
+        )
         fs.writeFileSync(contentPath, content)
     }
 
-    getChunk(chunkId: string, version: string): Buffer {
-        const contentPath = path.join(this.storagePath, `${chunkId}.${version}`)
+    getChunk(round: number, chunkId: string, version: string): Buffer {
+        const contentPath = path.join(
+            this.storagePath,
+            `${round}.${chunkId}.${version}`,
+        )
         return fs.readFileSync(contentPath)
     }
 }

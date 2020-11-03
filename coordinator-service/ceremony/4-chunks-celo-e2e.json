@@ -1,4 +1,5 @@
 {
+    "round": 0,
     "version": 0,
     "maxLocks": 1,
     "contributorIds": [
@@ -16,7 +17,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-                    "verifiedLocation": "http://coordinator-service:8080/chunks/0/contribution/0",
+                    "verifiedLocation": "http://coordinator-service:8080/chunks/0/0/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -37,7 +38,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-                    "verifiedLocation": "http://coordinator-service:8080/chunks/1/contribution/0",
+                    "verifiedLocation": "http://coordinator-service:8080/chunks/0/1/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -58,7 +59,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-                    "verifiedLocation": "http://coordinator-service:8080/chunks/2/contribution/0",
+                    "verifiedLocation": "http://coordinator-service:8080/chunks/0/2/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -79,7 +80,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "0x02451aFDeD2418A55b77C23b7930AD7D8Bb612B5",
-                    "verifiedLocation": "http://coordinator-service:8080/chunks/3/contribution/0",
+                    "verifiedLocation": "http://coordinator-service:8080/chunks/0/3/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {

@@ -39,7 +39,9 @@ describe('BlobChunkStorage', () => {
                 ],
             } as ChunkData
             const participantId = 'ben'
+            const round = 0
             const expectedUrl = blobChunkStorage.getChunkWriteLocation({
+                round,
                 chunk,
                 participantId,
             })

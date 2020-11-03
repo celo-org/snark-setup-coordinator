@@ -30,6 +30,7 @@ export interface Coordinator {
     getMaxLocks(): number
     getShutdownSignal(): boolean
     setShutdownSignal(signal: boolean): void
+    getRound(): number
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
     tryLockChunk(chunkId: string, particpantId: string): boolean
@@ -49,17 +50,21 @@ export interface Coordinator {
 
 export interface ChunkStorage {
     getChunkWriteLocation({
+        round,
         chunk,
         participantId,
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     })
 
     copyChunk({
+        round,
         chunk,
         participantId,
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     }): Promise<string>

@@ -129,25 +129,35 @@ function http(args): void {
 
         app.use(bodyParser.raw({ limit: '5mb' }))
         app.post(
-            '/chunks/:chunkId/contribution/:version',
+            '/chunks/:round/:chunkId/contribution/:version',
             authenticateRequest,
             async (req, res) => {
                 const chunkId = req.params.chunkId
                 const version = req.params.version
+                const round = parseInt(req.params.round)
                 const content = req.body
 
-                logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
-                diskChunkStorage.setChunk(chunkId, version, content)
+                logger.info(
+                    `POST /chunks/${round}/${chunkId}/contribution/${version}`,
+                )
+                diskChunkStorage.setChunk(round, chunkId, version, content)
                 res.json({ status: 'ok' })
             },
         )
-        app.get('/chunks/:chunkId/contribution/:version', (req, res) => {
+        app.get('/chunks/:round/:chunkId/contribution/:version', (req, res) => {
             const chunkId = req.params.chunkId
             const version = req.params.version
+            const round = parseInt(req.params.round)
 
-            logger.info(`GET /chunks/${chunkId}/contribution/${version}`)
+            logger.info(
+                `GET /chunks/${round}/${chunkId}/contribution/${version}`,
+            )
             try {
-                const content = diskChunkStorage.getChunk(chunkId, version)
+                const content = diskChunkStorage.getChunk(
+                    round,
+                    chunkId,
+                    version,
+                )
                 res.status(200).send(content)
             } catch (err) {
                 logger.warn(err.message)
