@@ -135,19 +135,25 @@ function http(args): void {
                 const chunkId = req.params.chunkId
                 const version = req.params.version
                 const content = req.body
+                const round = coordinator.getRound()
 
                 logger.info(`POST /chunks/${chunkId}/contribution/${version}`)
-                diskChunkStorage.setChunk(chunkId, version, content)
+                diskChunkStorage.setChunk(round, chunkId, version, content)
                 res.json({ status: 'ok' })
             },
         )
         app.get('/chunks/:chunkId/contribution/:version', (req, res) => {
             const chunkId = req.params.chunkId
             const version = req.params.version
+            const round = coordinator.getRound()
 
             logger.info(`GET /chunks/${chunkId}/contribution/${version}`)
             try {
-                const content = diskChunkStorage.getChunk(chunkId, version)
+                const content = diskChunkStorage.getChunk(
+                    round,
+                    chunkId,
+                    version,
+                )
                 res.status(200).send(content)
             } catch (err) {
                 logger.warn(err.message)
