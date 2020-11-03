@@ -3,6 +3,11 @@ provider "azurerm" {
   features {}
 }
 
+# Configure the Microsoft Azure Active Directory Provider
+provider "azuread" {
+  version = "~> 1.0.0"
+}
+
 locals {
   environment = "development"
   cluster_name = "plumo-ceremony-${local.environment}"

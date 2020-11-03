@@ -13,6 +13,8 @@ locals {
       }
       storageAccount = replace("plumo-ceremony-${var.environment}", "-", "")
       azureAccessKey = azurerm_storage_account.coordinator_storage.primary_access_key
+      azureLoadBalancerIP = azurerm_public_ip.coordinator.ip_address
+      azureResourceGroup = data.azurerm_resource_group.existing.name
       initialVerifier = var.initial_verifier
     }
   }
@@ -20,9 +22,10 @@ locals {
 
 resource "kubernetes_namespace" "coordinator_namespace" {
   metadata {
-    name = "coordinator-service-${var.environment}"
+    name = "${var.environment}"
   }
 }
+
 
 # Deploy to cluster with Helm 
 resource "helm_release" "coordinator-service" {
@@ -35,5 +38,3 @@ resource "helm_release" "coordinator-service" {
   ]
   wait        = true
 }
-
-# Deploy Azure Front Door

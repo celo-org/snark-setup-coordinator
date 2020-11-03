@@ -6,6 +6,7 @@ metadata:
   labels:
     app: {{ tpl $.Values.coordinator.fullName . }}
 spec:
+  storageClassName: default
   accessModes:
     - ReadWriteOnce
   resources:

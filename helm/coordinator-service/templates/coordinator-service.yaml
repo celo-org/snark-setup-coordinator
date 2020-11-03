@@ -2,14 +2,18 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: {{ $.Values.coordinator.azureResourceGroup }}
   name: {{ tpl $.Values.coordinator.fullName . }}
   labels:
     app: {{ tpl $.Values.coordinator.fullName . }}
 spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ $.Values.coordinator.azureLoadBalancerIP }}
   ports:
     - port: 8080
       name: coordinator-web
   selector:
     app: {{ tpl $.Values.coordinator.fullName . }}
-  type: LoadBalancer
+  
 {{ end }}

@@ -13,5 +13,7 @@ coordinator:
   storageType: azure
   storageAccount: "ceremonykubernetes"
   azureAccessKey: ""
+  azureLoadBalancerIP: ""
+  azureResourceGroup: ""
   container: chunks
   initialVerifier: ""

@@ -14,8 +14,9 @@ resource "azurerm_kubernetes_cluster" "coordinator_cluster" {
     vm_size    = "Standard_F8"
   }
 
-  identity {
-    type = "SystemAssigned"
+  service_principal {
+    client_id = azuread_application.coordinator_cluster.application_id
+    client_secret = random_password.coordinator_sp_password.result
   }
 
   tags = {
