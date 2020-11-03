@@ -137,7 +137,7 @@ function http(args): void {
                 const round = parseInt(req.params.round)
                 const content = req.body
 
-                logger.info(
+                logger.debug(
                     `POST /chunks/${round}/${chunkId}/contribution/${version}`,
                 )
                 diskChunkStorage.setChunk(round, chunkId, version, content)
@@ -149,7 +149,7 @@ function http(args): void {
             const version = req.params.version
             const round = parseInt(req.params.round)
 
-            logger.info(
+            logger.debug(
                 `GET /chunks/${round}/${chunkId}/contribution/${version}`,
             )
             try {
