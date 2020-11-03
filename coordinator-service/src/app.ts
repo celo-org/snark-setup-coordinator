@@ -163,20 +163,26 @@ export function initExpress({
         '/chunks/:id/unlock',
         authenticateRequests,
         allowParticipants,
+        bodyParser.json(),
         (req, res) => {
             const participantId = req.participantId
             const chunkId = req.params.id
+            const error = req.body.error
             logger.debug(`POST /chunks/${chunkId}/unlock ${participantId}`)
             try {
                 const unlocked = coordinator.tryUnlockChunk(
                     chunkId,
                     participantId,
                 )
+                if (error) {
+                    logger.error(`participant reported error: ${error}`)
+                }
                 res.json({
                     status: 'ok',
                     result: {
                         chunkId,
                         unlocked,
+                        error,
                     },
                 })
             } catch (err) {
