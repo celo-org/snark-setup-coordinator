@@ -196,7 +196,9 @@ export function initExpress({
 
             logger.debug(`GET /chunks/${chunkId}/contribution ${participantId}`)
             const chunk = coordinator.getChunk(chunkId)
+            const round = coordinator.getRound()
             const writeUrl = chunkStorage.getChunkWriteLocation({
+                round,
                 chunk,
                 participantId,
             })
@@ -224,10 +226,12 @@ export function initExpress({
                 `POST /chunks/${chunkId}/contribution ${participantId}`,
             )
             const chunk = coordinator.getChunk(chunkId)
+            const round = coordinator.getRound()
 
             let url
             try {
                 url = await chunkStorage.copyChunk({
+                    round,
                     chunk,
                     participantId,
                 })

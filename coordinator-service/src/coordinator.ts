@@ -50,17 +50,21 @@ export interface Coordinator {
 
 export interface ChunkStorage {
     getChunkWriteLocation({
+        round,
         chunk,
         participantId,
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     })
 
     copyChunk({
+        round,
         chunk,
         participantId,
     }: {
+        round: number
         chunk: ChunkData
         participantId: string
     }): Promise<string>
