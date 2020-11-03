@@ -18,7 +18,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.0",
+                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.0.0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -39,7 +39,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/1.0",
+                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.1.0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -60,7 +60,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/2.0",
+                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.2.0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -81,7 +81,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/3.0",
+                    "verifiedLocation": "https://silasdev.blob.core.windows.net/contributions/0.3.0",
                     "verified": true,
                     "verifiedData": {
                         "data": {

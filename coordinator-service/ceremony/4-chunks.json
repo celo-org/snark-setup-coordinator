@@ -25,7 +25,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "http://localhost:8080/chunks/0/contribution/0",
+                    "verifiedLocation": "http://localhost:8080/chunks/0/0/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -46,7 +46,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "http://localhost:8080/chunks/1/contribution/0",
+                    "verifiedLocation": "http://localhost:8080/chunks/0/1/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -67,7 +67,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "http://localhost:8080/chunks/2/contribution/0",
+                    "verifiedLocation": "http://localhost:8080/chunks/0/2/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
@@ -88,7 +88,7 @@
                     "contributorId": null,
                     "contributedLocation": null,
                     "verifierId": "verifier0",
-                    "verifiedLocation": "http://localhost:8080/chunks/3/contribution/0",
+                    "verifiedLocation": "http://localhost:8080/chunks/0/3/contribution/0",
                     "verified": true,
                     "verifiedData": {
                         "data": {
