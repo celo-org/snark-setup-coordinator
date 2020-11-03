@@ -141,6 +141,7 @@ async function newChallenge({
         contributorCommand: command,
         seedFile: seedFile,
     })
+    const round = 0
 
     const chunks = []
     for (let chunkIndex = 0; chunkIndex < count; chunkIndex++) {
@@ -156,7 +157,7 @@ async function newChallenge({
             .readFileSync(newChallengeHashPath)
             .toString('hex')
 
-        const url = `${apiUrl}/chunks/${chunkIndex}/contribution/0`
+        const url = `${apiUrl}/chunks/${round}/${chunkIndex}/contribution/0`
         await chunkUploader.upload({
             url,
             content: fs.readFileSync(contributionPath),
