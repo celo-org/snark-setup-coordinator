@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "coordinator_cluster" {
   }
 
   service_principal {
-    client_id = azuread_application.coordinator_cluster.application_id
+    client_id     = azuread_application.coordinator_cluster.application_id
     client_secret = random_password.coordinator_sp_password.result
   }
 

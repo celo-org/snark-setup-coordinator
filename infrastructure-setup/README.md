@@ -1,23 +1,45 @@
-# Infrastructure setup
+# Infrastructure Setup 
 
-## Setup storage account and container
+The infrastructure for the SNARK Ceremony is designed to be deployed with Terraform and Helm 3, you will need the binaries for both of these installed before proceeding with a Deployment. 
 
-```
-# Existing subscription to create storage account in
-SUBSCRIPTION=celo-testnet
-# Existing resource group to create storage account in
-GROUP=...
-# Name to create storage account with
-STORAGE_ACCOUNT_NAME=...
-```
+- Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
+- Helm: https://helm.sh/docs/intro/install/
 
-Create storage account and containers:
+This deployment also relies exclusively on Azure resources, and will require the machine you are deploying from to be properly authenticated via the Azure CLI. 
 
-```
-az deployment group create \
-  --name contribution-storage \
-  --subscription $SUBSCRIPTION \
-  --resource-group $GROUP \
-  --parameters storageAccountName=$STORAGE_ACCOUNT_NAME \
-  --template-file template.json
-```
+`az login`
+
+For more details see: https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli
+
+{{ Insert permissions that are required here. }}
+
+## Create Your Environment
+
+An example deployment is available in `/terraform/example`. Depending on the available infrastructure, you may want to deploy the Ceremony to an existing Kubernetes cluster, however an Azure Kuberentes module has been provided that creates the required resources. 
+
+You may use the example deployment for testing purposes, but it is recommended that you modify the variables to suit your setup. 
+
+## Seeing What Will Be Deployed 
+
+Running `terraform plan` will have Terraform resolve the dependency graph of what will be deployed, but stop short of deploying it. 
+
+## Creating the Infrastructure
+
+Running `terraform apply` in the example directory will get you the following: 
+
+- An Azure Resource Group
+- An Azure Kubernetes Cluster
+- Helm releases consisting of: 
+  - Ceremony Coordinator Service API 
+  - Ceremony Verifiers (ToDo)
+  - Prometheus (ToDo)
+- An Azure Front Door pointed at the Coordinator Service API
+- An Azure Storage Account for the Coordinator Service API 
+
+Note: The deploy from scratch will take between 4-8 minutes, primarily due to deploying the cluster. To speed up deployments, specify an existing K8s cluster in your environment.
+
+## Cleaning Up 
+
+Running `terraform destroy` will clean up your environment and any resources that were created.
+
+
