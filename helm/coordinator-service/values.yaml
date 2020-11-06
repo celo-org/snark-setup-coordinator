@@ -17,3 +17,6 @@ coordinator:
   azureResourceGroup: ""
   container: chunks
   initialVerifier: ""
+
+participant: 
+  enabled: false

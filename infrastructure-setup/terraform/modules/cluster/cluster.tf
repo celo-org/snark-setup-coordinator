@@ -19,6 +19,11 @@ resource "azurerm_kubernetes_cluster" "coordinator_cluster" {
     client_secret = random_password.coordinator_sp_password.result
   }
 
+  oms_agent {
+    enabled = true
+    log_analytics_workspace_id = ""
+  }
+
   tags = {
     Environment = var.environment
   }

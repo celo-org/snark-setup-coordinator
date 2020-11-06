@@ -10,30 +10,20 @@ provider "azuread" {
 
 # Local variables that define the deployment, make changes here as-needed
 locals {
-  environment                   = "development"
-  cluster_name                  = "plumo-ceremony-${local.environment}"
-  cluster_dns_prefix            = "plumoceremony${local.environment}"
-  resource_group_name           = "coordinator-ceremony-${local.environment}"
+  environment                   = "example"
+  cluster_prefix                = "plumo-${local.environment}"
+  resource_group_name           = "plumo-${local.environment}"
   coordinator_service_image_tag = "test"
   coordinator_service_image     = "coordinator-service"
   initial_verifier              = "0x07dfadb3483c474fc0913a232cc3a06483d17060"
 }
 
 resource "azurerm_resource_group" "coordinator_group" {
-  name     = "coordinator-ceremony-${local.environment}"
+  name     = local.resource_group_name
   location = "West US"
 }
 
-# This module deploys a Kubernetes cluster and provides outputs
-# for the kubectl configuration to be passed to Helm
-module "cluster" {
-  source              = "../modules/cluster"
-  environment         = local.environment
-  cluster_name        = local.cluster_name
-  cluster_dns_prefix  = local.cluster_dns_prefix
-  resource_group_name = local.resource_group_name
-  depends_on          = [azurerm_resource_group.coordinator_group]
-}
+
 
 # The Helm 3 Provider, you can simply configure this if you need to deploy to an existing cluster.
 # Ex. Azure Cluster Data Source: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/kubernetes_cluster
@@ -41,12 +31,12 @@ provider helm {
   version = "~> 1.3.2"
   debug   = true
   kubernetes {
-    host                   = module.cluster.kube_config.0.host
-    client_certificate     = base64decode(module.cluster.kube_config.0.client_certificate)
-    client_key             = base64decode(module.cluster.kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(module.cluster.kube_config.0.cluster_ca_certificate)
-    username               = module.cluster.kube_config.0.username
-    password               = module.cluster.kube_config.0.password
+    host                   = module.aks.host
+    client_certificate     = base64decode(module.aks.client_certificate)
+    client_key             = base64decode(module.aks.client_key)
+    cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+    username               = module.aks.username
+    password               = module.aks.password
     load_config_file       = false
   }
 }
@@ -54,12 +44,12 @@ provider helm {
 # Kubernetes Provider (used for creating namespaces)
 provider "kubernetes" {
   version                = "~> 1.13.3"
-  host                   = module.cluster.kube_config[0].host
-  client_certificate     = base64decode(module.cluster.kube_config[0].client_certificate)
-  client_key             = base64decode(module.cluster.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(module.cluster.kube_config[0].cluster_ca_certificate)
-  username               = module.cluster.kube_config[0].username
-  password               = module.cluster.kube_config[0].password
+  host                   = module.aks.host
+  client_certificate     = base64decode(module.aks.client_certificate)
+  client_key             = base64decode(module.aks.client_key)
+  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+  username               = module.aks.username
+  password               = module.aks.password
   load_config_file       = false
 }
 
@@ -71,5 +61,16 @@ module "deployment" {
   coordinator_service_image     = local.coordinator_service_image
   initial_verifier              = local.initial_verifier
   resource_group_name           = local.resource_group_name
-  depends_on                    = [azurerm_resource_group.coordinator_group, module.cluster]
+  depends_on                    = [azurerm_resource_group.coordinator_group]
+}
+
+output "front_door_hostname" {
+  value = module.deployment.front_door_hostname
+}
+output "cluster_name" {
+  value = "${local.cluster_prefix}-aks"
+}
+
+output "kube_ctl_command" {
+  value = "az aks get-credentials --resource-group ${local.resource_group_name} --name ${local.cluster_prefix}-aks"
 }
