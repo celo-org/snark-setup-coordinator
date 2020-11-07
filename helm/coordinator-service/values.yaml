@@ -1,7 +1,7 @@
 environment: development
 coordinator: 
   enabled: true
-  fullName: "ceremony-coordinator-{{$.Values.environment}}"
+  fullName: "plumo-coordinator-{{$.Values.environment}}"
   image: 
     repo: "us.gcr.io/celo-testnet"
     image: coordinator-service
@@ -16,7 +16,18 @@ coordinator:
   azureLoadBalancerIP: ""
   azureResourceGroup: ""
   container: chunks
-  initialVerifier: ""
+  initialVerifierAddresses: ""
 
 participant: 
   enabled: false
+  fullName: "plumo-verifier-{{$.Values.environment}}"
+  image: 
+    repo: "us.gcr.io/celo-testnet"
+    image: snark-ceremony-operator
+    tag: test
+    full: "{{$.Values.participant.image.repo}}/{{$.Values.participant.image.image}}:{{$.Values.participant.image.tag}}"
+  participationMode: verify #contribute 
+  plumoKeys: 
+    - key: ""
+      password: ""
+  coordinatorUri: http://{{ tpl $.Values.coordinator.fullname . }}:8080

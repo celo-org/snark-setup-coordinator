@@ -1,0 +1,39 @@
+{{ if $.Values.participant.enabled }}
+{{- range $index, $keyPair := .Values.participant.plumoKeys }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ tpl $.Values.participant.fullName $ }}-{{ $index }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ tpl $.Values.participant.fullName $ }}-{{ $index }}
+  template:
+    metadata:
+      labels:
+        app: {{ tpl $.Values.participant.fullName $ }}-{{ $index }}
+    spec:
+      containers:
+        - image: {{ tpl $.Values.participant.image.full $ }}
+          imagePullPolicy: Always
+          name: verifier
+          command: ["sh", "-c"]
+          args: ["echo $(cat /secrets/password) |  ./contribute --unsafe-passphrase --keys-path /secrets/plumo.keys --coordinator-url $COORDINATOR_IP --participation-mode $PARTICIPATION_MODE & touch snark-setup.log && tail -f snark-setup.log"]
+          env: 
+            - name: RUST_LOG
+              value: info
+          envFrom:
+            - configMapRef:
+                name: {{ tpl $.Values.participant.fullName $ }}-configmap
+          volumeMounts:
+            - name: secrets
+              mountPath: "/secrets/"
+              readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: {{ tpl $.Values.participant.fullName $ }}-secret-{{ $index }}
+{{ end }}
+{{ end }}

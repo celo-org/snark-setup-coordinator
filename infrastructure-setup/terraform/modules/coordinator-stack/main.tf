@@ -15,7 +15,26 @@ locals {
       azureAccessKey      = azurerm_storage_account.coordinator_storage.primary_access_key
       azureLoadBalancerIP = azurerm_public_ip.coordinator.ip_address
       azureResourceGroup  = data.azurerm_resource_group.existing.name
-      initialVerifier     = var.initial_verifier
+      initialVerifierAddresses    = var.initial_verifier_addresses
+    }
+  }
+  verifier_vars = {
+    environment = var.environment
+    coordinator = {
+      enabled = false
+    }
+    participant = {
+      enabled = true
+      participationMode = "verify"
+      image = {
+        image = var.verifier_image
+        tag   = var.verifier_image_tag
+      }
+      plumoKeys = [ for pair in var.verifier_credentials: {
+        key = file(pair.path), 
+        password = pair.password
+      }]
+      coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
     }
   }
 }
@@ -27,8 +46,8 @@ resource "kubernetes_namespace" "coordinator_namespace" {
 }
 
 
-# Deploy to cluster with Helm 
-resource "helm_release" "coordinator-service" {
+# Deploy Coordinator to cluster with Helm 
+resource "helm_release" "coordinator_service" {
   name      = "coordinator-service-${var.environment}"
   chart     = "../../../helm/coordinator-service"
   version   = "0.1.1"
@@ -37,4 +56,17 @@ resource "helm_release" "coordinator-service" {
     yamlencode(local.coordinator_vars)
   ]
   wait = true
+}
+
+# Deploy Verifiers to cluster with Helm 
+resource "helm_release" "verifiers" {
+  name      = "verifiers-${var.environment}"
+  chart     = "../../../helm/coordinator-service"
+  version   = "0.1.1"
+  namespace = kubernetes_namespace.coordinator_namespace.metadata[0].name
+  values = [
+    yamlencode(local.verifier_vars)
+  ]
+  wait = true
+  depends_on = [helm_release.coordinator_service]
 }
