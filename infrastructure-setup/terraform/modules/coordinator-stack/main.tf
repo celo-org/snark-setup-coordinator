@@ -37,6 +37,23 @@ locals {
       coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
     }
   }
+  monitor_vars = {
+    environment = var.environment
+    coordinator = {
+      enabled = false
+    }
+    participant = {
+      enabled = false
+    }
+    monitor = {
+      image = {
+        image = var.monitor_image
+        tag   = var.monitor_image_tag
+      }
+      pollingInterval = var.monitor_polling_interval
+      coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
+    }
+  }
 }
 
 resource "kubernetes_namespace" "coordinator_namespace" {

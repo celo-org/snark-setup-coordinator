@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: Always
           name: verifier
           command: ["sh", "-c"]
-          args: ["echo $(cat /secrets/password) |  ./contribute --unsafe-passphrase --keys-path /secrets/plumo.keys --coordinator-url $COORDINATOR_IP --participation-mode $PARTICIPATION_MODE & touch snark-setup.log && tail -f snark-setup.log"]
+          args: ["echo $(cat /secrets/password) |  ./contribute --unsafe-passphrase --keys-path /secrets/plumo.keys --coordinator-url $COORDINATOR_URI --participation-mode $PARTICIPATION_MODE & touch snark-setup.log && tail -f snark-setup.log"]
           env: 
             - name: RUST_LOG
               value: info

@@ -44,3 +44,14 @@ variable "verifier_credentials" {
     password = "password"
   }]
 }
+
+variable "monitor_image" {
+  type        = string
+  description = "The image to use in the monitor deployment"
+}
+
+variable "monitor_image_tag" {
+  type        = string
+  description = "The tag to use in the monitor deployment"
+  default     = "test"
+}

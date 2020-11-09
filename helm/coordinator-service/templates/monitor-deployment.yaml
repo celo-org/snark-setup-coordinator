@@ -1,0 +1,29 @@
+{{ if $.Values.monitor.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ tpl $.Values.monitor.fullName $ }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ tpl $.Values.monitor.fullName $ }}
+  template:
+    metadata:
+      labels:
+        app: {{ tpl $.Values.monitor.fullName $ }}
+    spec:
+      containers:
+        - image: {{ tpl $.Values.monitor.image.full $ }}
+          imagePullPolicy: Always
+          name: verifier
+          command: ["sh", "-c"]
+          args: ["./monitor --polling-interval $POLLING_INTERVAL --coordinator-url $COORDINATOR_URI"]
+          env: 
+            - name: RUST_LOG
+              value: info
+          envFrom:
+            - configMapRef:
+                name: {{ tpl $.Values.monitor.fullName $ }}-configmap
+{{ end }}
+{{ end }}
