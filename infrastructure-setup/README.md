@@ -27,7 +27,7 @@ Make note of the generated account address and the path of the key, you will nee
 
 The example deployment uses `test` images, to build your own from source, run the `release-docker.py` script in the coordinator and operator repositories. 
 
-`python3 release-docker.py release-docker --tag $YOUR_TAG_HERE`
+`python3 scripts/release-docker.py release-docker --tag $YOUR_TAG_HERE`
 
 You may optionally specify a different repository (like dockerhub) with the `--repository` flag: 
 
@@ -180,3 +180,12 @@ k delete pod plumo-coordinator-example-0
 Running `terraform destroy` will clean up your environment and any resources that were created.
 
 
+NOTE: There is currently a bug in the Azure LoadBalancer Service Finalizer, which will (occasionally) prevent the deployed namespace from being deleted. This, (annoyingly), can be fixed by manually removing the load-balancer finalizer like so: 
+
+`KUBE_EDITOR="vim" k edit svc plumo-coordinator-$ENVIRONMENT_NAME`
+
+and replacing the `finalizers` block with an empty array `[]` like so: 
+
+`finalizers: []`
+
+Saving the file will result in the namespace being updated and likely immediately deleted. From there you may proceed with another `terraform destroy`.
