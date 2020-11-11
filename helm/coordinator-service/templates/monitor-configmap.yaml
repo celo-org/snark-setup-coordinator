@@ -5,5 +5,5 @@ metadata:
   name: {{ tpl $.Values.monitor.fullName . }}-configmap
 data:
     COORDINATOR_URI: {{ tpl $.Values.monitor.coordinatorUri . }}
-    POLLING_INTERVAL: {{ $.Values.monitor.pollingInterval }}
+    POLLING_INTERVAL: {{ $.Values.monitor.pollingInterval | quote }}
 {{ end }}

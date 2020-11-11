@@ -51,6 +51,6 @@ module "aks" {
   prefix              = local.cluster_prefix
   vnet_subnet_id      = module.network.vnet_subnets[0]
   os_disk_size_gb     = 50
-  agents_count = 3
-  depends_on = [module.network]
+  agents_count        = 3
+  depends_on          = [module.network, azuread_service_principal_password.coordinator_cluster]
 }

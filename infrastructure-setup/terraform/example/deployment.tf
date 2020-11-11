@@ -17,18 +17,21 @@ locals {
   coordinator_service_image     = "coordinator-service"
   verifier_image                = "snark-ceremony-operator"
   verifier_image_tag            = "test"
-  initial_verifier_addresses    = "0x07dfadb3483c474fc0913a232cc3a06483d17060 0x8be982eb27b9c195c4e0eb8d3da4d339d7b8d23b 0xdd13467160aff91113994cb1aef9752debef0bfb"
+  monitor_image                 = "snark-ceremony-operator"
+  monitor_image_tag             = "test"
+  monitor_polling_interval      = 1
+  initial_verifier_addresses    = "0x6bb0e6b5f194fed57e49590981093cc887c084aa 0x36ea72ae857dbdf72e85396e6335cacc603af410 0x2eb0d7f506eddf100cfebe18d2df90d34cca6fcb"
   verifier_credentials = [
     {
-      path = "./plumo-verifier-1.keys"
+      path     = "./plumo-verifier-1.keys"
       password = "password"
     },
     {
-      path = "./plumo-verifier-2.keys"
+      path     = "./plumo-verifier-2.keys"
       password = "password"
     },
     {
-      path = "./plumo-verifier-3.keys"
+      path     = "./plumo-verifier-3.keys"
       password = "password"
     }
   ]
@@ -75,10 +78,13 @@ module "deployment" {
   environment                   = local.environment
   coordinator_service_image_tag = local.coordinator_service_image_tag
   coordinator_service_image     = local.coordinator_service_image
-  verifier_image = local.verifier_image
-  verifier_image_tag = local.verifier_image_tag
-  initial_verifier_addresses             = local.initial_verifier_addresses
-  verifier_credentials = local.verifier_credentials
+  verifier_image                = local.verifier_image
+  verifier_image_tag            = local.verifier_image_tag
+  monitor_image                 = local.monitor_image
+  monitor_image_tag             = local.monitor_image_tag
+  monitor_polling_interval      = local.monitor_polling_interval
+  initial_verifier_addresses    = local.initial_verifier_addresses
+  verifier_credentials          = local.verifier_credentials
   resource_group_name           = local.resource_group_name
   depends_on                    = [azurerm_resource_group.coordinator_group]
 }
@@ -88,6 +94,14 @@ output "front_door_hostname" {
 }
 output "cluster_name" {
   value = "${local.cluster_prefix}-aks"
+}
+
+output "storage_account_name" {
+  value = module.deployment.storage_account_name
+}
+
+output "storage_account_key" {
+  value = module.deployment.storage_account_key
 }
 
 output "kube_ctl_command" {

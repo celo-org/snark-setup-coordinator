@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ tpl $.Values.monitor.fullName $ }}
 spec:
-  replicas: 1
+  replicas: {{ $.Values.monitor.num_replicas }}
   selector:
     matchLabels:
       app: {{ tpl $.Values.monitor.fullName $ }}
@@ -25,5 +25,4 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ tpl $.Values.monitor.fullName $ }}-configmap
-{{ end }}
 {{ end }}

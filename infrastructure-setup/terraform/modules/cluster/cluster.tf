@@ -27,7 +27,7 @@ resource "azurerm_kubernetes_cluster" "coordinator_cluster" {
   tags = {
     Environment = var.environment
   }
-  depends_on = [azuread_service_principal.coordinator_cluster]
+  depends_on = [azuread_service_principal_password.coordinator_cluster]
 }
 
 output "kube_config" {

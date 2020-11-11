@@ -42,3 +42,4 @@ monitor:
     full: "{{$.Values.monitor.image.repo}}/{{$.Values.monitor.image.image}}:{{$.Values.monitor.image.tag}}"
   pollingInterval: 1 # polling interval in minutes
   coordinatorUri: http://{{ tpl $.Values.coordinator.fullname . }}:8080
+  numReplicas: 1

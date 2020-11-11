@@ -55,3 +55,16 @@ variable "monitor_image_tag" {
   description = "The tag to use in the monitor deployment"
   default     = "test"
 }
+
+variable "monitor_polling_interval" {
+  type        = number
+  description = "The number of minutes the monitor will wait in-between requests."
+  default = 1
+}
+
+variable "monitor_replicas" {
+  type        = number
+  description = "The number of monitor instances to deploy."
+  default = 1
+}
+
