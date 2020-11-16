@@ -57,8 +57,8 @@ export class DiskCoordinator implements Coordinator {
         if (initialVerifiers) {
             config.verifierIds = config.verifierIds.concat(initialVerifiers)
         }
-        logger.info("args %o", initialVerifiers)
-        logger.info("config %o", config.verifierIds)
+        logger.info('args %o', initialVerifiers)
+        logger.info('config %o', config.verifierIds)
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {
