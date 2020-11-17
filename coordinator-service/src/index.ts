@@ -178,7 +178,10 @@ function http(args): void {
 
 function init(args): void {
     const dbPath = args.dbFile
-    const initialVerifiers = args.initialVerifiers.split(' ')
+    let initialVerifiers
+    if (args.initialVerifiers) {
+        initialVerifiers = args.initialVerifiers.split(' ')
+    }
     const storagePath = path.dirname(dbPath)
     try {
         fs.mkdirSync(storagePath, { recursive: true })

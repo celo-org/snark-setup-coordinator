@@ -4,7 +4,7 @@ const { spawnSync } = require('child_process')
 const debug = false
 
 const createCluster = true
-const deleteCluster = false
+const deleteCluster = true
 const dockerBuild = true
 const runService = true
 const runNewChallenge = true
