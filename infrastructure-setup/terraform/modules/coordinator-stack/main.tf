@@ -11,11 +11,11 @@ locals {
         image = var.coordinator_service_image
         tag   = var.coordinator_service_image_tag
       }
-      storageAccount      = azurerm_storage_account.coordinator_storage.name
-      azureAccessKey      = azurerm_storage_account.coordinator_storage.primary_access_key
-      azureLoadBalancerIP = azurerm_public_ip.coordinator.ip_address
-      azureResourceGroup  = data.azurerm_resource_group.existing.name
-      initialVerifierAddresses    = var.initial_verifier_addresses
+      storageAccount           = azurerm_storage_account.coordinator_storage.name
+      azureAccessKey           = azurerm_storage_account.coordinator_storage.primary_access_key
+      azureLoadBalancerIP      = azurerm_public_ip.coordinator.ip_address
+      azureResourceGroup       = data.azurerm_resource_group.existing.name
+      initialVerifierAddresses = var.initial_verifier_addresses
     }
   }
   verifier_vars = {
@@ -24,14 +24,14 @@ locals {
       enabled = false
     }
     participant = {
-      enabled = true
+      enabled           = true
       participationMode = "verify"
       image = {
         image = var.verifier_image
         tag   = var.verifier_image_tag
       }
-      plumoKeys = [ for pair in var.verifier_credentials: {
-        key = file(pair.path), 
+      plumoKeys = [for pair in var.verifier_credentials : {
+        key      = file(pair.path),
         password = pair.password
       }]
       coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
@@ -52,7 +52,7 @@ locals {
         tag   = var.monitor_image_tag
       }
       pollingInterval = var.monitor_polling_interval
-      coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
+      coordinatorUri  = "https://plumo-setup-${var.environment}.azurefd.net"
     }
   }
 }
@@ -85,7 +85,7 @@ resource "helm_release" "verifiers" {
   values = [
     yamlencode(local.verifier_vars)
   ]
-  wait = true
+  wait       = true
   depends_on = [helm_release.coordinator_service]
 }
 
@@ -98,6 +98,6 @@ resource "helm_release" "monitors" {
   values = [
     yamlencode(local.monitor_vars)
   ]
-  wait = true
+  wait       = true
   depends_on = [helm_release.coordinator_service]
 }
