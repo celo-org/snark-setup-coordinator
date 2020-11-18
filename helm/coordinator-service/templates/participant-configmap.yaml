@@ -1,0 +1,9 @@
+{{ if $.Values.participant.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.participant.fullName . }}-configmap
+data:
+    COORDINATOR_URI: {{ tpl $.Values.participant.coordinatorUri . }}
+    PARTICIPATION_MODE: {{ $.Values.participant.participationMode }}
+{{ end }}

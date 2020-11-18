@@ -1,0 +1,44 @@
+{{ if $.Values.coordinator.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ tpl $.Values.coordinator.fullName . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ tpl $.Values.coordinator.fullName . }}
+  serviceName: {{ tpl $.Values.coordinator.fullName . }}
+  template:
+    metadata:
+      labels:
+        app: {{ tpl $.Values.coordinator.fullName . }}
+    spec:
+      containers:
+        - image: {{ tpl $.Values.coordinator.image.full . }}
+          imagePullPolicy: Always
+          name: {{ tpl $.Values.coordinator.fullName . }}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: {{ tpl $.Values.coordinator.fullName . }}-configmap
+          env:
+            - name: COORDINATOR_DB_FILE
+              value: /db/db.json
+            - name: COORDINATOR_DISK_CHUNK_STORAGE_DIRECTORY
+              value: /db
+          volumeMounts:
+            - name: db
+              mountPath: /db
+            - name: secrets
+              mountPath: "/secrets/"
+              readOnly: true
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: {{ tpl $.Values.coordinator.fullName . }}-pvc
+        - name: secrets
+          secret:
+            secretName: {{ tpl $.Values.coordinator.fullName . }}-secret
+{{ end }}

@@ -11,6 +11,7 @@ import {
 } from './ceremony'
 import { isContributorData } from './contribution-data'
 import { isVerificationData } from './verification-data'
+import { logger } from './logger'
 
 function timestamp(): string {
     return new Date().toISOString()
@@ -31,13 +32,13 @@ export class DiskCoordinator implements Coordinator {
     static init({
         config,
         dbPath,
-        initialVerifier = null,
+        initialVerifiers = null,
         force = false,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any
         dbPath: string
-        initialVerifier?: string
+        initialVerifiers?: string[]
         force?: boolean
     }): void {
         const configVersion =
@@ -53,9 +54,11 @@ export class DiskCoordinator implements Coordinator {
         if (!config.verifierIds) {
             config.verifierIds = []
         }
-        if (initialVerifier) {
-            config.verifierIds.push(initialVerifier)
+        if (initialVerifiers) {
+            config.verifierIds = config.verifierIds.concat(initialVerifiers)
         }
+        logger.info('args %o', initialVerifiers)
+        logger.info('config %o', config.verifierIds)
 
         // Add parameters if they're falsy in the config
         config.parameters = config.parameters || {
