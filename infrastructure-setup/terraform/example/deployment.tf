@@ -35,6 +35,7 @@ locals {
       password = "password"
     }
   ]
+  victorops_webhook_uri = "https://alert-mapping.victorops.com/integrations/azure/v1/<token>/Plumo"
 }
 
 resource "azurerm_resource_group" "coordinator_group" {
@@ -86,6 +87,8 @@ module "deployment" {
   initial_verifier_addresses    = local.initial_verifier_addresses
   verifier_credentials          = local.verifier_credentials
   resource_group_name           = local.resource_group_name
+  log_analytics_workspace_name  = "${local.cluster_prefix}-workspace"
+  azure_monitor_alerts_webhook_uri = local.victorops_webhook_uri
   depends_on                    = [azurerm_resource_group.coordinator_group]
 }
 
