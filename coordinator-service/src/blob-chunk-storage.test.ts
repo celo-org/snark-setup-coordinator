@@ -50,5 +50,89 @@ describe('BlobChunkStorage', () => {
                 `https://${account}.blob.core.windows.net`,
             )
         })
+
+        it('returns a CDN URL when configured', () => {
+            const account = 'accountfoo'
+            const accountKey = 'doesnt matter'
+            const sharedKeyCredential = new StorageSharedKeyCredential(
+                account,
+                accountKey,
+            )
+            const mockUrl = `https://${account}.blob.core.windows.net/foo`
+            const containerClient = new ContainerClient(
+                mockUrl,
+                sharedKeyCredential,
+            )
+            const blobChunkStorage = new BlobChunkStorage({
+                containerClient,
+                sharedKeyCredential,
+                cdn: 'http://testcdn.com',
+            })
+            const chunk = {
+                chunkId: 'chunkfoo',
+                contributions: [
+                    {
+                        contributorId: null,
+                        contributedLocation: null,
+                        verifierId: 'verifier0',
+                        verifiedLocation:
+                            'http://testing:8080/chunks/chunk-1/contribution/0',
+                        verified: true,
+                    },
+                ],
+            } as ChunkData
+            const participantId = 'ben'
+            const round = 0
+            const expectedUrl = blobChunkStorage.getChunkWriteLocation({
+                round,
+                chunk,
+                participantId,
+            })
+
+            expect(expectedUrl).to.include(`http://testcdn.com`)
+        })
+
+        it('returns a non-CDN URL when the length is 0', () => {
+            const account = 'accountfoo'
+            const accountKey = 'doesnt matter'
+            const sharedKeyCredential = new StorageSharedKeyCredential(
+                account,
+                accountKey,
+            )
+            const mockUrl = `https://${account}.blob.core.windows.net/foo`
+            const containerClient = new ContainerClient(
+                mockUrl,
+                sharedKeyCredential,
+            )
+            const blobChunkStorage = new BlobChunkStorage({
+                containerClient,
+                sharedKeyCredential,
+                cdn: '',
+            })
+            const chunk = {
+                chunkId: 'chunkfoo',
+                contributions: [
+                    {
+                        contributorId: null,
+                        contributedLocation: null,
+                        verifierId: 'verifier0',
+                        verifiedLocation:
+                            'http://testing:8080/chunks/chunk-1/contribution/0',
+                        verified: true,
+                    },
+                ],
+            } as ChunkData
+            const participantId = 'ben'
+            const round = 0
+            const expectedUrl = blobChunkStorage.getChunkWriteLocation({
+                round,
+                chunk,
+                participantId,
+            })
+
+            expect(expectedUrl).to.include(
+                `https://${account}.blob.core.windows.net`,
+            )
+        })
     })
 })

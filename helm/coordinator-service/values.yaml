@@ -17,6 +17,7 @@ coordinator:
   azureResourceGroup: ""
   container: chunks
   initialVerifierAddresses: ""
+  cdn: ""
 
 participant: 
   enabled: false
