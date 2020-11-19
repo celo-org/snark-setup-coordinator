@@ -2,7 +2,7 @@ resource "azurerm_cdn_profile" "cdn_plumo" {
   name                = "CDNPlumo${var.environment}"
   location            = "West US"
   resource_group_name = data.azurerm_resource_group.existing.name
-  sku                 = "Standard_Akamai"
+  sku                 = "Standard_Microsoft"
 }
 
 resource "azurerm_cdn_endpoint" "cdn_plumo_endpoint" {
