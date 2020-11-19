@@ -15,4 +15,5 @@ resource "azurerm_cdn_endpoint" "cdn_plumo_endpoint" {
     name      = "PlumoBlobStorage"
     host_name = azurerm_storage_account.coordinator_storage.primary_blob_host
   }
+  origin_host_header = azurerm_storage_account.coordinator_storage.primary_blob_host
 }
