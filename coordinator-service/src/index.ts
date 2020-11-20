@@ -114,11 +114,9 @@ function http(args): void {
             `https://${args.azureStorageAccount}.blob.core.windows.net`,
             sharedKeyCredential,
         ).getContainerClient(args.azureContainer)
-        const cdn = args.cdn
         chunkStorage = new BlobChunkStorage({
             containerClient,
             sharedKeyCredential,
-            cdn,
         })
     }
 

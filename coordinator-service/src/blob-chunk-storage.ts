@@ -16,28 +16,20 @@ const timeoutMilliseconds = 10 * 1000
 export class BlobChunkStorage implements ChunkStorage {
     sharedKeyCredential: StorageSharedKeyCredential
     containerClient: ContainerClient
-    cdn?: string
 
     constructor({
         containerClient,
         sharedKeyCredential,
-        cdn,
     }: {
         containerClient: ContainerClient
         sharedKeyCredential: StorageSharedKeyCredential
-        cdn?: string
     }) {
         this.containerClient = containerClient
         this.sharedKeyCredential = sharedKeyCredential
-        this.cdn = cdn
     }
 
     _baseUrl(): string {
-        if (this.cdn == null || !this.cdn.length) {
-            return this.containerClient.url
-        } else {
-            return `${this.cdn}/${this.containerClient.containerName}`
-        }
+        return this.containerClient.url
     }
 
     static _blobName(round, chunkId, version, participantId, suffix): string {

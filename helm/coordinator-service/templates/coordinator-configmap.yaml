@@ -12,5 +12,4 @@ data:
   COORDINATOR_AZURE_STORAGE_ACCOUNT: {{ $.Values.coordinator.storageAccount }}
   COORDINATOR_AZURE_CONTAINER: {{ $.Values.coordinator.container }}
   COORDINATOR_INITIAL_VERIFIERS: {{ $.Values.coordinator.initialVerifierAddresses }}
-  COORDINATOR_CDN: {{ $.Values.coordinator.cdn }}
 {{ end }}
