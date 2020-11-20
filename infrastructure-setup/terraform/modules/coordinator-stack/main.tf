@@ -16,7 +16,6 @@ locals {
       azureLoadBalancerIP      = azurerm_public_ip.coordinator.ip_address
       azureResourceGroup       = data.azurerm_resource_group.existing.name
       initialVerifierAddresses = var.initial_verifier_addresses
-      cdn                      = "https://CDNPlumoStorage${var.environment}.azureedge.net"
     }
   }
   verifier_vars = {
