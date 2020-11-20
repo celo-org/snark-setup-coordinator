@@ -36,7 +36,7 @@ export class BlobChunkStorage implements ChunkStorage {
         if (this.cdn == null || !this.cdn.length) {
             return this.containerClient.url
         } else {
-            return this.cdn
+            return `${this.cdn}/${this.containerClient.containerName}`
         }
     }
 
