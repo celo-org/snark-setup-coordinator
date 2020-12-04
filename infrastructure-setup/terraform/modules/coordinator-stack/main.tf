@@ -30,6 +30,7 @@ locals {
         image = var.verifier_image
         tag   = var.verifier_image_tag
       }
+      numParticipants = var.verifier_count
       plumoKeys = [for pair in var.verifier_credentials : {
         key      = file(pair.path),
         password = pair.password
