@@ -19,6 +19,7 @@ coordinator:
   initialVerifierAddresses: ""
 
 participant: 
+  numParticipants: 5
   enabled: false
   fullName: "plumo-verifier-{{$.Values.environment}}"
   image: 
