@@ -1,5 +1,5 @@
 {{ if $.Values.participant.enabled }}
-{{- range $index, $keyPair := .Values.participant.plumoKeys }}
+{{- range $index := until (int .Values.participant.numParticipants) }}
 ---
 apiVersion: apps/v1
 kind: Deployment

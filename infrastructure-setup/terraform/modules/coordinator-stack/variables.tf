@@ -45,6 +45,11 @@ variable "verifier_credentials" {
   }]
 }
 
+variable "verifier_count" {
+  type        = number
+  description = "The number of verifiers to deploy, must be less than or equal to number of keys passed."
+}
+
 variable "monitor_image" {
   type        = string
   description = "The image to use in the monitor deployment"
