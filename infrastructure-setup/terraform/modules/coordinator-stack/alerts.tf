@@ -25,12 +25,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_warnings" {
   }
 
   data_source_id = data.azurerm_log_analytics_workspace.coordinator_workspace.id
-  description    = "Alert when nWarnings > 1 in a 30 minute period."
+  description    = "Alert when nWarnings > 1 in a 5 minute period."
   enabled        = true
 
   query       = <<-QUERY
     let podPrefix = "coordinator";
-    let startTimestamp = ago(30m);
+    let startTimestamp = ago(5m);
     KubePodInventory
     | where TimeGenerated > startTimestamp
     | project ContainerID, PodName=Name, PodLabel
@@ -47,7 +47,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_warnings" {
   
   severity    = 3
   frequency   = 5
-  time_window = 30
+  time_window = 5
   
   trigger {
     operator  = "GreaterThan"
@@ -66,12 +66,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_errors" {
   }
 
   data_source_id = data.azurerm_log_analytics_workspace.coordinator_workspace.id
-  description    = "Alert when nErrors > 1 in a 30 minute period."
+  description    = "Alert when nErrors > 1 in a 5 minute period."
   enabled        = true
 
   query       = <<-QUERY
     let podPrefix = "coordinator";
-    let startTimestamp = ago(30m);
+    let startTimestamp = ago(5m);
     KubePodInventory
     | where TimeGenerated > startTimestamp
     | project ContainerID, PodName=Name, PodLabel
@@ -88,7 +88,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_errors" {
   
   severity    = 1
   frequency   = 5
-  time_window = 30
+  time_window = 5
   
   trigger {
     operator  = "GreaterThan"
