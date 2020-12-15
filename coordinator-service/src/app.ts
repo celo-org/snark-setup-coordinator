@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser'
 import express from 'express'
+import cors from 'cors'
 
 import { authenticate, AuthenticateStrategy } from './authenticate'
 import { authorize } from './authorize'
@@ -26,6 +27,7 @@ export function initExpress({
     chunkStorage: ChunkStorage
 }): express.Application {
     const app = express()
+    app.use(cors())
     const allowParticipants = authorize({
         coordinator,
         groups: ['verifierIds', 'contributorIds'],
