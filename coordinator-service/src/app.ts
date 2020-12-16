@@ -177,7 +177,9 @@ export function initExpress({
                     participantId,
                 )
                 if (error) {
-                    logger.error(`participant reported error: ${error}`)
+                    logger.error(
+                        `participant ${participantId} reported error: ${error}`,
+                    )
                 }
                 res.json({
                     status: 'ok',
