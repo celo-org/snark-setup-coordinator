@@ -178,7 +178,7 @@ export function initExpress({
                 )
                 if (error) {
                     logger.error(
-                        `participant ${participantId} reported error: ${error}`,
+                        `participant ${participantId} reported error for chunk ${chunkId}: ${error}`,
                     )
                 }
                 res.json({
