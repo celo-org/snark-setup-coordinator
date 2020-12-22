@@ -129,7 +129,7 @@ export class DiskCoordinator implements Coordinator {
             })
     }
 
-    addAttestation(att: Attestation, participantId: string) {
+    addAttestation(att: Attestation, participantId: string): void {
         if (att.address != participantId) {
             throw new Error('adding attestation to wrong participant')
         }
