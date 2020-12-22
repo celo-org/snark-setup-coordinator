@@ -6,6 +6,7 @@
     "contributorIds": [],
     "verifierIds": [],
     "chunks": [],
+    "attestations": [],
     "parameters": {
       "provingSystem": "groth16",
       "curveKind": "bw6",

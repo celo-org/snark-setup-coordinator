@@ -7,6 +7,7 @@ import { authorize } from './authorize'
 import { ChunkStorage, Coordinator } from './coordinator'
 import { logger } from './logger'
 import { isSignedData } from './signed-data'
+import { Attestation } from './ceremony'
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -96,6 +97,35 @@ export function initExpress({
         }
     })
 
+    app.get('/locked-chunks/:id', (req, res) => {
+        const participantId = req.params.id
+        logger.debug(`GET /locked-chunks/${participantId}`)
+        try {
+            const chunks = coordinator.getLockedChunks(participantId)
+            const numNonContributed = coordinator.getNumNonContributedChunks(
+                participantId,
+            )
+            const numChunks = coordinator.getNumChunks()
+            const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
+            res.json({
+                status: 'ok',
+                result: {
+                    chunks,
+                    numNonContributed,
+                    parameters,
+                    numChunks,
+                    maxLocks,
+                    shutdownSignal,
+                },
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
+
     app.get('/verifier/chunks', (req, res) => {
         logger.debug(`GET /verifier/chunks`)
         try {
@@ -138,6 +168,47 @@ export function initExpress({
                         chunkId,
                         locked,
                     },
+                })
+            } catch (err) {
+                logger.warn(err.message)
+                res.status(400).json({ status: 'error', message: err.message })
+            }
+        },
+    )
+
+    app.post(
+        '/attest',
+        authenticateRequests,
+        allowParticipants,
+        bodyParser.json(),
+        (req, res) => {
+            const participantId = req.participantId
+            logger.debug(`POST /attest ${participantId}`)
+            try {
+                const body = req.body
+                if (!isSignedData(body)) {
+                    throw new Error(
+                        `Body for attestation by participant ${participantId} should have been signed data: ${JSON.stringify(
+                            body,
+                        )}`,
+                    )
+                }
+                const { data, signature } = body
+                if (
+                    !authenticateStrategy.verifyMessage(
+                        data,
+                        signature,
+                        participantId,
+                    )
+                ) {
+                    throw new Error(
+                        `Could not verify signed data for attestation by participant ${participantId}`,
+                    )
+                }
+                coordinator.addAttestation(data as Attestation, participantId)
+                res.json({
+                    status: 'ok',
+                    result: {},
                 })
             } catch (err) {
                 logger.warn(err.message)

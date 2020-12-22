@@ -40,11 +40,18 @@ export interface CeremonyParameters {
     power?: number
 }
 
+export interface Attestation {
+    id: string
+    address: string
+    data: string
+}
+
 export interface Ceremony {
     parameters: CeremonyParameters
     chunks: LockedChunkData[]
     contributorIds: string[]
     verifierIds: string[]
+    attestations: Attestation[]
     version: number
     round: number
     maxLocks: number

@@ -9,6 +9,7 @@
     "verifierIds": [
         "verifier0"
     ],
+    "attestations": [],
     "chunks": [
         {
             "chunkId": "0",

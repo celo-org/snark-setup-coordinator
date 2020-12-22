@@ -4,6 +4,7 @@ import {
     CeremonyParameters,
     ChunkData,
     LockedChunkData,
+    Attestation,
 } from './ceremony'
 
 export interface ChunkInfo {
@@ -24,6 +25,8 @@ export interface Coordinator {
     setCeremony(ceremony: Ceremony): void
     getParameters(): CeremonyParameters
     getNumNonContributedChunks(contributorId: string): number
+    getLockedChunks(participantId: string): ChunkInfo[]
+    addAttestation(attest: Attestation, participantId: string): void
     getContributorChunks(participantId: string): ChunkInfo[]
     getVerifierChunks(): ChunkInfo[]
     getNumChunks(): number
@@ -33,8 +36,8 @@ export interface Coordinator {
     getRound(): number
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
-    tryLockChunk(chunkId: string, particpantId: string): boolean
-    tryUnlockChunk(chunkId: string, particpantId: string): boolean
+    tryLockChunk(chunkId: string, participantId: string): boolean
+    tryUnlockChunk(chunkId: string, participantId: string): boolean
     contributeChunk({
         chunkId,
         participantId,
