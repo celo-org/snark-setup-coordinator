@@ -18,6 +18,10 @@ declare global {
     }
 }
 
+export function isAttestation(a: object): a is Attestation {
+    return a['data'] || a['id'] || a['address']
+}
+
 export function initExpress({
     authenticateStrategy,
     coordinator,
@@ -205,7 +209,14 @@ export function initExpress({
                         `Could not verify signed data for attestation by participant ${participantId}`,
                     )
                 }
-                coordinator.addAttestation(data as Attestation, participantId)
+                if (!isAttestation(data)) {
+                    throw new Error(
+                        `Bad attestation data for participant ${participantId}: ${JSON.stringify(
+                            data,
+                        )}`,
+                    )
+                }
+                coordinator.addAttestation(data, participantId)
                 res.json({
                     status: 'ok',
                     result: {},
