@@ -131,7 +131,7 @@ export class DiskCoordinator implements Coordinator {
 
     addAttestation(att: Attestation, participantId: string) {
         if (att.address != participantId) {
-            throw new Error("adding attestation to wrong participant")
+            throw new Error('adding attestation to wrong participant')
         }
         const ceremony = this.db
         if (!ceremony.attestations) {
