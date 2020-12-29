@@ -192,6 +192,7 @@ describe('app', () => {
             expect(res).to.have.status(200)
             const expected = {
                 chunks: [{ lockHolder: null, chunkId: '1' }],
+                lockedChunks: [],
                 numNonContributed: 1,
                 parameters: {},
                 numChunks: 4,
@@ -282,6 +283,12 @@ describe('app', () => {
             expect(res).to.have.status(200)
             expect(res.body.result.chunkId).to.equal('1')
             expect(res.body.result.locked).to.equal(true)
+
+            const resInfo = await chai
+                .request(app)
+                .get('/contributor/frank/chunks')
+            expect(resInfo).to.have.status(200)
+            expect(resInfo.body.result.lockedChunks).to.deep.equal(['1'])
         })
 
         it('returns false if lock holder tries another lock', async () => {
@@ -611,6 +618,34 @@ describe('app', () => {
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
             expect(contributionRes).to.have.status(400)
+        })
+    })
+
+    describe('POST /attest', () => {
+        it('attests successfully', async () => {
+            const res = await chai
+                .request(app)
+                .post('/attest')
+                .set('authorization', 'dummy frank')
+                .send({
+                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    signature:
+                        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                })
+            expect(res).to.have.status(200)
+        })
+
+        it('attests for wrong participant', async () => {
+            const res = await chai
+                .request(app)
+                .post('/attest')
+                .set('authorization', 'dummy frank')
+                .send({
+                    data: { signature: 'hello', id: 'pat', address: 'pat' },
+                    signature:
+                        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                })
+            expect(res).to.have.status(400)
         })
     })
 })

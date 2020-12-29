@@ -3,6 +3,7 @@ import clonedeep = require('clone-deep')
 
 import { Coordinator, ChunkInfo, ChunkDownloadInfo } from './coordinator'
 import {
+    Attestation,
     Ceremony,
     CeremonyParameters,
     ChunkData,
@@ -53,6 +54,9 @@ export class DiskCoordinator implements Coordinator {
         config = JSON.parse(JSON.stringify(config))
         if (!config.verifierIds) {
             config.verifierIds = []
+        }
+        if (!config.attestations) {
+            config.attestations = []
         }
         if (initialVerifiers) {
             config.verifierIds = config.verifierIds.concat(initialVerifiers)
@@ -111,6 +115,25 @@ export class DiskCoordinator implements Coordinator {
         const ceremony = this.db
         return ceremony.chunks.filter((a) => !hasContributed(contributorId, a))
             .length
+    }
+
+    getLockedChunks(contributorId: string): string[] {
+        const ceremony = this.db
+        return ceremony.chunks
+            .filter((a) => a.lockHolder == contributorId)
+            .map(({ chunkId }) => chunkId)
+    }
+
+    addAttestation(att: Attestation, participantId: string): void {
+        if (att.address != participantId) {
+            throw new Error('adding attestation to wrong participant')
+        }
+        const ceremony = this.db
+        if (!ceremony.attestations) {
+            ceremony.attestations = []
+        }
+        ceremony.attestations.push(att)
+        this._writeDb()
     }
 
     getContributorChunks(contributorId: string): ChunkInfo[] {
