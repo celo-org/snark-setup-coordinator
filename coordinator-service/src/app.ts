@@ -19,7 +19,7 @@ declare global {
 }
 
 export function isAttestation(a: object): a is Attestation {
-    return a['data'] || a['id'] || a['address']
+    return a['data'] && a['id'] && a['address']
 }
 
 export function initExpress({
