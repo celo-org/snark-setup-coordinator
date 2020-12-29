@@ -25,7 +25,7 @@ export interface Coordinator {
     setCeremony(ceremony: Ceremony): void
     getParameters(): CeremonyParameters
     getNumNonContributedChunks(contributorId: string): number
-    getLockedChunks(participantId: string): ChunkInfo[]
+    getLockedChunks(participantId: string): string[]
     addAttestation(attest: Attestation, participantId: string): void
     getContributorChunks(participantId: string): ChunkInfo[]
     getVerifierChunks(): ChunkInfo[]

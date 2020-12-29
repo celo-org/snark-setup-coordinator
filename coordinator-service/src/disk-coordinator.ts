@@ -117,16 +117,11 @@ export class DiskCoordinator implements Coordinator {
             .length
     }
 
-    getLockedChunks(contributorId: string): ChunkInfo[] {
+    getLockedChunks(contributorId: string): string[] {
         const ceremony = this.db
         return ceremony.chunks
             .filter((a) => a.lockHolder == contributorId)
-            .map(({ lockHolder, chunkId }) => {
-                return {
-                    lockHolder,
-                    chunkId,
-                }
-            })
+            .map(({ chunkId }) => chunkId)
     }
 
     addAttestation(att: Attestation, participantId: string): void {

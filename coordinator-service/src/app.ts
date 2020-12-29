@@ -19,7 +19,7 @@ declare global {
 }
 
 export function isAttestation(a: object): a is Attestation {
-    return a['data'] && a['id'] && a['address']
+    return a['signature'] && a['id'] && a['address']
 }
 
 export function initExpress({
@@ -77,6 +77,7 @@ export function initExpress({
         logger.debug(`GET /contributor/${participantId}/chunks`)
         try {
             const chunks = coordinator.getContributorChunks(participantId)
+            const lockedChunks = coordinator.getLockedChunks(participantId)
             const numNonContributed = coordinator.getNumNonContributedChunks(
                 participantId,
             )
@@ -88,35 +89,7 @@ export function initExpress({
                 status: 'ok',
                 result: {
                     chunks,
-                    numNonContributed,
-                    parameters,
-                    numChunks,
-                    maxLocks,
-                    shutdownSignal,
-                },
-            })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(400).json({ status: 'error', message: err.message })
-        }
-    })
-
-    app.get('/locked-chunks/:id', (req, res) => {
-        const participantId = req.params.id
-        logger.debug(`GET /locked-chunks/${participantId}`)
-        try {
-            const chunks = coordinator.getLockedChunks(participantId)
-            const numNonContributed = coordinator.getNumNonContributedChunks(
-                participantId,
-            )
-            const numChunks = coordinator.getNumChunks()
-            const parameters = coordinator.getParameters()
-            const maxLocks = coordinator.getMaxLocks()
-            const shutdownSignal = coordinator.getShutdownSignal()
-            res.json({
-                status: 'ok',
-                result: {
-                    chunks,
+                    lockedChunks,
                     numNonContributed,
                     parameters,
                     numChunks,
