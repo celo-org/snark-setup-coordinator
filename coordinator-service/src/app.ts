@@ -189,6 +189,19 @@ export function initExpress({
                         )}`,
                     )
                 }
+                if (
+                    !authenticateStrategy.verifyString(
+                        data.id,
+                        `0x${data.signature}`,
+                        data.address,
+                    )
+                ) {
+                    throw new Error(
+                        `Could not verify attestation by participant ${participantId}, data was ${JSON.stringify(
+                            data,
+                        )}`,
+                    )
+                }
                 coordinator.addAttestation(data, participantId)
                 res.json({
                     status: 'ok',

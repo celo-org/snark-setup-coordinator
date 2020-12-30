@@ -45,4 +45,7 @@ export class AuthenticateCelo implements AuthenticateStrategy {
         const message = JSON.stringify(data)
         return verifySignature(message, signature, address)
     }
+    verifyString(data: string, signature: string, address: string): boolean {
+        return verifySignature(data, signature, address)
+    }
 }

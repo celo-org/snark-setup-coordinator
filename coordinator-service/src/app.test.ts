@@ -635,6 +635,33 @@ describe('app', () => {
             expect(res).to.have.status(200)
         })
 
+        it("attesting twice doesn't add twice", async () => {
+            const res = await chai
+                .request(app)
+                .post('/attest')
+                .set('authorization', 'dummy frank')
+                .send({
+                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    signature:
+                        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                })
+            expect(res).to.have.status(200)
+            const res2 = await chai
+                .request(app)
+                .post('/attest')
+                .set('authorization', 'dummy frank')
+                .send({
+                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    signature:
+                        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                })
+            expect(res2).to.have.status(200)
+            const ceremony: Ceremony = (
+                await chai.request(app).get('/ceremony')
+            ).body.result
+            expect(ceremony.attestations.length).to.equal(1)
+        })
+
         it('attests for wrong participant', async () => {
             const res = await chai
                 .request(app)
