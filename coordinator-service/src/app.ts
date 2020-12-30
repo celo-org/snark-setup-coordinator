@@ -106,7 +106,9 @@ export function initExpress({
     app.get('/verifier/chunks', (req, res) => {
         logger.debug(`GET /verifier/chunks`)
         try {
+            const participantId = req.params.id
             const chunks = coordinator.getVerifierChunks()
+            const lockedChunks = coordinator.getLockedChunks(participantId)
             const numNonContributed = chunks.length
             const numChunks = coordinator.getNumChunks()
             const parameters = coordinator.getParameters()
@@ -116,6 +118,7 @@ export function initExpress({
                 status: 'ok',
                 result: {
                     chunks,
+                    lockedChunks,
                     numNonContributed,
                     parameters,
                     numChunks,
