@@ -104,9 +104,36 @@ export function initExpress({
     })
 
     app.get('/verifier/chunks', (req, res) => {
-        logger.debug(`GET /verifier/chunks`)
+        const participantId = req.params.id
+        logger.debug(`GET /verifier/${participantId}/chunks`)
         try {
-            const participantId = req.params.id
+            const chunks = coordinator.getVerifierChunks()
+            const numNonContributed = chunks.length
+            const numChunks = coordinator.getNumChunks()
+            const parameters = coordinator.getParameters()
+            const maxLocks = coordinator.getMaxLocks()
+            const shutdownSignal = coordinator.getShutdownSignal()
+            res.json({
+                status: 'ok',
+                result: {
+                    chunks,
+                    numNonContributed,
+                    parameters,
+                    numChunks,
+                    maxLocks,
+                    shutdownSignal,
+                },
+            })
+        } catch (err) {
+            logger.warn(err.message)
+            res.status(400).json({ status: 'error', message: err.message })
+        }
+    })
+
+    app.get('/verifier/:id/chunks', (req, res) => {
+        const participantId = req.params.id
+        logger.debug(`GET /verifier/${participantId}/chunks`)
+        try {
             const chunks = coordinator.getVerifierChunks()
             const lockedChunks = coordinator.getLockedChunks(participantId)
             const numNonContributed = chunks.length
