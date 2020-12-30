@@ -132,8 +132,10 @@ export class DiskCoordinator implements Coordinator {
         if (!ceremony.attestations) {
             ceremony.attestations = []
         }
-        ceremony.attestations.push(att)
-        this._writeDb()
+        if (!ceremony.attestations.some((a) => a.address == participantId)) {
+            ceremony.attestations.push(att)
+            this._writeDb()
+        }
     }
 
     getContributorChunks(contributorId: string): ChunkInfo[] {

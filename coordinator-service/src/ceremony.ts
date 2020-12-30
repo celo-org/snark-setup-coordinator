@@ -43,7 +43,7 @@ export interface CeremonyParameters {
 export interface Attestation {
     id: string
     address: string
-    data: string
+    signature: string
 }
 
 export interface Ceremony {

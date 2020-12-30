@@ -23,4 +23,8 @@ export class AuthenticateDummy implements AuthenticateStrategy {
     verifyMessage(data: object, signature: string, address: string): boolean {
         return true
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    verifyString(data: string, signature: string, address: string): boolean {
+        return true
+    }
 }
