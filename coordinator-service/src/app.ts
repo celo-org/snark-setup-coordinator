@@ -192,7 +192,7 @@ export function initExpress({
                 if (
                     !authenticateStrategy.verifyString(
                         data.id,
-                        data.signature,
+                        `0x${data.signature}`,
                         data.address,
                     )
                 ) {
