@@ -26,7 +26,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_warnings" {
 
   data_source_id = data.azurerm_log_analytics_workspace.coordinator_workspace.id
   description    = "Alert when nWarnings > 1 in a 5 minute period."
-  enabled        = true
+  enabled        = false
 
   query       = <<-QUERY
     let podPrefix = "coordinator";
@@ -40,7 +40,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_warnings" {
     (
         ContainerLog
         | where TimeGenerated > startTimestamp
-        | where LogEntry contains "WARNING"
+        | where LogEntry contains_cs "WARN"
     )
     on ContainerID
     QUERY
@@ -81,7 +81,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "coordinator_errors" {
     (
         ContainerLog
         | where TimeGenerated > startTimestamp
-        | where LogEntry contains "ERROR"
+        | where LogEntry contains_cs "ERROR"
     )
     on ContainerID
     QUERY
