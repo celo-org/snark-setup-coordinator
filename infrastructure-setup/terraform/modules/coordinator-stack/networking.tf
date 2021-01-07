@@ -12,7 +12,7 @@ resource "azurerm_public_ip" "coordinator" {
 
 resource "azurerm_frontdoor" "coordinator" {
   name                                         = "plumo-setup-${var.environment}"
-  location                                     = "Global"
+  location                                     = "global"
   resource_group_name                          = data.azurerm_resource_group.existing.name
   enforce_backend_pools_certificate_name_check = false
 
