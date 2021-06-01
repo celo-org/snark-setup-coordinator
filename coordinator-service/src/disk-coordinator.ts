@@ -124,6 +124,10 @@ export class DiskCoordinator implements Coordinator {
             .map(({ chunkId }) => chunkId)
     }
 
+    getPhase(): string {
+	return this.db.phase
+    }
+
     addAttestation(att: Attestation, participantId: string): void {
         if (att.address != participantId) {
             throw new Error('adding attestation to wrong participant')
