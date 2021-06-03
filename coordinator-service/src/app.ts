@@ -85,7 +85,7 @@ export function initExpress({
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
             const shutdownSignal = coordinator.getShutdownSignal()
-	    const phase = coordinator.getPhase()
+            const phase = coordinator.getPhase()
             res.json({
                 status: 'ok',
                 result: {
@@ -96,7 +96,7 @@ export function initExpress({
                     numChunks,
                     maxLocks,
                     shutdownSignal,
-		    phase, 
+                    phase,
                 },
             })
         } catch (err) {
@@ -116,7 +116,7 @@ export function initExpress({
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
             const shutdownSignal = coordinator.getShutdownSignal()
-	    const phase = coordinator.getPhase()
+            const phase = coordinator.getPhase()
             res.json({
                 status: 'ok',
                 result: {
@@ -127,7 +127,7 @@ export function initExpress({
                     numChunks,
                     maxLocks,
                     shutdownSignal,
-		    phase,
+                    phase,
                 },
             })
         } catch (err) {

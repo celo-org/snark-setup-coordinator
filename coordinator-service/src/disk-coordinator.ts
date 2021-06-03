@@ -125,7 +125,7 @@ export class DiskCoordinator implements Coordinator {
     }
 
     getPhase(): string {
-	return this.db.phase
+        return this.db.phase
     }
 
     addAttestation(att: Attestation, participantId: string): void {
