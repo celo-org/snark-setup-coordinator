@@ -56,6 +56,7 @@ export interface Ceremony {
     round: number
     maxLocks: number
     shutdownSignal: boolean
+    phase: string
 }
 
 type DeepReadonly<T> = {

@@ -36,6 +36,7 @@ export interface Coordinator {
     getRound(): number
     getChunk(chunkId: string): LockedChunkData
     getChunkDownloadInfo(chunkId: string): ChunkDownloadInfo
+    getPhase(): string
     tryLockChunk(chunkId: string, participantId: string): boolean
     tryUnlockChunk(chunkId: string, participantId: string): boolean
     contributeChunk({

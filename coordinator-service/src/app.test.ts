@@ -211,26 +211,6 @@ describe('app', () => {
         })
     })
 
-    describe('GET /verifier/chunks', () => {
-        it('matches ceremony', async () => {
-            const res = await chai.request(app).get('/verifier/chunks')
-            expect(res).to.have.status(200)
-
-            const expected = {
-                chunks: [
-                    { lockHolder: null, chunkId: '2' },
-                    { lockHolder: null, chunkId: '4' },
-                ],
-                numNonContributed: 2,
-                parameters: {},
-                numChunks: 4,
-                maxLocks: 1,
-                shutdownSignal: false,
-            }
-            expect(res.body.result).to.deep.equal(expected)
-        })
-    })
-
     describe('GET /chunks/:id/info', () => {
         it('info for chunk 1', async () => {
             const res = await chai.request(app).get('/chunks/1/info')

@@ -85,6 +85,7 @@ export function initExpress({
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
             const shutdownSignal = coordinator.getShutdownSignal()
+            const phase = coordinator.getPhase()
             res.json({
                 status: 'ok',
                 result: {
@@ -95,33 +96,7 @@ export function initExpress({
                     numChunks,
                     maxLocks,
                     shutdownSignal,
-                },
-            })
-        } catch (err) {
-            logger.warn(err.message)
-            res.status(400).json({ status: 'error', message: err.message })
-        }
-    })
-
-    app.get('/verifier/chunks', (req, res) => {
-        const participantId = req.params.id
-        logger.debug(`GET /verifier/${participantId}/chunks`)
-        try {
-            const chunks = coordinator.getVerifierChunks()
-            const numNonContributed = chunks.length
-            const numChunks = coordinator.getNumChunks()
-            const parameters = coordinator.getParameters()
-            const maxLocks = coordinator.getMaxLocks()
-            const shutdownSignal = coordinator.getShutdownSignal()
-            res.json({
-                status: 'ok',
-                result: {
-                    chunks,
-                    numNonContributed,
-                    parameters,
-                    numChunks,
-                    maxLocks,
-                    shutdownSignal,
+                    phase,
                 },
             })
         } catch (err) {
@@ -141,6 +116,7 @@ export function initExpress({
             const parameters = coordinator.getParameters()
             const maxLocks = coordinator.getMaxLocks()
             const shutdownSignal = coordinator.getShutdownSignal()
+            const phase = coordinator.getPhase()
             res.json({
                 status: 'ok',
                 result: {
@@ -151,6 +127,7 @@ export function initExpress({
                     numChunks,
                     maxLocks,
                     shutdownSignal,
+                    phase,
                 },
             })
         } catch (err) {
