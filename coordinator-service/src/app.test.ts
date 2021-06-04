@@ -117,7 +117,7 @@ describe('app', () => {
             ],
         }
 
-        DiskCoordinator.init({ config, dbPath, force: true })
+        DiskCoordinator.init({ config, dbPath, phase: 'phase1', force: true })
         chunkStorage = new DiskChunkStorage({ storagePath, chunkStorageUrl })
         coordinator = new DiskCoordinator({ dbPath })
         app = initExpress({
@@ -197,6 +197,7 @@ describe('app', () => {
                 parameters: {},
                 numChunks: 4,
                 maxLocks: 1,
+                phase: 'phase1',
                 shutdownSignal: false,
             }
             expect(res.body.result).to.deep.equal(expected)

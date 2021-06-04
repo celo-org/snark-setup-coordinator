@@ -17,6 +17,7 @@ coordinator:
   azureResourceGroup: ""
   container: chunks
   initialVerifierAddresses: ""
+  phase: ""
 
 participant: 
   numParticipants: 1
