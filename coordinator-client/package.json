@@ -54,7 +54,7 @@
     "execa": "^4.0.3",
     "ora": "^5.1.0",
     "pino": "^6.5.1",
-    "pino-pretty": "^4.1.0",
+    "pino-pretty": "^4.8.0",
     "shuffle-array": "^1.0.1",
     "tmp": "^0.2.1",
     "yargs": "^15.4.1"
