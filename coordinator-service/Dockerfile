@@ -1,4 +1,4 @@
-FROM node:12.18.3-alpine3.12 as base
+FROM node:12.22.2-alpine3.12 as base
 
 ENV NPM_CONFIG_LOGLEVEL info
 
@@ -15,7 +15,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:12.18.3-alpine3.12
+FROM node:12.22.2-alpine3.12
 
 # Ensure we only install dependencies (not devDependencies too)
 ENV NODE_ENV production
