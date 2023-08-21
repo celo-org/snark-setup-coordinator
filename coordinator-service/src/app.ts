@@ -19,7 +19,7 @@ declare global {
 }
 
 export function isAttestation(a: object): a is Attestation {
-    return a['signature'] && a['id'] && a['address']
+    return a['signature'] && a['id'] && a['publicKey']
 }
 
 export function initExpress({
@@ -199,8 +199,8 @@ export function initExpress({
                 if (
                     !authenticateStrategy.verifyString(
                         data.id,
-                        `0x${data.signature}`,
-                        data.address,
+                        data.signature,
+                        data.publicKey,
                     )
                 ) {
                     throw new Error(

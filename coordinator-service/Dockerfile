@@ -2,7 +2,7 @@ FROM node:12.18.3-alpine3.12 as base
 
 ENV NPM_CONFIG_LOGLEVEL info
 
-# @celo/utils has depdencies in github
+# @celo/utils has dependencies in github
 RUN apk update && apk upgrade && \
     apk add --no-cache git
 
@@ -21,7 +21,7 @@ FROM node:12.18.3-alpine3.12
 ENV NODE_ENV production
 ENV NPM_CONFIG_LOGLEVEL info
 
-# @celo/utils has depdencies in github
+# @celo/utils has dependencies in github
 RUN apk update && apk upgrade && \
     apk add --no-cache git
 

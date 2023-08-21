@@ -11,11 +11,11 @@ locals {
         image = var.coordinator_service_image
         tag   = var.coordinator_service_image_tag
       }
-      storageAccount           = azurerm_storage_account.coordinator_storage.name
-      azureAccessKey           = azurerm_storage_account.coordinator_storage.primary_access_key
-      azureLoadBalancerIP      = azurerm_public_ip.coordinator.ip_address
-      azureResourceGroup       = data.azurerm_resource_group.existing.name
-      initialVerifierAddresses = var.initial_verifier_addresses
+      storageAccount            = azurerm_storage_account.coordinator_storage.name
+      azureAccessKey            = azurerm_storage_account.coordinator_storage.primary_access_key
+      azureLoadBalancerIP       = azurerm_public_ip.coordinator.ip_address
+      azureResourceGroup        = data.azurerm_resource_group.existing.name
+      initialVerifierPublicKeys = var.initial_verifier_public_keys
     }
   }
   verifier_vars = {
@@ -31,11 +31,11 @@ locals {
         tag   = var.verifier_image_tag
       }
       numParticipants = var.verifier_count
-      plumoKeys = [for pair in var.verifier_credentials : {
+      nimiqKeys = [for pair in var.verifier_credentials : {
         key      = file(pair.path),
         password = pair.password
       }]
-      coordinatorUri = "https://plumo-setup-${var.environment}.azurefd.net"
+      coordinatorUri = "https://nimiq-setup-${var.environment}.azurefd.net"
     }
   }
   monitor_vars = {
@@ -53,7 +53,7 @@ locals {
         tag   = var.monitor_image_tag
       }
       pollingInterval = var.monitor_polling_interval
-      coordinatorUri  = "https://plumo-setup-${var.environment}.azurefd.net"
+      coordinatorUri  = "https://nimiq-setup-${var.environment}.azurefd.net"
     }
   }
 }

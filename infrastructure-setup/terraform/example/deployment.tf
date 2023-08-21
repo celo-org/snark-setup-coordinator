@@ -11,8 +11,8 @@ provider "azuread" {
 # Local variables that define the deployment, make changes here as-needed
 locals {
   environment                   = "example"
-  cluster_prefix                = "plumo-${local.environment}"
-  resource_group_name           = "plumo-${local.environment}"
+  cluster_prefix                = "nimiq-${local.environment}"
+  resource_group_name           = "nimiq-${local.environment}"
   coordinator_service_image_tag = "test"
   coordinator_service_image     = "coordinator-service"
   verifier_image                = "snark-ceremony-operator"
@@ -20,22 +20,22 @@ locals {
   monitor_image                 = "snark-ceremony-operator"
   monitor_image_tag             = "test"
   monitor_polling_interval      = 1
-  initial_verifier_addresses    = "0x6bb0e6b5f194fed57e49590981093cc887c084aa 0x36ea72ae857dbdf72e85396e6335cacc603af410 0x2eb0d7f506eddf100cfebe18d2df90d34cca6fcb"
+  initial_verifier_public_keys  = "ba154fac00e55e69ea72bb4966e8f19baf5ad8565e1b67018800b6570828618c e885ad0da659616319ca91d02659c01e8bcbe13ea2fff003bf6258bcc226a1e9 92b09c7071ee39be8f20efbaf5db90d6b5c367516ff11bd73c8212f8e382a7c9"
   verifier_credentials = [
     {
-      path     = "./plumo-verifier-1.keys"
-      password = "password"
+      path     = "./nimiq-verifier-1.keys"
+      password = "1"
     },
     {
-      path     = "./plumo-verifier-2.keys"
-      password = "password"
+      path     = "./nimiq-verifier-2.keys"
+      password = "1"
     },
     {
-      path     = "./plumo-verifier-3.keys"
-      password = "password"
+      path     = "./nimiq-verifier-3.keys"
+      password = "1"
     }
   ]
-  victorops_webhook_uri = "https://alert-mapping.victorops.com/integrations/azure/v1/<token>/Plumo"
+  victorops_webhook_uri = "https://alert-mapping.victorops.com/integrations/azure/v1/<token>/Nimiq"
 }
 
 resource "azurerm_resource_group" "coordinator_group" {
@@ -84,7 +84,7 @@ module "deployment" {
   monitor_image                 = local.monitor_image
   monitor_image_tag             = local.monitor_image_tag
   monitor_polling_interval      = local.monitor_polling_interval
-  initial_verifier_addresses    = local.initial_verifier_addresses
+  initial_verifier_public_keys  = local.initial_verifier_public_keys
   verifier_credentials          = local.verifier_credentials
   resource_group_name           = local.resource_group_name
   log_analytics_workspace_name  = "${local.cluster_prefix}-workspace"

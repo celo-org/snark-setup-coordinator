@@ -49,6 +49,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.2.0-preview.1",
     "@celo/utils": "^0.1.19",
+    "@nimiq/core": "^1.6.1",
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "execa": "^4.0.3",

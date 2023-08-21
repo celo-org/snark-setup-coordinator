@@ -1,13 +1,13 @@
 environment: development
 coordinator: 
   enabled: true
-  fullName: "plumo-coordinator-{{$.Values.environment}}"
+  fullName: "nimiq-coordinator-{{$.Values.environment}}"
   image: 
-    repo: "us.gcr.io/celo-testnet"
+    repo: "us.gcr.io/nimiq-testnet"
     image: coordinator-service
     tag: test
     full: "{{$.Values.coordinator.image.repo}}/{{$.Values.coordinator.image.image}}:{{$.Values.coordinator.image.tag}}"
-  authType: celo
+  authType: nimiq
   configPath: ceremony/empty.json
   apiURL: 'http://{{ tpl $.Values.coordinator.fullName . }}:8080'
   storageType: azure
@@ -16,28 +16,28 @@ coordinator:
   azureLoadBalancerIP: ""
   azureResourceGroup: ""
   container: chunks
-  initialVerifierAddresses: ""
+  initialVerifierPublicKeys: ""
 
 participant: 
   numParticipants: 1
   enabled: false
-  fullName: "plumo-verifier-{{$.Values.environment}}"
+  fullName: "nimiq-verifier-{{$.Values.environment}}"
   image: 
-    repo: "us.gcr.io/celo-testnet"
+    repo: "us.gcr.io/nimiq-testnet"
     image: snark-ceremony-operator
     tag: test
     full: "{{$.Values.participant.image.repo}}/{{$.Values.participant.image.image}}:{{$.Values.participant.image.tag}}"
   participationMode: verify #contribute 
-  plumoKeys: 
+  nimiqKeys: 
     - key: ""
       password: ""
   coordinatorUri: http://{{ tpl $.Values.coordinator.fullname . }}:8080
 
 monitor: 
   enabled: false
-  fullName: "plumo-monitor-{{$.Values.environment}}"
+  fullName: "nimiq-monitor-{{$.Values.environment}}"
   image: 
-    repo: "us.gcr.io/celo-testnet"
+    repo: "us.gcr.io/nimiq-testnet"
     image: snark-ceremony-operator
     tag: test
     full: "{{$.Values.monitor.image.repo}}/{{$.Values.monitor.image.image}}:{{$.Values.monitor.image.tag}}"

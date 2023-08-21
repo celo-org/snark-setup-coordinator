@@ -6,7 +6,7 @@ data "azurerm_log_analytics_workspace" "coordinator_workspace" {
 resource "azurerm_monitor_action_group" "victorops_group" {
   name                = "CoordinatorVictorOps"
   resource_group_name = data.azurerm_resource_group.existing.name
-  short_name          = "PlumoVO"
+  short_name          = "NimiqVO"
 
   webhook_receiver {
     name                    = "victorops"

@@ -608,7 +608,7 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
@@ -621,7 +621,7 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
@@ -631,7 +631,7 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', address: 'frank' },
+                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
@@ -648,7 +648,7 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'pat', address: 'pat' },
+                    data: { signature: 'hello', id: 'pat', publicKey: 'pat' },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })

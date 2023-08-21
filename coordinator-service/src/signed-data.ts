@@ -2,7 +2,8 @@ import Joi from 'joi'
 
 import { logger } from './logger'
 
-export const signatureWith0xLength = 132
+// Nimiq's signature is 128 characters in hex and does not start with 0x
+export const signatureWith0xLength = 128
 export interface SignedData {
     data: object
     signature: string
@@ -19,8 +20,7 @@ export function isSignedData(body: object): body is SignedData {
         return true
     } else {
         logger.error(
-            `could not validate signed data: error was ${
-                validationResult.error
+            `could not validate signed data: error was ${validationResult.error
             }, value was ${JSON.stringify(body)}`,
         )
         return false

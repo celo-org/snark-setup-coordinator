@@ -10,6 +10,7 @@ import {
 
 import { authenticate } from './authenticate'
 import { AuthenticateCelo } from './authenticate-celo'
+import { AuthenticateNimiq } from './authenticate-nimiq'
 import { AuthenticateDummy } from './authenticate-dummy'
 
 import { BlobChunkStorage } from './blob-chunk-storage'
@@ -23,6 +24,7 @@ import { logger } from './logger'
 dotenv.config()
 
 const authenticateStrategies = {
+    nimiq: new AuthenticateNimiq(),
     celo: new AuthenticateCelo(),
     dummy: new AuthenticateDummy(),
 }
@@ -37,7 +39,7 @@ const httpArgs = {
         type: 'number',
     },
     'auth-type': {
-        choices: ['celo', 'dummy'],
+        choices: ['nimiq', 'celo', 'dummy'],
         default: 'dummy',
         type: 'string',
     },
@@ -88,7 +90,7 @@ const argv = yargs
         'initial-verifiers': {
             type: 'string',
             demand: false,
-            describe: 'Initial verifier addresses. Space-delineated.',
+            describe: 'Initial verifier public keys. Space-delineated.',
         },
     })
     .demandCommand(1, 'You must specify a command.')

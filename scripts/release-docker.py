@@ -11,7 +11,7 @@ def cli(debug):
     click.echo('Debug mode is %s' % ('on' if debug else 'off'))
 
 @cli.command()  
-@click.option('--repo', default="us.gcr.io/celo-testnet")
+@click.option('--repo', default="us.gcr.io/nimiq-testnet")
 @click.option('--tag', default="test")
 @click.option('--client-path', default="./coordinator-client")
 @click.option('--service-path', default="./coordinator-service")

@@ -6,7 +6,7 @@ resource "random_password" "coordinator_sp_password" {
 
 # An application for the coordinator cluster
 resource "azuread_application" "coordinator_cluster" {
-  name = "PlumoCeremony${local.environment}"
+  name = "NimiqCeremony${local.environment}"
 }
 
 
@@ -15,7 +15,7 @@ resource "azuread_service_principal" "coordinator_cluster" {
   application_id               = azuread_application.coordinator_cluster.application_id
   app_role_assignment_required = false
 
-  tags = ["plumo", local.environment]
+  tags = ["nimiq", local.environment]
 }
 
 resource "azurerm_role_assignment" "cluster_networking" {

@@ -11,16 +11,16 @@ resource "azurerm_public_ip" "coordinator" {
 }
 
 resource "azurerm_frontdoor" "coordinator" {
-  name                                         = "plumo-setup-${var.environment}"
+  name                                         = "nimiq-setup-${var.environment}"
   location                                     = "Global"
   resource_group_name                          = data.azurerm_resource_group.existing.name
   enforce_backend_pools_certificate_name_check = false
 
   routing_rule {
-    name               = "RoutingRulePlumo${var.environment}"
+    name               = "RoutingRuleNimiq${var.environment}"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/*"]
-    frontend_endpoints = ["PlumoCeremonyFrontEnd${var.environment}"]
+    frontend_endpoints = ["NimiqCeremonyFrontEnd${var.environment}"]
     forwarding_configuration {
       forwarding_protocol = "HttpOnly"
       backend_pool_name   = "CoordinatorLoadBalancer${var.environment}"
@@ -28,11 +28,11 @@ resource "azurerm_frontdoor" "coordinator" {
   }
 
   backend_pool_load_balancing {
-    name = "LoadBalancingPlumo${var.environment}"
+    name = "LoadBalancingNimiq${var.environment}"
   }
 
   backend_pool_health_probe {
-    name = "HealthProbePlumo${var.environment}"
+    name = "HealthProbeNimiq${var.environment}"
   }
 
   backend_pool {
@@ -44,13 +44,13 @@ resource "azurerm_frontdoor" "coordinator" {
       https_port  = 8080
     }
 
-    load_balancing_name = "LoadBalancingPlumo${var.environment}"
-    health_probe_name   = "HealthProbePlumo${var.environment}"
+    load_balancing_name = "LoadBalancingNimiq${var.environment}"
+    health_probe_name   = "HealthProbeNimiq${var.environment}"
   }
 
   frontend_endpoint {
-    name                              = "PlumoCeremonyFrontEnd${var.environment}"
-    host_name                         = "plumo-setup-${var.environment}.azurefd.net"
+    name                              = "NimiqCeremonyFrontEnd${var.environment}"
+    host_name                         = "nimiq-setup-${var.environment}.azurefd.net"
     custom_https_provisioning_enabled = false
   }
 }

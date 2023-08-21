@@ -19,6 +19,7 @@ import { AuthCelo } from './auth-celo'
 import { AuthDummy } from './auth-dummy'
 import { worker } from './worker'
 import { Auth } from './auth'
+import { AuthNimiq } from './auth-nimiq'
 
 dotenv.config()
 tmp.setGracefulCleanup()
@@ -185,8 +186,9 @@ async function newChallenge({
                                 '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             newChallengeHash,
                         },
+                        // Nimiq signatures are only 128 characters in hex
                         signature:
-                            '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                     },
                     metadata: {
                         contributedTime: null,
@@ -289,7 +291,7 @@ async function main(): Promise<void> {
             describe: 'Ceremony API url',
         },
         'auth-type': {
-            choices: ['celo', 'dummy'],
+            choices: ['nimiq', 'celo', 'dummy'],
             default: 'dummy',
             type: 'string',
         },
@@ -298,13 +300,13 @@ async function main(): Promise<void> {
             demand: true,
             describe: 'ID of ceremony participant',
         },
-        'celo-private-key': {
+        'private-key': {
             type: 'string',
-            describe: 'Private key if using Celo auth (for development)',
+            describe: 'Private key if using Celo/Nimiq auth (for development)',
         },
-        'celo-private-key-file': {
+        'private-key-file': {
             type: 'string',
-            describe: 'Path to private key if using Celo auth',
+            describe: 'Path to private key if using Celo/Nimiq auth',
         },
     }
 
@@ -384,14 +386,24 @@ async function main(): Promise<void> {
     }
 
     if (args.authType === 'celo') {
-        let privateKey = args.celoPrivateKey
+        let privateKey = args.privateKey
         if (!privateKey) {
-            privateKey = fs.readFileSync(args.celoPrivateKeyFile).toString()
+            privateKey = fs.readFileSync(args.privateKeyFile).toString()
         }
 
         args.auth = new AuthCelo({
             address: args.participantId,
             privateKey,
+        })
+    } else if (args.authType == 'nimiq') {
+        let keyPair = args.privateKey
+        if (!keyPair) {
+            keyPair = fs.readFileSync(args.privateKeyFile).toString()
+        }
+
+        args.auth = AuthNimiq.fromString({
+            publicKey: args.participantId,
+            keyPair: keyPair,
         })
     } else {
         args.auth = new AuthDummy(args.participantId)

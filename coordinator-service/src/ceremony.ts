@@ -42,7 +42,7 @@ export interface CeremonyParameters {
 
 export interface Attestation {
     id: string
-    address: string
+    publicKey: string
     signature: string
 }
 

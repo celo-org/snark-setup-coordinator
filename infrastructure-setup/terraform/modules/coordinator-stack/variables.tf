@@ -19,10 +19,10 @@ variable "coordinator_service_image_tag" {
   default     = "test"
 }
 
-variable "initial_verifier_addresses" {
+variable "initial_verifier_public_keys" {
   type        = string
-  description = "A space-delimited list of Celo Public Keys corresponding to one or more cLabs verifiers."
-  default     = "0xc3e855aec16975e8351aba6f8261e2025c3159ca"
+  description = "A space-delimited list of Nimiq Public Keys corresponding to one or more verifiers."
+  default     = "ba154fac00e55e69ea72bb4966e8f19baf5ad8565e1b67018800b6570828618c"
 }
 
 variable "verifier_image" {
@@ -40,8 +40,8 @@ variable "verifier_credentials" {
   type        = list(map(string))
   description = "An array of Maps consisting of Verifier Credentials"
   default = [{
-    path     = "./plumo-verifier-example.keys"
-    password = "password"
+    path     = "./nimiq-verifier-example.keys"
+    password = "1"
   }]
 }
 
