@@ -40,7 +40,7 @@ export class AuthNimiq implements Auth {
         const signature = Nimiq.Signature.create(
             this.keyPair.privateKey,
             this.keyPair.publicKey,
-            Nimiq.BufferUtils.fromAny(message),
+            Nimiq.BufferUtils.fromAscii(message),
         )
         const serializedSignature = signature.toHex()
         return serializedSignature

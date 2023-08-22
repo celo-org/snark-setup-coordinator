@@ -17,7 +17,7 @@ describe('nimiqAuth', () => {
         const signature = Nimiq.Signature.create(
             keyPair.privateKey,
             keyPair.publicKey,
-            Nimiq.BufferUtils.fromAny(message),
+            Nimiq.BufferUtils.fromAscii(message),
         )
         const serializedSignature = signature.toHex()
 

@@ -36,7 +36,7 @@ export class AuthenticateNimiq implements AuthenticateStrategy {
         const message = `${req.method.toLowerCase()} ${req.path.toLowerCase()}`
         const verified = signature.verify(
             publicKey,
-            Nimiq.BufferUtils.fromAny(message),
+            Nimiq.BufferUtils.fromAscii(message),
         )
         if (!verified) {
             throw new Error('Invalid authorization')
@@ -52,7 +52,7 @@ export class AuthenticateNimiq implements AuthenticateStrategy {
         const publicKey = Nimiq.PublicKey.fromAny(serializedPublicKey)
         const signature = Nimiq.Signature.fromAny(serializedSignature)
         const message = JSON.stringify(data)
-        return signature.verify(publicKey, Nimiq.BufferUtils.fromAny(message))
+        return signature.verify(publicKey, Nimiq.BufferUtils.fromAscii(message))
     }
     verifyString(
         data: string,
@@ -61,6 +61,6 @@ export class AuthenticateNimiq implements AuthenticateStrategy {
     ): boolean {
         const publicKey = Nimiq.PublicKey.fromAny(serializedPublicKey)
         const signature = Nimiq.Signature.fromAny(serializedSignature)
-        return signature.verify(publicKey, Nimiq.BufferUtils.fromAny(data))
+        return signature.verify(publicKey, Nimiq.BufferUtils.fromAscii(data))
     }
 }
