@@ -129,14 +129,14 @@ export class DiskCoordinator implements Coordinator {
     }
 
     addAttestation(att: Attestation, participantId: string): void {
-        if (att.address != participantId) {
+        if (att.publicKey != participantId) {
             throw new Error('adding attestation to wrong participant')
         }
         const ceremony = this.db
         if (!ceremony.attestations) {
             ceremony.attestations = []
         }
-        if (!ceremony.attestations.some((a) => a.address == participantId)) {
+        if (!ceremony.attestations.some((a) => a.publicKey == participantId)) {
             ceremony.attestations.push(att)
             this._writeDb()
         }
@@ -216,7 +216,7 @@ export class DiskCoordinator implements Coordinator {
             lastResponseUrl:
                 contributions.length > 0
                     ? contributions[contributions.length - 1]
-                          .contributedLocation
+                        .contributedLocation
                     : null,
             lastChallengeUrl:
                 contributions.length > 0
@@ -304,7 +304,7 @@ export class DiskCoordinator implements Coordinator {
         if (chunk.lockHolder !== participantId) {
             throw new Error(
                 `Participant ${participantId} does not hold lock ` +
-                    `on chunk ${chunkId}`,
+                `on chunk ${chunkId}`,
             )
         }
         const now = timestamp()
