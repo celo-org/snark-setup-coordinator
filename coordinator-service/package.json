@@ -44,7 +44,7 @@
   "dependencies": {
     "@azure/abort-controller": "^1.0.1",
     "@azure/storage-blob": "^12.2.0-preview.1",
-    "@celo/utils": "^0.1.19",
+    "@celo/utils": "^4.1.0",
     "clone-deep": "^4.0.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
