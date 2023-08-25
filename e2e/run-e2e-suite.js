@@ -13,7 +13,7 @@ const runVerifier = true
 
 const clusterName = 'coordinator-cluster'
 const kindConfig = path.join(__dirname, 'kind.yaml')
-const kindImage = 'kindest/node:v1.16.15'
+const kindImage = 'kindest/node:v1.28.0'
 const kubeconfig = path.join(__dirname, '.kubeconfig')
 
 const serviceYaml = path.join('coordinator-service', 'coordinator-service.yaml')
