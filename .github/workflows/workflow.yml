@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Node 12
+    name: Node 18
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,8 +25,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 12
-      - run: npm install
+          node-version: 18
+      - run: npm ci
       - run: npm run build
       - run: npm run test
   test-e2e:
@@ -39,5 +39,5 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 18
       - run: node e2e/run-e2e-suite.js
