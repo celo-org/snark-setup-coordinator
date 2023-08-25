@@ -1,7 +1,7 @@
 const path = require('path')
 const { spawnSync } = require('child_process')
 
-const debug = false
+const debug = true
 
 const createCluster = true
 const deleteCluster = true
@@ -34,7 +34,7 @@ const verifierSecret = path.join(__dirname, 'verifier-secret.yaml')
 function run(command, args, options) {
   options = options || {}
   if (debug) console.log(`${command} \\\n  ${args.join(' \\\n  ')}`)
-  const result = spawnSync(command, args, {stdio: 'inherit', ...options})
+  const result = spawnSync(command, args, { stdio: 'inherit', ...options })
   if (result.status) {
     throw new Error(`${command} failed: ${result.status}`)
   } else if (result.signal) {
@@ -79,22 +79,22 @@ function main() {
 
   if (createCluster) {
     kind(['create', 'cluster',
-          '--verbosity', '4',
-          '--config', kindConfig,
-          '--image', kindImage])
+      '--verbosity', '4',
+      '--config', kindConfig,
+      '--image', kindImage])
   }
 
   if (dockerBuild) {
     run('docker',
-        ['build', '-t', 'coordinator-service:test', '.'],
-        {stdio: 'inherit', cwd: 'coordinator-service'})
+      ['build', '-t', 'coordinator-service:test', '.'],
+      { stdio: 'inherit', cwd: 'coordinator-service' })
     run('docker',
-        ['build', '-t', 'coordinator-client:test', '.'],
-        {stdio: 'inherit', cwd: 'coordinator-client'})
+      ['build', '-t', 'coordinator-client:test', '.'],
+      { stdio: 'inherit', cwd: 'coordinator-client' })
     kind(['load', 'docker-image', '--name', clusterName, 'coordinator-service:test'])
     kind(['load', 'docker-image', '--name', clusterName, 'coordinator-client:test'])
   }
-  
+
   if (runService) {
     kubectl(['apply', '-f', serviceConfigMap])
     kubectl(['apply', '-f', serviceYaml])
@@ -136,7 +136,7 @@ function main() {
 
 try {
   main()
-} catch(err) {
+} catch (err) {
   console.log(err)
   process.exit(1)
 }
