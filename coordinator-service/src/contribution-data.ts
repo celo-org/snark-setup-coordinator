@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 import { logger } from './logger'
-import { signatureWith0xLength } from './signed-data'
+import { nimiqSignatureLength, signatureWith0xLength } from './signed-data'
 
 export const challengeHashLength = 128
 export const responseHashLength = 128
@@ -24,7 +24,10 @@ export function isContributorData(
         })
             .unknown(true)
             .required(),
-        signature: Joi.string().length(signatureWith0xLength).required(),
+        signature: Joi.alternatives().try(
+            Joi.string().length(signatureWith0xLength).required(),
+            Joi.string().length(nimiqSignatureLength).required(),
+        ),
     })
 
     const validationResult = schema.validate(data)

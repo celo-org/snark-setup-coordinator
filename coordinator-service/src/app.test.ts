@@ -608,7 +608,11 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
+                    data: {
+                        signature: 'hello',
+                        id: 'frank',
+                        publicKey: 'frank',
+                    },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
@@ -621,7 +625,11 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
+                    data: {
+                        signature: 'hello',
+                        id: 'frank',
+                        publicKey: 'frank',
+                    },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })
@@ -631,7 +639,11 @@ describe('app', () => {
                 .post('/attest')
                 .set('authorization', 'dummy frank')
                 .send({
-                    data: { signature: 'hello', id: 'frank', publicKey: 'frank' },
+                    data: {
+                        signature: 'hello',
+                        id: 'frank',
+                        publicKey: 'frank',
+                    },
                     signature:
                         '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                 })

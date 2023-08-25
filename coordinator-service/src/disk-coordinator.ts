@@ -216,7 +216,7 @@ export class DiskCoordinator implements Coordinator {
             lastResponseUrl:
                 contributions.length > 0
                     ? contributions[contributions.length - 1]
-                        .contributedLocation
+                          .contributedLocation
                     : null,
             lastChallengeUrl:
                 contributions.length > 0
@@ -304,7 +304,7 @@ export class DiskCoordinator implements Coordinator {
         if (chunk.lockHolder !== participantId) {
             throw new Error(
                 `Participant ${participantId} does not hold lock ` +
-                `on chunk ${chunkId}`,
+                    `on chunk ${chunkId}`,
             )
         }
         const now = timestamp()
