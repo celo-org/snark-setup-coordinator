@@ -25,6 +25,12 @@ variable "initial_verifier_addresses" {
   default     = "0xc3e855aec16975e8351aba6f8261e2025c3159ca"
 }
 
+variable "phase" {
+  type        = string
+  description = "The setup phase."
+  default     = "phase1"
+}
+
 variable "verifier_image" {
   type        = string
   description = "The image to use in the verifier deployment"

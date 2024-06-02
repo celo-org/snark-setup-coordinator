@@ -85,6 +85,11 @@ const argv = yargs
             demand: true,
             describe: 'Initial ceremony state file',
         },
+        phase: {
+            type: 'string',
+            demand: true,
+            describe: 'Setup phase. Either phase1 or phase2.',
+        },
         'initial-verifiers': {
             type: 'string',
             demand: false,
@@ -190,8 +195,9 @@ function init(args): void {
             throw error
         }
     }
+    const phase = args.phase
     const config = JSON.parse(fs.readFileSync(args.configPath).toString())
-    DiskCoordinator.init({ config, dbPath, initialVerifiers })
+    DiskCoordinator.init({ config, dbPath, phase, initialVerifiers })
 }
 
 function main(args): void {

@@ -33,12 +33,14 @@ export class DiskCoordinator implements Coordinator {
     static init({
         config,
         dbPath,
+        phase,
         initialVerifiers = null,
         force = false,
     }: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any
         dbPath: string
+        phase: string
         initialVerifiers?: string[]
         force?: boolean
     }): void {
@@ -61,6 +63,8 @@ export class DiskCoordinator implements Coordinator {
         if (initialVerifiers) {
             config.verifierIds = config.verifierIds.concat(initialVerifiers)
         }
+        config.phase = phase
+        logger.info('phase %o', phase)
         logger.info('args %o', initialVerifiers)
         logger.info('config %o', config.verifierIds)
 
