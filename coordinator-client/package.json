@@ -47,7 +47,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@azure/storage-blob": "^12.2.0-preview.1",
+    "@azure/storage-blob": "^12.2.0",
     "@celo/utils": "^0.1.19",
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
