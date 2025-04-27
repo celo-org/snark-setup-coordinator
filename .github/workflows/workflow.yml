@@ -19,7 +19,7 @@ jobs:
       run:
         working-directory: ${{ matrix.app }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Setup node
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     name: E2E
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Setup node
